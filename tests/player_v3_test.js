@@ -132,7 +132,32 @@ function runTestCase(c) {
   Otherwise tests might succeed at the first time then fail later.
 
   Some fields are expected but the value is unknown, use expectedUnknownFields to pass these fields
-
+  
+  API to modify: //need further discuss
+  
+  POST /friend managing friend list
+  
+  send friend request/accept friend request
+  POST /friend/{ownPlayerID}
+  {"accessSignature":...,"Action":"ADD","playerId":...}
+  Return {"success":"REQUEST_SENT"} //success
+  Return {"error":"WRONG_PLAYER_ID"} //no such user
+  Return {"error":"ALREADY_FRIEND"} //already friend
+  Return {"error":"ACTION_DENY"} //action denied (blocked user)
+  
+  remove friend
+  POST /friend/{ownPlayerID}
+  {"accessSignature":...,"Action":"REMOVE","playerId":...}
+  Return {"success":"REMOVED"} //success
+  Return {"error":"WRONG_PLAYER_ID"} //no such friend
+  
+  get friend list
+  GET /friend/{ownPlayerID}
+  {"accessSignature":...,"Action":"LIST"}
+  Return {"friends":[...]} //success
+  
+  
+  
 */
 
 //TODO manage testcase dependency
@@ -394,27 +419,16 @@ function testPlayerV1() {
     },
     "testTitle":"Get player Info with wrong Id",
   },
-  //Delete a player Info with wrong accessSignature
+  //Send a friend request
   {
-    "method":"DELETE",
-    "testUrl":"/players/"+getPlayerId(0),
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(0),
     "sendingMessage":{
-      "accessSignature":"foobarwrongsignature",
+      "ACTION":"ADD",
+      "playerId":getPlayerId(1),
     },
     "expectedMessage":{
-      "error": "WRONG_ACCESS_SIGNATURE",
-    },
-    "expectedUnknownFields":[],
-    "testTitle":"Delete a player with wrong accessSignature",
-  },
-  //Delete a player Info with wrong Id
-  {
-    "method":"DELETE",
-    "testUrl":"/players/12345",
-    "sendingMessage":{
-    },
-    "expectedMessage":{
-      "error": "WRONG_PLAYER_ID",
+      "success": "SEND_FRIEND_REQUEST",
     },
     "expectedUnknownFields":[],
     "before": {
@@ -425,7 +439,181 @@ function testPlayerV1() {
       },
       "requiredKeys":["accessSignature"]
     },
-    "testTitle":"Delete a player with wrong Id",
+    "testTitle":"Send a friend request",
+  },
+  //Send duplicate friend request
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(0),
+    "sendingMessage":{
+      "ACTION":"ADD",
+      "playerId":getPlayerId(1),
+    },
+    "expectedMessage":{
+      "error":"ACTION_DENY",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(0),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"Send duplicate friend request",
+  },
+  //Accept a friend request
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(1),
+    "sendingMessage":{
+      "ACTION":"ADD",
+      "playerId":getPlayerId(0)
+    },
+    "expectedMessage":{
+      "success": "SEND_FRIEND_REQUEST",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(1),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"Accept a friend request",
+  },
+  //add a friend already exist
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(1),
+    "sendingMessage":{
+      "ACTION":"ADD",
+      "playerId":getPlayerId(0)
+    },
+    "expectedMessage":{
+      "error":"ALREADY_FRIEND",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(1),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"add a friend already exist",
+  },
+  //add a non-exist player
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(1),
+    "sendingMessage":{
+      "ACTION":"ADD",
+      "playerId":12345,
+    },
+    "expectedMessage":{
+      "error":"WRONG_PLAYER_ID",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(1),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"add a non-exist player",
+  },
+  //Get friend list
+  {
+    "method":"GET",
+    "testUrl":"/friend/"+getPlayerId(0),
+    "sendingMessage":{
+      "ACTION":"LIST",
+    },
+    "expectedMessage":{
+      "friends": [getPlayerId(1)],
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(0),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"get friend list",
+  },
+  //Remove a friend
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(1),
+    "sendingMessage":{
+      "ACTION":"REMOVE",
+      "playerId":getPlayerId(0)
+    },
+    "expectedMessage":{
+      "success": "REMOVED",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(1),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"Remove a friend",
+  },
+  //Get friend list after being removed
+  {
+    "method":"GET",
+    "testUrl":"/friend/"+getPlayerId(0),
+    "sendingMessage":{
+      "ACTION":"LIST",
+    },
+    "expectedMessage":{
+      "friends": [],
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(0),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"get friend list",
+  },
+  //Remove a non-exist friend
+  {
+    "method":"POST",
+    "testUrl":"/friend/"+getPlayerId(1),
+    "sendingMessage":{
+      "ACTION":"REMOVE",
+      "playerId":getPlayerId(0)
+    },
+    "expectedMessage":{
+      "error":"WRONG_PLAYER_ID",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(1),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"Remove a non-exist friend",
   },
   //Deleting a player
   {

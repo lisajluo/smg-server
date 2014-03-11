@@ -248,6 +248,39 @@ function testPlayerV1() {
     },
     "testTitle":"Delete a player with wrong Id",
   },
+  //Delete a player Info with wrong accessSignature
+  {
+    "method":"DELETE",
+    "testUrl":"/players/"+getPlayerId(0),
+    "sendingMessage":{
+      "accessSignature":"foobarwrongsignature",
+    },
+    "expectedMessage":{
+      "error": "WRONG_ACCESS_SIGNATURE",
+    },
+    "expectedUnknownFields":[],
+    "testTitle":"Delete a player with wrong accessSignature",
+  },
+  //Delete a player Info with wrong Id
+  {
+    "method":"DELETE",
+    "testUrl":"/players/12345",
+    "sendingMessage":{
+    },
+    "expectedMessage":{
+      "error": "WRONG_PLAYER_ID",
+    },
+    "expectedUnknownFields":[],
+    "before": {
+      "method":"GET",
+      "testUrl":"/players/"+getPlayerId(0),
+      "sendingMessage":{
+        "password":"foobar",
+      },
+      "requiredKeys":["accessSignature"]
+    },
+    "testTitle":"Delete a player with wrong Id",
+  },
   //Deleting a player
   {
     "method":"DELETE",
