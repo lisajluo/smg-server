@@ -143,7 +143,7 @@ test("How Much Time Left", function(){
 // Case for the ability to move forward as well as back.
 function testMoveBack(successCallback){ 
     $.ajax({
-        url: 'http: //1.smg-server.appspot.com/state_history',
+        url: 'http: //2.smg-server.appspot.com/state_history',
         dataType: 'json',
         type: 'GET',
         data: {
