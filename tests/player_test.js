@@ -7,7 +7,7 @@ function testAjax(method, testUrl, sendingMessage, expectedMessage, expectedUnkn
         beforeOb["method"],
         beforeOb["testUrl"],
         beforeOb["sendingMessage"],
-        beforeOb["requiredKeys"],
+        beforeOb["requiredKeys"]
       );
       joinObject(sendingMessage,t);
     }
@@ -192,7 +192,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Update a    info",
@@ -233,7 +233,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Update a player info with wrong Id",
@@ -254,7 +254,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Get player Info",
@@ -273,7 +273,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Get player Info with wrong Id",
@@ -293,7 +293,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Delete a player",
@@ -326,7 +326,7 @@ function testPlayer() {
       "testUrl":"/players/1234",
       "sendingMessage":{
         "password":"foobar",
-      }
+      },
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Delete a player with wrong Id",
