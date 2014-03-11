@@ -1,21 +1,31 @@
-PLAYER_ID = 1042
-ACCESS_SIGNATURE = "hD7d7DDdjsh12WQ"
-
 // Save current game(same game state????)
-$.ajax({
-    url: “http: //1.smg-server.appspot.com/save”,
-    dataType: 'json',
-    type: 'POST',
-    data: {
-        'accessSignature': ACCESS_SIGNATURE,
-        "type": "save_game_request"
-        "playerid": PLAYER_ID
-    },
-    success: function (actural) {
-        var expectedData = {}
-        assert.deepEqual(actural, expected);
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        alert('error ' + textStatus + " " + errorThrown);
-    }
-});
+function testSaveGameState(successCallBack){
+    $.ajax({
+        url: "http: //3.smg-server.appspot.com/save",
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            'accessSignature': "hD7d7DDdjsh12WQ",
+            "type": "save_game_request",
+            "playerid": 42
+        },
+        success: successCallBack,
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error' + textStatus + " " + errorThrown);
+        }
+    });
+}
+
+test("Save Game State", function(){
+    stop(1000);     
+    testSaveGameState(function(actual) {
+        var expected = {
+            "gameState": {
+                "state_1":"state_1",
+                "state_2":"state_2"
+            }
+        };
+        deepEqual(expected, actual, "Expected data does not match actual data.");
+        start();
+    })
+})

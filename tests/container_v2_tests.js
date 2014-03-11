@@ -112,87 +112,121 @@ test("Quit Match with illegal match Id", function() {
     })
 })
 
-
-
-PLAYER_ID = 1042
-ACCESS_SIGNATURE = "hD7d7DDdjsh12WQ"
-
 // Case for how much time left.
-$.ajax({
-    url: 'http://1.smg-server.appspot.com/get_time_remaining/' + PLAYER_ID,
-    dataType: 'json',
-    type: 'GET',
-    data: {
-        'accessSignature': ACCESS_SIGNATURE,
-        "type": "get_time_remaining"
-    },
-    success: function (actural) {
-        var expectedData = {
-            'time_remaining': 1
+function testHowMuchTimeLeft(successCallback){
+    $.ajax({
+        url: 'http://2.smg-server.appspot.com/get_time_remaining/42',
+        dataType: 'json',
+        type: 'GET',
+        data: {
+            'accessSignature': "hD7d7DDdjsh12WQ",
+            "type": "get_time_remaining"
+        },
+        success: successCallback,
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
         }
-        assert.deepEqual(actural, expected);
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        alert('error ' + textStatus + " " + errorThrown);
-    }
-});
+    });
+}
+
+test("How Much Time Left", function(){
+    stop(1000);     
+    testHowMuchTimeLeft(function(actual) {
+        var expected = { 
+          'time_remaining': 1
+        };
+        deepEqual(expected, actual, "Expected data does not match actual data.");
+        start();
+    })
+})
 
 // Case for the ability to move forward as well as back.
-$.ajax({
-    url: 'http: //1.smg-server.appspot.com/state_history',
-    dataType: 'json',
-    type: 'GET',
-    data: {
-        'accessSignature': ACCESS_SIGNATURE,
-        'type': 'get_back_state'
-    },
-    success: function (actural) {
-        var expectedData = {
-            'gameState': {...
-            }
+function testMoveBack(successCallback){ 
+    $.ajax({
+        url: 'http: //1.smg-server.appspot.com/state_history',
+        dataType: 'json',
+        type: 'GET',
+        data: {
+            'accessSignature': ACCESS_SIGNATURE,
+            'type': 'get_back_state'
+        },
+        success: successCallback,
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
         }
-        assert.deepEqual(actural, expected);
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        alert('error ' + textStatus + " " + errorThrown);
-    }
-});
+    });
+}
 
-$.ajax({
-    url: 'http: //1.smg-server.appspot.com/state_history',
-    dataType: 'json',
-    type: 'GET',
-    data: {
-        'accessSignature': ACCESS_SIGNATURE,
-        'type': 'get_forward_state'
-    },
-    success: function (actural) {
-        var expectedData = {
-            'gameState': {...
-            }
+test("Move Back", function(){
+    stop(1000);     
+    testMoveBack(function(actual) {
+        var expected = {
+                'gameState': {
+                    'state_1':'state_1',
+                    'state_2': 'state_2'
+                }
+        };
+        deepEqual(expected, actual, "Expected data does not match actual data.");
+        start();
+    })
+})
+
+// Case for the ability to move forward as well as back.
+function testMoveForward(successCallback){ 
+    $.ajax({
+        url: 'http: //2.smg-server.appspot.com/state_history',
+        dataType: 'json',
+        type: 'GET',
+        data: {
+            'accessSignature': ACCESS_SIGNATURE,
+            'type': 'get_forward_state'
+        },
+        success: successCallback,
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
         }
-        assert.deepEqual(actural, expected);
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        alert('error ' + textStatus + " " + errorThrown);
-    }
-});
+    });
+}
+
+test("Move Forward", function(){
+    stop(1000);     
+    testMoveForward(function(actual) {
+        var expected = {
+                'gameState': {
+                    'state_1':'state_1',
+                    'state_2': 'state_2'
+                }
+        };
+        deepEqual(expected, actual, "Expected data does not match actual data.");
+        start();
+    })
+})
 
 // Bet on tokens AND ALSO change current bet.
-$.ajax({
-    url: 'http: //1.smg-server.appspot.com/bet',
-    dataType: 'json',
-    type: 'POST',
-    data: {
-        'accessSignature': ACCESS_SIGNATURE,
-        'type': 'set_bet_token_number',
-        'token': 9
-    },
-    success: function (actural) {
-        var expectedData = {}
-        assert.deepEqual(actural, expected);
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        alert('error ' + textStatus + " " + errorThrown);
-    }
-});
+function testChangeBet(successCallback){
+    $.ajax({
+        url: 'http: //2.smg-server.appspot.com/bet',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            'accessSignature': ACCESS_SIGNATURE,
+            'type': 'set_bet_token_number',
+            'token': 9
+        },
+        success: successCallback,
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+}
+
+test("Change Bet", function(){
+    stop(1000);     
+    testMoveForward(function(actual) {
+        var expected = {
+            'token': 9
+        };
+        deepEqual(expected, actual, "Expected data does not match actual data.");
+        start();
+    })
+})
