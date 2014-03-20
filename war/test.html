@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Test</title>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
+</head>
+<body>
+<h3> Test Page</h3>
+
+<p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
+<a href = "#" id = "CORSlink">CORS AJAX</a>
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $("#nonCORSlink").on("click", function(event) {
+    ajaxCall("http://localhost:8888/smg_server");
+  });
+
+  $("#CORSlink").on("click", function(event) {
+    ajaxCall("http://localhost:8888/test");
+  });
+});
+
+function ajaxCall(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "GET",
+    success: function(data, textStatus, jqXHR) {
+      alert("SUCCESS");
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+</script>
+</body>
+</html>
