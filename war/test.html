@@ -34,7 +34,7 @@ $(document).ready(function() {
   });
   
   $("#PLAYER-GET").on("click", function(event){
-	  ajaxCallGet("http://localhost:8888/players/1234?password=adcnaewnco?nickname=as");
+	  ajaxCallGet("http://localhost:8888/players/1234?password=adcnaewnco&nickname=as");
   });
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -42,7 +42,7 @@ $(document).ready(function() {
   });
   
   $("#LOGIN-A-PLAYER").on("click", function(event){
-	  ajaxCallLogin("http://localhost:8888/players/1234?password=adcnaewnco?nickname=as");
+	  ajaxCallLogin("http://localhost:8888/players/1234?password=adcnaewnco");
   })
   
   $("#UPDATE-A-PLAYER").on("click", function(event){
@@ -147,7 +147,7 @@ function ajaxCallLogin(url){
         alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown){
-        alert("ERROR: " + textStatus + " " + errorThworn);
+        alert("ERROR: " + textStatus + " " + errorThrown);
       }
     });
 }

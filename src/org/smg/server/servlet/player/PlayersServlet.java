@@ -31,6 +31,7 @@ public class PlayersServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
+		CORSUtil.addCORSHeader(resp);
 		resp.setContentType("text/plain");
 		String player = null;
 		if (req.getPathInfo().length() != 0 && req.getPathInfo() != null)
@@ -98,12 +99,12 @@ public class PlayersServlet extends HttpServlet {
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-
+		CORSUtil.addCORSHeader(resp);
 	}
 
 	@Override
 	public void doPut(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-
+		CORSUtil.addCORSHeader(resp);
 	}
 }
