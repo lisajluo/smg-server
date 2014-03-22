@@ -25,7 +25,7 @@ public class DeveloperServlet extends HttpServlet {
    * Unique developerId for each developer account.  For now we will just increment by 1 for
    * each new developer.  Reserving some of the initial developerIds just in case.
    */
-  static int incDeveloperId = 5000;
+  //static int incDeveloperId = 5000;
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
@@ -35,10 +35,18 @@ public class DeveloperServlet extends HttpServlet {
     JSONObject json = new JSONObject();
     
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
-    String developerId = req.getPathInfo().substring(1);
+    String devIdStr = req.getPathInfo().substring(1);
+    long developerId = -1;
+    
+    try {
+      developerId = Long.parseLong(devIdStr);
+    }
+    catch (NumberFormatException e) {
+      //
+    }
     Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
     
-    if (developer == null) {  // No developer found for developerId
+    if (developerId == -1 || developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
@@ -64,15 +72,23 @@ public class DeveloperServlet extends HttpServlet {
     JSONObject json = new JSONObject();
     
     String password = req.getParameter(PASSWORD);
-    String developerId = req.getPathInfo().substring(1);
+    String devIdStr = req.getPathInfo().substring(1);
+    long developerId = -1;
+    
+    try {
+      developerId = Long.parseLong(devIdStr);
+    }
+    catch (NumberFormatException e) {
+      //
+    }
     Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
 
-    if (developer == null) {  // No developer found for developerId
+    if (developerId == -1 || developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(PASSWORD).equals(password)) {
       developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
-      DatabaseDriver.insertEntity(DEVELOPER, developerId, developer);
+      DatabaseDriver.updateEntity(DEVELOPER, developerId, developer);
       json = new JSONObject(developer);
     }
     else {
@@ -93,6 +109,13 @@ public class DeveloperServlet extends HttpServlet {
     JSONObject json = new JSONObject();
     
     String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICKNAME};
+ //   Map parameterMap = req.getParameterMap();
+  /*  String[] str = req.getParameterValues("nickname");
+    String str2 = req.getParameter("nickname");
+    System.out.println(str2);
+    System.out.println(str[0]);
+    */
+    
     
     Map<Object, Object> parameterMap = deleteInvalid(req.getParameterMap(), validParams);
     
@@ -101,17 +124,17 @@ public class DeveloperServlet extends HttpServlet {
     }
     else if (DatabaseDriver.queryByProperty(
         DEVELOPER, EMAIL, (String) parameterMap.get(EMAIL)).isEmpty()) {
-      String devIdStr = Integer.toString(incDeveloperId);
-      String accessSignature = AccessSignatureUtil.generate(devIdStr);
-      parameterMap.put(ACCESS_SIGNATURE, accessSignature);
-      parameterMap.put(DEVELOPER_ID, incDeveloperId);
       // Add to database
-      DatabaseDriver.insertEntity(DEVELOPER, devIdStr, parameterMap);
+      long developerId = DatabaseDriver.insertEntity(DEVELOPER, parameterMap);
+      
+      String accessSignature = AccessSignatureUtil.generate(developerId);
+      parameterMap.put(ACCESS_SIGNATURE, accessSignature);
+      // Update database with access signature
+      DatabaseDriver.updateEntity(DEVELOPER, developerId, parameterMap);
 
       // Return response  
-      json.put(DEVELOPER_ID, incDeveloperId);
+      json.put(DEVELOPER_ID, developerId);
       json.put(ACCESS_SIGNATURE, accessSignature);
-      incDeveloperId++;
     } 
     else {
       json.put(ERROR, EMAIL_EXISTS);
