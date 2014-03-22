@@ -7,36 +7,74 @@
   <script type="text/javascript" src="../resources/json2.js"></script>
 </head>
 <body>
-<h3> Test Page</h3>
+<h3>Test Page</h3>
 
-<p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
-<a href = "#" id = "CORSlink">CORS AJAX</a>
+
 
 
 <script type="text/javascript">
 
 $(document).ready(function() {
-  $("#nonCORSlink").on("click", function(event) {
-    ajaxCall("http://localhost:8888/smg_server");
+  $("#get1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var jsonObj = { "key": "value2" };
+    
+    $.ajax({
+      url: "http://localhost:8888/developer", 
+      dataType: "json",
+     // contentType: "application/json; charset=utf-8",
+      type: "GET",
+//      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+      //console.log(jQuery.parseJSON(data));
+    //    console.log(jQuery.parseJSON(data));
+        alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
   });
+  
+  $("#post1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var jsonObj = { "email": "blahblah@bladsfah.com", 
+      "password": "soldkfjlaskdf",
+      "nickname": "blahb lah blah",
+      "whatever": "some thing should be deleted"
+    };
+    
+    
+    $.ajax({
+      url: "http://localhost:8888/developer", 
+      //dataType: "json",
+     // contentType: "application/json; charset=utf-8",
+      type: "POST",
+      data: jsonObj,
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        //alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
 
-  $("#CORSlink").on("click", function(event) {
-    ajaxCall("http://localhost:8888/test");
   });
 });
-
-function ajaxCall(url) {
-  var jsonObj = { "key": "value2" };
-  $.ajax({
-    url: url, 
-    type: "GET",
-    success: function(data, textStatus, jqXHR) {
-      alert("SUCCESS");
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert("ERROR: " + textStatus + " " + errorThrown);
-    }});
-}
 </script>
+
+<form id="get1"></form>
+<input type="submit" value="Get" form="get1">
+
+<form id="post1"></form>
+<input type="submit" value="Post" form="post1">
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-package org.smg.util;
+package org.smg.server.util;
 
 import javax.servlet.http.HttpServletResponse;
 
