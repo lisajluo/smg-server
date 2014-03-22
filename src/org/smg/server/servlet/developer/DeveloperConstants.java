@@ -1,7 +1,7 @@
 package org.smg.server.servlet.developer;
 
-public final class Constants {
-  private Constants() { }  // Prevent instantiation/subclassing
+public final class DeveloperConstants {
+  private DeveloperConstants() { }  // Prevent instantiation/subclassing
   
   // Developer entity
   public static final String DEVELOPER = "Developer";

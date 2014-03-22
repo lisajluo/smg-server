@@ -1,7 +1,8 @@
 package org.smg.server.database;
 
-import static org.smg.server.servlet.developer.Constants.DEVELOPER;
-import static org.smg.server.servlet.developer.Constants.EMAIL;
+
+import org.smg.server.servlet.developer.DeveloperConstants;
+import org.smg.server.servlet.container.ContainerConstants;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 public class DatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -43,7 +47,7 @@ public class DatabaseDriver {
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public static Map getDeveloperMapByKey(long keyId) {
-    Entity entity = getEntityByKey(DEVELOPER, keyId);
+    Entity entity = getEntityByKey(DeveloperConstants.DEVELOPER, keyId);
     if (entity == null) {
       return null;
     }
@@ -73,13 +77,14 @@ public class DatabaseDriver {
     long key;
     Transaction txn = datastore.beginTransaction();
 
-    Entity entity = new Entity(DEVELOPER);
+    Entity entity = new Entity(DeveloperConstants.DEVELOPER);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String)entry.getKey(), entry.getValue());
     }
     
-    if (queryByProperty(DEVELOPER, EMAIL, (String) properties.get(EMAIL)).isEmpty()) {
+    if (queryByProperty(DeveloperConstants.DEVELOPER, DeveloperConstants.EMAIL, 
+        (String) properties.get(DeveloperConstants.EMAIL)).isEmpty()) {
       key = datastore.put(entity).getId();
     }
     else {
@@ -95,7 +100,7 @@ public class DatabaseDriver {
    */
   public static void insertDeveloper(long keyId, Map<Object, Object> properties) {
     Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(DEVELOPER, keyId);
+    Entity entity = new Entity(DeveloperConstants.DEVELOPER, keyId);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String)entry.getKey(), entry.getValue());
@@ -120,5 +125,26 @@ public class DatabaseDriver {
     Key key = KeyFactory.createKey(kind, keyId);
     datastore.delete(key);
     txn.commit();
+  }
+
+  public static long insertMatchEntity(JSONObject match) throws JSONException {
+    Transaction txn = datastore.beginTransaction();
+    //Key key = KeyFactory.createKey("Match", match.getInt("matchId"));
+    Entity entity = new Entity(ContainerConstants.MATCH);
+    //entity.setProperty("matchId", match.getInt("matchId"));
+    entity.setProperty(ContainerConstants.GAME_ID, match.getLong(ContainerConstants.GAME_ID));
+    entity.setUnindexedProperty(ContainerConstants.PLAYER_IDS,
+        match.getJSONArray(ContainerConstants.PLAYER_IDS).toString());
+    entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
+        match.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+    entity.setUnindexedProperty(ContainerConstants.GAME_OVER_SCORES, 
+        match.getJSONObject(ContainerConstants.GAME_OVER_SCORES).toString());
+    entity.setProperty(ContainerConstants.GAME_OVER_REASON, 
+        match.getString(ContainerConstants.GAME_OVER_REASON));
+    entity.setUnindexedProperty(ContainerConstants.HISTORY, 
+        match.getJSONArray(ContainerConstants.HISTORY).toString());
+    datastore.put(entity);
+    txn.commit();
+    return entity.getKey().getId();
   }
 }
