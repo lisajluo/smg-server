@@ -50,29 +50,32 @@ public class NewMatchServlet extends HttpServlet {
       json = br.readLine();
     }
     JSONObject returnValue = new JSONObject();
-    if (json == null || json.length() != 0) {
+//    json = "{\"email\":\"foo@nyu.edu\"}";
+    if (json != null ) {
       Map<String,Object> jsonMap = JSONUtil.parse(json);
-      
+
       // TODO: put test data in DS
-//      DummyDataGen.addPlayer();
-//      DummyDataGen.addGame();
+      //DummyDataGen.addPlayer();
+      //DummyDataGen.addGame();
       
       // verify accessSignature and playerIds
-      ArrayList<Integer> playerIds = (ArrayList<Integer>)jsonMap.get("playerIds");
-      String accessSignature = (String)jsonMap.get("accessSignature");
+      ArrayList<Long> playerIds = (ArrayList<Long>)jsonMap.get(Constants.PLAYER_IDS);
+      String accessSignature = (String)jsonMap.get(Constants.ACCESS_SIGNATURE);
       boolean foundAS = false;
-      for (Integer playerId : playerIds){
-        List<Entity> result = DatabaseDriver.queryByProperty("Player", "playerId", playerId);
-        if (result.isEmpty()) {
+      for (Long playerId : playerIds){
+      //  List<Entity> result = DatabaseDriver.queryByProperty(
+      //      Constants.PLAYER, "ID/Name", playerId);
+        Entity result = DatabaseDriver.queryById(Constants.PLAYER, playerId);
+        if (result == null) {
           try {
-            returnValue.put("error", "WRONG_PLAYER_ID");
-            resp.getWriter().write(returnValue.toString());
+            returnValue.put(Constants.ERROR, Constants.WRONG_PLAYER_ID);
+            returnValue.write(resp.getWriter());
             return;
           } catch (JSONException e) {
             e.printStackTrace();
           }
         } else {
-          if (result.get(0).getProperty("accessSignature").equals(accessSignature)) {
+          if (result.getProperty(Constants.ACCESS_SIGNATURE).equals(accessSignature)) {
             foundAS = true;
             break;
           }
@@ -80,20 +83,22 @@ public class NewMatchServlet extends HttpServlet {
       }
       if (!foundAS){
         try {
-          returnValue.put("error", "WRONG_ACCESS_SIGNATURE");
-          resp.getWriter().write(returnValue.toString());
+          returnValue.put(Constants.ERROR, Constants.WRONG_ACCESS_SIGNATURE);
+          returnValue.write(resp.getWriter());
           return;
         } catch (JSONException e) {
           e.printStackTrace();
         }
       } 
       // verify gameId existed
-      Integer gameId = (Integer)jsonMap.get("gameId");
-      List<Entity> result = DatabaseDriver.queryByProperty("Game", "gameId", gameId);
-      if (result.isEmpty()) {
+      Long gameId = (Long)jsonMap.get(Constants.GAME_ID);
+//      List<Entity> result = DatabaseDriver.queryByProperty(
+//          Constants.GAME, Constants.GAME_ID, gameId);
+      Entity result = DatabaseDriver.queryById(Constants.GAME, gameId);
+      if (result == null) {
         try {
-          returnValue.put("error", "WRONG_GAME_ID");
-          resp.getWriter().write(returnValue.toString());
+          returnValue.put(Constants.ERROR, Constants.WRONG_GAME_ID);
+          returnValue.write(resp.getWriter());
           return;
         } catch (JSONException e) {
           e.printStackTrace();
@@ -101,32 +106,32 @@ public class NewMatchServlet extends HttpServlet {
       } 
       // insert new match
       // TODO constant match ID
-      Integer matchId = 23232;
+      long matchId = 0;
       JSONObject match = new JSONObject();
       
       try {
-        match.put("matchId", matchId);
-        match.put("gameId", gameId);
+        //match.put(Constants.MATCH_ID, matchId);
+        match.put(Constants.GAME_ID, gameId);
         JSONArray jaPlayerIds = new JSONArray(playerIds);
-        match.put("playerIds", jaPlayerIds);
-        match.put("playerThatHasTurn", -1);        
-        match.put("gameOverScores", new JSONObject());
-        match.put("gameOverReason", "");
-        match.put("history", new JSONArray());
-        DatabaseDriver.insertMatchEntity(match);
+        match.put(Constants.PLAYER_IDS, jaPlayerIds);
+        match.put(Constants.PLAYER_THAT_HAS_TURN, -1);        
+        match.put(Constants.GAME_OVER_SCORES, new JSONObject());
+        match.put(Constants.GAME_OVER_REASON, "");
+        match.put(Constants.HISTORY, new JSONArray());
+        matchId = DatabaseDriver.insertMatchEntity(match);
       } catch (JSONException e1) {
         e1.printStackTrace();
       }
       
       // put result in returnValue
       try {
-        returnValue.put("matchId", matchId);
+        returnValue.put(Constants.MATCH_ID, matchId);
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }else {
       try {
-        returnValue.put("error", "NO_DATA_GOT");
+        returnValue.put(Constants.ERROR, Constants.NO_DATA_RECEIVED);
       } catch (JSONException e) {
         e.printStackTrace();
       }           
