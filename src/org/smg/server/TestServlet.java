@@ -17,4 +17,20 @@ public class TestServlet extends HttpServlet {
     resp.setContentType("text/plain");
     resp.getWriter().println("Hello, world");
   }
+  
+  @Override
+  public void doDelete(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException {
+    CORSUtil.addCORSHeader(resp);
+    resp.setContentType("text/plain");
+    resp.getWriter().println("Hello, world");
+  }
+  
+  @Override
+  public void doPut(HttpServletRequest req, HttpServletResponse resp)
+      throws IOException {
+    CORSUtil.addCORSHeader(resp);
+    resp.setContentType("text/plain");
+    resp.getWriter().println("Hello, world");
+  }
 }

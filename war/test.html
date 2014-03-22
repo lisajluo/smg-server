@@ -17,6 +17,8 @@
 <p><a href = "#" id = "LOGIN-A-PLAYER">LOGIN A PLAYER</a></p>
 <p><a href = "#" id = "UPDATE-A-PLAYER">UPDATE A PLAYER</a></p>
 <p><a href = "#" id = "DELETE-A-PLAYER">DELETE A PLAYER</a></p>
+<p><a href = "#" id = "CORSlinkPut">CORS AJAX Put</a></p>
+<p><a href = "#" id = "CORSlinkDelete">CORS AJAX Delete</a></p>
 
 <script type="text/javascript">
 
@@ -51,6 +53,13 @@ $(document).ready(function() {
   
   $("#DELETE-A-PLAYER").on("click", function(event){
 	  ajaxCallDelete("http://localhost:8888/players/");
+
+	$("#CORSlinkPut").on("click", function(event) {
+    ajaxCallMethod("http://localhost:8888/test","PUT");
+  });
+  
+  $("#CORSlinkDelete").on("click", function(event) {
+    ajaxCallMethod("http://localhost:8888/test","DELETE");
   });
 });
 
@@ -198,6 +207,18 @@ function ajaxCallDelete(url){
     });
 }
 	
+function ajaxCallMethod(url,method) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: method,
+    success: function(data, textStatus, jqXHR) {
+      alert("SUCCESS");
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
 </script>
 </body>
 </html>

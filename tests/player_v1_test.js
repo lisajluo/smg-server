@@ -49,14 +49,12 @@ function testAjax(method, testUrl, sendingMessage, before) {
     url: testUrl,
     dataType: 'json',
       type:method,
-      data:sendingMessage,
+      data:JSON.stringify(sendingMessage),
       success: function(data) {
-        parsedData = $.parseJSON(data);
-        temp = parsedData;
+        temp = data;
       },
       error: function(data) {
-        parsedData = $.parseJSON(data);
-        temp = parsedData;
+        temp = data;
       }
   });
   return temp;

@@ -46,6 +46,4 @@ public class AccessSignatureUtil {
     md.update(sig.getBytes());
     return new BigInteger(1,md.digest()).toString(16);
   }
-  
-  
 }
