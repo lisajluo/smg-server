@@ -1,10 +1,11 @@
 package org.smg.server.database;
 
+import static org.smg.server.servlet.developer.Constants.DEVELOPER;
+import static org.smg.server.servlet.developer.Constants.EMAIL;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.smg.server.util.AccessSignatureUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -38,11 +39,11 @@ public class DatabaseDriver {
   }
   
   /**
-   * Returns the entity of kind (ex. DEVELOPER) keyed from keyString, in the form of a (copied) Map.
+   * Returns developer map keyed from developerId, in the form of a (copied) Map.
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static Map getEntityMapByKey(String kind, long keyId) {
-    Entity entity = getEntityByKey(kind, keyId);
+  public static Map getDeveloperMapByKey(long keyId) {
+    Entity entity = getEntityByKey(DEVELOPER, keyId);
     if (entity == null) {
       return null;
     }
@@ -64,22 +65,27 @@ public class DatabaseDriver {
   }
 
   /**
-   * Inserts an entity of kind (ex. DEVELOPER), keyed by keyString (ex. developerId or playerId),
-   * and adding a property for every <String, Object> property in the Map properties.
-   * The same transaction also overwrites any entity that has the same key.
-   * **** Note: does not currently handle nested values in the Map! ****
-   * @TODO test for nested values and create nested entities
+   * Inserts a developer, keyed by developerId, and adding a property for every <String, Object> 
+   * property in the Map properties. The same transaction also overwrites any entity that has 
+   * the same key. Flat (non-nested) maps only.
    */
-  public static long insertEntity(String kind, Map<Object, Object> properties) {
+  public static long insertDeveloper(Map<Object, Object> properties) {
+    long key;
     Transaction txn = datastore.beginTransaction();
 
-    Entity entity = new Entity(kind);
+    Entity entity = new Entity(DEVELOPER);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String)entry.getKey(), entry.getValue());
     }
     
-    long key = datastore.put(entity).getId();
+    if (queryByProperty(DEVELOPER, EMAIL, (String) properties.get(EMAIL)).isEmpty()) {
+      key = datastore.put(entity).getId();
+    }
+    else {
+      key = -1;
+    }
+    
     txn.commit();    
     return key;
   }
@@ -87,9 +93,9 @@ public class DatabaseDriver {
   /**
    * Inserts an entity with specified keyId (used in the future for AI, etc.).
    */
-  public static void insertEntity(String kind, long keyId, Map<Object, Object> properties) {
+  public static void insertDeveloper(long keyId, Map<Object, Object> properties) {
     Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(kind, keyId);
+    Entity entity = new Entity(DEVELOPER, keyId);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String)entry.getKey(), entry.getValue());
@@ -100,10 +106,10 @@ public class DatabaseDriver {
   }
   
   /**
-   * Updates an entity with specified keyId.
+   * Updates a (non-nested) developer entity with specified keyId.
    */
-  public static void updateEntity(String kind, long keyId, Map<Object, Object> properties) {
-    insertEntity(kind, keyId, properties);    
+  public static void updateDeveloper(long keyId, Map<Object, Object> properties) {
+    insertDeveloper(keyId, properties);    
   }
   
   /**

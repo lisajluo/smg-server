@@ -3,6 +3,7 @@ package org.smg.server.servlet.developer;
 import static org.smg.server.servlet.developer.Constants.*;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -14,19 +15,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 
 @SuppressWarnings("serial")
-public class DeveloperServlet extends HttpServlet {
+public class DeveloperServlet extends HttpServlet {  
+  static final JSONParser parser = new JSONParser();
+  
+  @Override
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    CORSUtil.addCORSHeader(resp);
+  }
   
   /**
-   * Unique developerId for each developer account.  For now we will just increment by 1 for
-   * each new developer.  Reserving some of the initial developerIds just in case.
+   * Delete a developer with developerId and accessSignature 
+   * (/developers/{developerId}?accessSignature=...).
    */
-  //static int incDeveloperId = 5000;
-  
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -36,7 +42,7 @@ public class DeveloperServlet extends HttpServlet {
     
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
     String devIdStr = req.getPathInfo().substring(1);
-    long developerId = -1;
+    long developerId = INVALID;
     
     try {
       developerId = Long.parseLong(devIdStr);
@@ -44,9 +50,9 @@ public class DeveloperServlet extends HttpServlet {
     catch (NumberFormatException e) {
       //
     }
-    Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
+    Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
     
-    if (developerId == -1 || developer == null) {  // No developer found for developerId
+    if (developerId == INVALID || developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
@@ -73,7 +79,7 @@ public class DeveloperServlet extends HttpServlet {
     
     String password = req.getParameter(PASSWORD);
     String devIdStr = req.getPathInfo().substring(1);
-    long developerId = -1;
+    long developerId = INVALID;
     
     try {
       developerId = Long.parseLong(devIdStr);
@@ -81,14 +87,14 @@ public class DeveloperServlet extends HttpServlet {
     catch (NumberFormatException e) {
       //
     }
-    Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
+    Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
 
-    if (developerId == -1 || developer == null) {  // No developer found for developerId
+    if (developerId == INVALID || developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(PASSWORD).equals(password)) {
       developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
-      DatabaseDriver.updateEntity(DEVELOPER, developerId, developer);
+      DatabaseDriver.updateDeveloper(developerId, developer);
       json = new JSONObject(developer);
     }
     else {
@@ -101,56 +107,68 @@ public class DeveloperServlet extends HttpServlet {
   /**
    * Inserts a new developer.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
+
     JSONObject json = new JSONObject();
     
     String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICKNAME};
- //   Map parameterMap = req.getParameterMap();
-  /*  String[] str = req.getParameterValues("nickname");
-    String str2 = req.getParameter("nickname");
-    System.out.println(str2);
-    System.out.println(str[0]);
-    */
-    
-    
-    Map<Object, Object> parameterMap = deleteInvalid(req.getParameterMap(), validParams);
-    
-    if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
-      json.put(ERROR, MISSING_INFO);
-    }
-    else if (DatabaseDriver.queryByProperty(
-        DEVELOPER, EMAIL, (String) parameterMap.get(EMAIL)).isEmpty()) {
-      // Add to database
-      long developerId = DatabaseDriver.insertEntity(DEVELOPER, parameterMap);
+    StringBuffer buffer = new StringBuffer();
+    String line = null;
+    try {
+      BufferedReader reader = req.getReader();
+      while ((line = reader.readLine()) != null) {
+        buffer.append(line);
+      }
+   
+      Map<Object, Object> parameterMap = deleteInvalid(
+          (Map) parser.parse(buffer.toString()), validParams);
       
-      String accessSignature = AccessSignatureUtil.generate(developerId);
-      parameterMap.put(ACCESS_SIGNATURE, accessSignature);
-      // Update database with access signature
-      DatabaseDriver.updateEntity(DEVELOPER, developerId, parameterMap);
-
-      // Return response  
-      json.put(DEVELOPER_ID, developerId);
-      json.put(ACCESS_SIGNATURE, accessSignature);
-    } 
-    else {
-      json.put(ERROR, EMAIL_EXISTS);
-    }   
+      if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
+        json.put(ERROR, MISSING_INFO);
+      }
+      else {
+        // Add to database
+        long developerId = DatabaseDriver.insertDeveloper(parameterMap);
+        
+        if (developerId == INVALID) {
+          json.put(ERROR, EMAIL_EXISTS);
+        }
+        else {
+          String accessSignature = AccessSignatureUtil.generate(developerId);
+          parameterMap.put(ACCESS_SIGNATURE, accessSignature);
+          // Update database with access signature
+          DatabaseDriver.updateDeveloper(developerId, parameterMap);
     
+          // Return response  
+          json.put(DEVELOPER_ID, developerId);
+          json.put(ACCESS_SIGNATURE, accessSignature);
+        }
+      }
+    }
+    catch (Exception e) { 
+      e.printStackTrace();
+      json.put(ERROR, INVALID_JSON);
+    }
+
     json.writeJSONString(writer);
+
   }
   
   /**
-   * Deletes keys that are illegal and also massages map into form <String, String>.
+   * Deletes keys that are illegal and also massages map into form <String, String> (nested objects
+   * are also illegal for the developer login).
    */
-  private Map<Object, Object> deleteInvalid(Map<String, String[]> params, String[] validParams) {
+  private Map<Object, Object> deleteInvalid(Map<Object, Object> params, String[] validParams) {
     Map<Object, Object> returnMap = new HashMap<Object, Object>();
-    for (Map.Entry<String, String[]> entry : params.entrySet()) {
+    for (Map.Entry<Object, Object> entry : params.entrySet()) {
       if (Arrays.asList(validParams).contains(entry.getKey())) {
-        returnMap.put(entry.getKey(), entry.getValue()[0]);
+        if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+          returnMap.put(entry.getKey(), entry.getValue());
+        }
       }
     }
     

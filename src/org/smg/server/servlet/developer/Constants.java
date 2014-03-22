@@ -4,10 +4,10 @@ public final class Constants {
   private Constants() { }  // Prevent instantiation/subclassing
   
   // Developer entity
-  static final String DEVELOPER = "Developer";
+  public static final String DEVELOPER = "Developer";
   
   // Various properties in the table
-  static final String EMAIL = "email";
+  public static final String EMAIL = "email";
   static final String PASSWORD = "password";
   static final String FIRST_NAME = "firstName";
   static final String MIDDLE_NAME = "middleName";
@@ -23,8 +23,12 @@ public final class Constants {
   static final String WRONG_DEVELOPER_ID = "WRONG_DEVELOPER_ID";
   static final String WRONG_PASSWORD = "WRONG_PASSWORD";
   static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
+  static final String INVALID_JSON = "INVALID_JSON";
   
   // Success messages
   static final String SUCCESS = "success";
   static final String DELETED_DEVELOPER = "DELETED_DEVELOPER";
+  
+  // Invalid indicator
+  static final int INVALID = -1;
 }
