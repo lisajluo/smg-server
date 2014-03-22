@@ -11,6 +11,7 @@
 
 <p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
 <a href = "#" id = "CORSlink">CORS AJAX</a>
+<br><a href = "#" id = "NewMatch">Insert New Match</a>
 
 
 <script type="text/javascript">
@@ -22,6 +23,10 @@ $(document).ready(function() {
 
   $("#CORSlink").on("click", function(event) {
     ajaxCall("http://localhost:8888/test");
+  });
+  
+  $("#NewMatch").on("click", function(event) {
+    ajaxCallNewMatch("http://localhost:8888/matches");
   });
 });
 
@@ -36,6 +41,24 @@ function ajaxCall(url) {
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
     }});
+}
+
+function ajaxCallNewMatch(url) {
+  var jsonObj = { 'accessSignature': 'HJJIIKKSJF',
+                  'playerIds': [1234,4556],
+                  'gameId': 12233 };
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: { 'jsonData': JSON.stringify(jsonObj)},
+    success: function(data, textStatus, jqXHR) {
+      alert("SUCCESS");
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
 }
 </script>
 </body>
