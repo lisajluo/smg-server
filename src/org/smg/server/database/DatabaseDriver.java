@@ -1,5 +1,6 @@
 package org.smg.server.database;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class DatabaseDriver {
   /**
    * Returns the entity of kind (ex. DEVELOPER) keyed from keyString.
    */
-  public static Entity getEntityByKey(String kind, long keyId) {
+  public static Entity getEntityByKey(String kind, String keyId) {
     Key key = KeyFactory.createKey(kind, keyId);
     Entity entity = null;
     
@@ -30,22 +31,21 @@ public class DatabaseDriver {
       entity = datastore.get(key);
     }
     catch (EntityNotFoundException e) {
-      System.out.println("WHYYYY");
     }
     return entity;
   }
   
   /**
-   * Returns the entity of kind (ex. DEVELOPER) keyed from keyString, in the form of a Map.
+   * Returns the entity of kind (ex. DEVELOPER) keyed from keyString, in the form of a (copied) Map.
    */
-  @SuppressWarnings("rawtypes")
-  public static Map getEntityMapByKey(String kind, long keyId) {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static Map getEntityMapByKey(String kind, String keyId) {
     Entity entity = getEntityByKey(kind, keyId);
     if (entity == null) {
       return null;
     }
     else {
-      return entity.getProperties();
+      return new HashMap(entity.getProperties());
     }
   }
 
@@ -68,23 +68,22 @@ public class DatabaseDriver {
    * **** Note: does not currently handle nested values in the Map! ****
    * @TODO test for nested values and create nested entities
    */
-  public static void insertEntity(String kind, long keyId, Map<Object, Object> properties) {
+  public static void insertEntity(String kind, String keyId, Map<Object, Object> properties) {
     Transaction txn = datastore.beginTransaction();
-    Key key = KeyFactory.createKey(kind, keyId);
-    Entity entity = new Entity(kind, key);
+    Entity entity = new Entity(kind, keyId);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String)entry.getKey(), entry.getValue());
     }
     
     datastore.put(entity);
-    txn.commit();
+    txn.commit();    
   }
   
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
-  public static void deleteEntity(String kind, long keyId) {
+  public static void deleteEntity(String kind, String keyId) {
     Transaction txn = datastore.beginTransaction();
     Key key = KeyFactory.createKey(kind, keyId);
     datastore.delete(key);

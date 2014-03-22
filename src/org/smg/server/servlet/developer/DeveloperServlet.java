@@ -33,21 +33,12 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    long developerId;
     
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
-    try {
-      developerId = Integer.parseInt(req.getPathInfo().substring(1));
-    }
-    catch (NumberFormatException e) {
-      developerId = -1;
-    }
-    
-    System.out.println(developerId);
+    String developerId = req.getPathInfo().substring(1);
     Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
-    //Map developer = DatabaseDriver.queryByProperty(DEVELOPER, DEVELOPER_ID,  developerId).get(0).getProperties();
     
-    if (developerId == -1 || developer == null) {  // No developer found for developerId
+    if (developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
@@ -71,22 +62,12 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    long developerId;
     
     String password = req.getParameter(PASSWORD);
-    try {
-      developerId = Integer.parseInt(req.getPathInfo().substring(1));
-    }
-    catch (NumberFormatException e) {
-      developerId = -1;
-    }
-    System.out.println(developerId);
+    String developerId = req.getPathInfo().substring(1);
     Map developer = DatabaseDriver.getEntityMapByKey(DEVELOPER, developerId);
-    /** @TODO fix this! Why doesn't key match work? Below will blow up if the query is empty
-     */
-    //Map developer = DatabaseDriver.queryByProperty(DEVELOPER, DEVELOPER_ID,  developerId).get(0).getProperties();
-    
-    if (developerId == -1 || developer == null) {  // No developer found for developerId
+
+    if (developer == null) {  // No developer found for developerId
       json.put(ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(PASSWORD).equals(password)) {
@@ -120,11 +101,12 @@ public class DeveloperServlet extends HttpServlet {
     }
     else if (DatabaseDriver.queryByProperty(
         DEVELOPER, EMAIL, (String) parameterMap.get(EMAIL)).isEmpty()) {
-      String accessSignature = AccessSignatureUtil.generate(incDeveloperId);
+      String devIdStr = Integer.toString(incDeveloperId);
+      String accessSignature = AccessSignatureUtil.generate(devIdStr);
       parameterMap.put(ACCESS_SIGNATURE, accessSignature);
       parameterMap.put(DEVELOPER_ID, incDeveloperId);
       // Add to database
-      DatabaseDriver.insertEntity(DEVELOPER, incDeveloperId, parameterMap);
+      DatabaseDriver.insertEntity(DEVELOPER, devIdStr, parameterMap);
 
       // Return response  
       json.put(DEVELOPER_ID, incDeveloperId);
