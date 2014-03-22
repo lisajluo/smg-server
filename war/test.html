@@ -22,7 +22,7 @@ $(document).ready(function() {
     var jsonObj = { "key": "value2" };
     
     $.ajax({
-      url: "http://localhost:8888/developer", 
+      url: "http://localhost:8888/developers/5000?password=soldkfjlaskdf", 
       dataType: "json",
      // contentType: "application/json; charset=utf-8",
       type: "GET",
@@ -31,7 +31,7 @@ $(document).ready(function() {
         console.log(data);
       //console.log(jQuery.parseJSON(data));
     //    console.log(jQuery.parseJSON(data));
-        alert("SUCCESS");
+     //   alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -43,7 +43,7 @@ $(document).ready(function() {
     // Prevent all default form submission
     e.preventDefault();
     
-    var jsonObj = { "email": "blahblah@bladsfah.com", 
+    var jsonObj = { "email": "blahblaasdaaaasdfsffh@bladsfah.com", 
       "password": "soldkfjlaskdf",
       "nickname": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -51,11 +51,33 @@ $(document).ready(function() {
     
     
     $.ajax({
-      url: "http://localhost:8888/developer", 
-      //dataType: "json",
+      url: "http://localhost:8888/developers", 
+      dataType: "json",
      // contentType: "application/json; charset=utf-8",
       type: "POST",
       data: jsonObj,
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        //alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#delete1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+
+    $.ajax({
+      url: "http://localhost:8888/developers/5000?accessSignature=abc",
+      dataType: "json",
+     // contentType: "application/json; charset=utf-8",
+      type: "DELETE",
+      //data: jsonObj,
       success: function(data, textStatus, jqXHR) {
         console.log(data);
         //alert("SUCCESS");
@@ -71,10 +93,13 @@ $(document).ready(function() {
 </script>
 
 <form id="get1"></form>
-<input type="submit" value="Get" form="get1">
+<input type="submit" value="Login" form="get1">
 
 <form id="post1"></form>
-<input type="submit" value="Post" form="post1">
+<input type="submit" value="Insert" form="post1">
 
+
+<form id="delete1"></form>
+<input type="submit" value="Delete" form="delete1">
 </body>
 </html>

@@ -10,7 +10,7 @@ public class AccessSignatureUtil {
   /**
    * Returns an MD5 hash given an id (ie., playerId or developerId).
    */
-  public static String generateAccessSignature(int id) {
+  public static String generate(long id) {
     String digest = null;
     String secretSignature = "sldfjsldf";
     String hashInput = id + new Date().getTime() + secretSignature;
