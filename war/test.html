@@ -10,9 +10,13 @@
 <h3> Test Page</h3>
 
 <p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
-<a href = "#" id = "CORSlink">CORS AJAX</a>
-<br><a href = "#" id = "NewMatch">Insert New Match</a>
-
+<p><a href = "#" id = "CORSlink">CORS AJAX</a></p>
+<p><a href = "#" id = "PLAYER-POST">PLAYER POST</a></p>
+<p><a href = "#" id = "PLAYER-GET">PLAYER GET</a></p>
+<p><a href = "#" id = "INSERT-A-PLAYER">INSERT A PLAYER</a></p>
+<p><a href = "#" id = "LOGIN-A-PLAYER">LOGIN A PLAYER</a></p>
+<p><a href = "#" id = "UPDATE-A-PLAYER">UPDATE A PLAYER</a></p>
+<p><a href = "#" id = "DELETE-A-PLAYER">DELETE A PLAYER</a></p>
 
 <script type="text/javascript">
 
@@ -25,8 +29,28 @@ $(document).ready(function() {
     ajaxCall("http://localhost:8888/test");
   });
   
-  $("#NewMatch").on("click", function(event) {
-    ajaxCallNewMatch("http://localhost:8888/matches");
+  $("#PLAYER-POST").on("click", function(event) {
+	  ajaxCallPost("http://localhost:8888/players");
+  });
+  
+  $("#PLAYER-GET").on("click", function(event){
+	  ajaxCallGet("http://localhost:8888/players/1234?password=adcnaewnco?nickname=as");
+  });
+  
+  $("#INSERT-A-PLAYER").on("click", function(event){
+	  ajaxCallInsert("http://localhost:8888/players/");
+  });
+  
+  $("#LOGIN-A-PLAYER").on("click", function(event){
+	  ajaxCallLogin("http://localhost:8888/players/1234?password=adcnaewnco?nickname=as");
+  })
+  
+  $("#UPDATE-A-PLAYER").on("click", function(event){
+	  ajaxCallUpdate("http://localhost:8888/players/");
+  });
+  
+  $("#DELETE-A-PLAYER").on("click", function(event){
+	  ajaxCallDelete("http://localhost:8888/players/");
   });
 });
 
@@ -60,6 +84,120 @@ function ajaxCallNewMatch(url) {
     }
     });
 }
+
+function ajaxCallPost(url){
+	  var jsonObj = {'EMAIL': 'aaaa@nyu.edu'};
+	  var jsonString = JSON.stringify(jsonObj);
+	  alert(jsonString);
+	  $.ajax({
+	    url: url,
+	    //dataType: 'json',
+	    data: jsonString,
+	    type: "POST",
+	    success: function(data, textStatus, jqXHR){
+	      alert("SUCCESS");
+	    },
+	    error: function(jqXHR, textStatus, errorThrown){
+	      alert("ERROR: " + textStatus + " " + errorThrown);
+	    }
+	  });
+	}
+	
+function ajaxCallGet(url){
+	  $.ajax({
+		  url: url,
+		  type: "GET",
+		  success: function(data, textStatus, jqXHR){
+			  alert("SUCCESS");
+		  },
+		  error: function(jqXHR, textStatus, errorThrown){
+			  alert("ERROR: " + textStatus + " " + errorThworn);
+		  }
+	  });
+}
+
+function ajaxCallInsert(url){
+	  var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
+			             'PASSWORD': 'password', 
+			             'FIRSTNAME': 'Allen',
+			             'LASTNAME': 'Sa',
+			             'NICKNAME': 'AS'};
+	 
+    var jsonString = JSON.stringify(jsonObj);
+    alert(jsonString);
+    $.ajax({
+      url: url,
+      //dataType: 'json',
+      data: jsonString,
+      type: "POST",
+      success: function(data, textStatus, jqXHR){
+        alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallLogin(url){
+    $.ajax({
+      url: url,
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThworn);
+      }
+    });
+}
+
+function ajaxCallUpdate(url){
+    var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
+                   'PASSWORD': 'password', 
+                   'FIRSTNAME': 'Allen',
+                   'LASTNAME': 'Sa',
+                   'NICKNAME': 'AS'};
+   
+    var jsonString = JSON.stringify(jsonObj);
+    alert(jsonString);
+    $.ajax({
+      url: url,
+      //dataType: 'json',
+      data: jsonString,
+      type: "POST",
+      success: function(data, textStatus, jqXHR){
+        alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallDelete(url){
+    var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
+                   'PASSWORD': 'password', 
+                   'FIRSTNAME': 'Allen',
+                   'LASTNAME': 'Sa',
+                   'NICKNAME': 'AS'};
+   
+    var jsonString = JSON.stringify(jsonObj);
+    alert(jsonString);
+    $.ajax({
+      url: url,
+      //dataType: 'json',
+      data: jsonString,
+      type: "DELETE",
+      success: function(data, textStatus, jqXHR){
+        alert("SUCCESS");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+	
 </script>
 </body>
 </html>

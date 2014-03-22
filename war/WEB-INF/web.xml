@@ -36,6 +36,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>newMatch</servlet-name>
     <url-pattern>/matches</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>players</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayersServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>players</servlet-name>
+    <url-pattern>/players/*</url-pattern>
+  </servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
