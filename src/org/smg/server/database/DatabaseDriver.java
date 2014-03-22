@@ -22,22 +22,24 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class DatabaseDriver {
   private static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  
+
   //MODEL NAME DEFINE
   private static final String PLAYER = "PLAYER";
-  
+
   //PLAYER MODEL MODIFY BLACKLIST
   private static List<String> playerPropertyBlackList = Arrays.asList(
       PlayerProperty.EMAIL.toString(),
       PlayerProperty.PLAYERID.toString()
       );
-  
+
   private static Object insertPlayerMutex = new Object();
-  
+  //TODO: Use Specific Mutex for each player login
+  private static Object loginMutex = new Object();
+
   public static int test() {
     return 0;
   }
-  
+
   /**
    * save player's information to database (insert or update)
    * If it is to insert a profile, playerId should not be given
@@ -61,7 +63,7 @@ public class DatabaseDriver {
       return insertPlayer(player);
     }
   }
-  
+
   private static String updatePlayer(Player player) {
     Map<String, String> playerInfo = player.getAllProperties();
     long playerId;
@@ -75,9 +77,9 @@ public class DatabaseDriver {
     try {
       Entity playerDB = datastore.get(playerKey);
       String as = (String) playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE.toString());
-      String asLocal = playerInfo.containsKey(PlayerProperty.ACCESSSIGNATURE.toString()) ? "":
-        playerInfo.get(PlayerProperty.ACCESSSIGNATURE.toString());
-      if (asLocal != "" && as == asLocal) {
+      String asLocal = playerInfo.containsKey(PlayerProperty.ACCESSSIGNATURE.toString()) ?
+        playerInfo.get(PlayerProperty.ACCESSSIGNATURE.toString()):"";
+      if (asLocal != "" && as.equals(asLocal)) {
         for (String key: playerInfo.keySet()){
           if (playerPropertyBlackList.contains(key)) {
             continue;
@@ -93,7 +95,7 @@ public class DatabaseDriver {
       return "WRONG_PLAYER_ID";
     }
   }
-  
+
   private static String insertPlayer(Player player) {
     Map<String, String> playerInfo = player.getAllProperties();
     Entity playerDB = new Entity(PLAYER);
@@ -113,14 +115,14 @@ public class DatabaseDriver {
       }
       Key playerKey = datastore.put(playerDB);
       playerId = playerKey.getId();
-      
+
       String accessSignature = AccessSignatureUtil.getAccessSignature(String.valueOf(playerId));
       playerDB.setProperty(PlayerProperty.ACCESSSIGNATURE.toString(), accessSignature);
       datastore.put(playerDB);
       return "SUCCESS:"+playerId+":"+accessSignature;
     }
   }
-  
+
   /**
    * get a played by its id. If player is not exist, throw EntityNotFoundException. 
    * @param playerId
@@ -134,10 +136,61 @@ public class DatabaseDriver {
     Map<String,Object> properties = playerDB.getProperties();
     for (String key: properties.keySet()) {
       PlayerProperty p = PlayerProperty.findByValue(key);
-      if (p != null) {
+      if (p != null && p != PlayerProperty.HASHEDPASSWORD) {
         player.setProperty(p, (String)properties.get(key));
       }
     }
+    player.setProperty(PlayerProperty.PLAYERID, String.valueOf(playerId));
     return player;
+  }
+
+  /**
+   * login a player by id and password
+   * If login success, update access signature and return
+   * If login fail, throw EntityNotFoundException for WRONG_PLAYER_ID
+   * @param playerId
+   * @param originalPassword
+   * @return new access signature if login success or "WRONG_PASSWORD" if 
+   * password incorrect
+   * @throws EntityNotFoundException if WRONG_PLAYER_ID
+   */
+  public static String loginPlayer(long playerId, String originalPassword) throws EntityNotFoundException {
+    Key playerKey = KeyFactory.createKey(PLAYER, playerId);
+    synchronized (loginMutex) {
+      Entity playerDB = datastore.get(playerKey);
+      String hashedPassword = AccessSignatureUtil.getHashedPassword(originalPassword);
+      if (playerDB.getProperty(PlayerProperty.HASHEDPASSWORD.toString()).equals(hashedPassword)) {
+
+        String accessSignature = AccessSignatureUtil.getAccessSignature(String.valueOf(playerId));
+        playerDB.setProperty(PlayerProperty.ACCESSSIGNATURE.toString(), accessSignature);
+        datastore.put(playerDB);
+        return accessSignature;
+
+      } else {
+        return "WRONG_PASSWORD";
+      }
+    }
+  }
+  
+  /**
+   * Delete a player by id and access signature
+   * If delete success, return DELETE_PLAYER
+   * If delete failed due to wrong access signature return WRONG_ACCESS_SIGNATURE
+   * @param playerId
+   * @param accessSignature
+   * @return
+   * @throws EntityNotFoundException if WRONG_PLAYER_ID
+   */
+  public static String deletePlayer(long playerId, String accessSignature) throws EntityNotFoundException {
+    Key playerKey = KeyFactory.createKey(PLAYER, playerId);
+    synchronized (loginMutex) {
+      Entity playerDB = datastore.get(playerKey);
+      if (playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE.toString()).equals(accessSignature)) {
+        datastore.delete(playerKey);
+        return "DELETED_PLAYER";
+      } else {
+        return "WRONG_ACCESS_SIGNATURE";
+      }
+    }
   }
 }

@@ -95,6 +95,9 @@ public class Player {
   public boolean isContain(Player subPlayer) {
     Map<String,String> subPlayerInfo = subPlayer.getAllProperties();
     for (String key: subPlayerInfo.keySet()) {
+      if (key.equals(PlayerProperty.HASHEDPASSWORD.toString())) {
+        continue;
+      }
       if (!this.properties.containsKey(key) || 
           !this.properties.get(key).equals(subPlayerInfo.get(key))) {
         return false;
@@ -102,6 +105,4 @@ public class Player {
     }
     return true;
   }
-  
-
 }

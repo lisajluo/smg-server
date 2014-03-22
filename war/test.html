@@ -10,7 +10,9 @@
 <h3> Test Page</h3>
 
 <p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
-<a href = "#" id = "CORSlink">CORS AJAX</a>
+<p><a href = "#" id = "CORSlink">CORS AJAX</a></p>
+<p><a href = "#" id = "CORSlinkPut">CORS AJAX Put</a></p>
+<p><a href = "#" id = "CORSlinkDelete">CORS AJAX Delete</a></p>
 
 
 <script type="text/javascript">
@@ -23,6 +25,14 @@ $(document).ready(function() {
   $("#CORSlink").on("click", function(event) {
     ajaxCall("http://localhost:8888/test");
   });
+  
+  $("#CORSlinkPut").on("click", function(event) {
+    ajaxCallMethod("http://localhost:8888/test","PUT");
+  });
+  
+  $("#CORSlinkDelete").on("click", function(event) {
+    ajaxCallMethod("http://localhost:8888/test","DELETE");
+  });
 });
 
 function ajaxCall(url) {
@@ -30,6 +40,19 @@ function ajaxCall(url) {
   $.ajax({
     url: url, 
     type: "GET",
+    success: function(data, textStatus, jqXHR) {
+      alert("SUCCESS");
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallMethod(url,method) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: method,
     success: function(data, textStatus, jqXHR) {
       alert("SUCCESS");
     },

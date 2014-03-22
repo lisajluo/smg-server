@@ -17,6 +17,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DatabaseDriverTest {
   private final LocalServiceTestHelper helper =
@@ -46,13 +47,39 @@ public class DatabaseDriverTest {
   }
   @Test
   public void test() throws NumberFormatException, EntityNotFoundException {
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    //int i = DatabaseDriver.test();
     String resp = DatabaseDriver.savePlayer(legalPlayer);
-    System.out.println(resp.split(":")[1]);
     Player p = DatabaseDriver.getPlayerById(Long.parseLong(resp.split(":")[1]));
-    System.out.println(p.getProperty(PlayerProperty.EMAIL));
     assertTrue(p.isContain(legalPlayer));
   }
+  
+  @Test
+  public void testUpdatePlayer() throws NumberFormatException, EntityNotFoundException {
+    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    long playerId = Long.parseLong(resp.split(":")[1]);
+    Player p = DatabaseDriver.getPlayerById(playerId);
+    System.out.println(p.getProperty(PlayerProperty.ACCESSSIGNATURE));
+    p.setProperty(PlayerProperty.NICKNAME, "Jinxuan");
+    String resp2 = DatabaseDriver.savePlayer(p);
+    assertEquals(resp2,"UPDATED_PLAYER");
+  }
 
+  @Test
+  public void testDeletePlayer() throws EntityNotFoundException {
+    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    long playerId = Long.parseLong(resp.split(":")[1]);
+    Player p = DatabaseDriver.getPlayerById(playerId);
+    String accessSignature = p.getProperty(PlayerProperty.ACCESSSIGNATURE);
+    String resp2 = DatabaseDriver.deletePlayer(playerId, accessSignature);
+    assertEquals(resp2,"DELETED_PLAYER");
+  }
+  
+  @Test
+  public void testLogin() throws EntityNotFoundException {
+    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    long playerId = Long.parseLong(resp.split(":")[1]);
+    String resp2 = DatabaseDriver.loginPlayer(playerId, "foobar");
+    if (resp2 == "WRONG_PASSWORD") {
+      fail("wrong password");
+    }
+  }
 }
