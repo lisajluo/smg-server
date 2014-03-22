@@ -6,6 +6,6 @@ public class CORSUtil {
   public static void addCORSHeader(HttpServletResponse resp) {
     resp.setHeader("Access-Control-Allow-Origin", "*");
     resp.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    resp.setHeader("Content-Type", "text/csv");
+    resp.setHeader("Content-Type", "application/json");
   }
 }

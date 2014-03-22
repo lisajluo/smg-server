@@ -45,15 +45,15 @@ function ajaxCall(url) {
 
 function ajaxCallNewMatch(url) {
   var jsonObj = { 'accessSignature': 'HJJIIKKSJF',
-                  'playerIds': [1234,4556],
+                  'playerIds': [1234,5678],
                   'gameId': 12233 };
   $.ajax({
     url: url, 
     type: 'POST',
     dataType: 'json',
-    data: { 'jsonData': JSON.stringify(jsonObj)},
-    success: function(data, textStatus, jqXHR) {
-      alert("SUCCESS");
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+      alert("error: " + data['error'] + " matchId: " + data['matchId']);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
