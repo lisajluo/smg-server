@@ -6,6 +6,7 @@ import org.smg.server.servlet.container.ContainerConstants;
 import org.smg.server.util.JSONUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
@@ -168,6 +170,7 @@ public class DatabaseDriver {
     String json = new JSONObject(match).toString();
     Map<String,Object> jsonMap = JSONUtil.parse(json);
     JSONObject jsonObj = new JSONObject(jsonMap);
+    
     Key key = KeyFactory.createKey(ContainerConstants.MATCH, matchId);
     Entity entity;
     try {
@@ -179,8 +182,11 @@ public class DatabaseDriver {
       //Currently make move affects two properties change 
       entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
           jsonObj.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+      @SuppressWarnings("unchecked")
+      ArrayList<Object> list = (ArrayList<Object>)jsonObj.get(ContainerConstants.HISTORY);
+      JSONArray jsonArray = new JSONArray(list.toArray());      
       entity.setUnindexedProperty(ContainerConstants.HISTORY, 
-          jsonObj.opt(ContainerConstants.HISTORY).toString());
+          jsonArray.toString());
     } catch (JSONException e) {
       return false;
     }

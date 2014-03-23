@@ -1,11 +1,8 @@
 
 package org.smg.server.servlet.container;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,13 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.servlet.container.GameApi.GameState;
 import org.smg.server.servlet.container.GameApi.Operation;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -34,6 +31,7 @@ public class MatchOperationServlet extends HttpServlet {
     // DummyDataGen.addGame();
     // DummyDataGen.addPlayer();
     // DummyDataGen.updateMatch();
+
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     long matchId = Long.parseLong(req.getPathInfo().substring(1));
@@ -90,11 +88,7 @@ public class MatchOperationServlet extends HttpServlet {
       throws ServletException, IOException {
     CORSUtil.addCORSHeader(resp);
     // get json string the parse to map
-    BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-    String json = "";
-    if (br != null) {
-      json = br.readLine();
-    }
+    String json = Utils.getBody(req);
     JSONObject returnValue = new JSONObject();
     if (json != null) {
       Map<String, Object> jsonMap = null;
@@ -136,43 +130,47 @@ public class MatchOperationServlet extends HttpServlet {
         return;
       }
 
-      // From now, processing the MakeMoveRequest.
+      // Get entity for MatchInfo from database.
       Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
 
-      // Convert the JSON string to Object.
-      ObjectMapper mapper = new ObjectMapper();
-      MakeMoveRequest makeMoveRequest = mapper.readValue(json, MakeMoveRequest.class);
+      List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
 
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
-        GameState currentState = mi.getGameStateHistory().get(0).getCurrentState();
-        List<Operation> operations = GameStateManager.messageToOperationList(makeMoveRequest
-            .getOperations());
-        currentState.makeMove(operations);
+        GameState newState = updateMatchInfoByOperations(mi, operations);
 
         // Write the object back to JSON formation.
-        String jsn = mapper.writeValueAsString(mi);
+        String rtnJsn = new ObjectMapper().writeValueAsString(mi);
+        DatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
-        // TODO Don't know how to convert MatchInfo object to a new JSONObject
-        // or a Map<String, Object>.
-        DatabaseDriver.updateMatchEntity(matchId, new HashMap<String, Object>());
+        // Response
+        String rtnStr = new ObjectMapper().writeValueAsString(newState);
+        returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
       } catch (JSONException e) {
         // This will be reached if there is something wrong with the formation
         // in Entity.
         e.printStackTrace();
       }
-
     } else {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.NO_DATA_RECEIVED);
       } catch (JSONException e) {
       }
     }
-
-    // write to resp then return
     try {
       returnValue.write(resp.getWriter());
     } catch (JSONException e) {
     }
+  }
+
+  private GameState updateMatchInfoByOperations(MatchInfo mi, List<Object> operationsMapList) {
+    List<Operation> operations = GameStateManager.messageToOperationList(operationsMapList);
+
+    // There is only one history record here.
+    // TODO Make sure which one will be the lastest state.
+    GameState currentState = mi.getHistory().get(0).getGameState();
+    currentState.makeMove(operations);
+
+    return currentState;
   }
 }

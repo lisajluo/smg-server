@@ -47,12 +47,12 @@ public class DummyDataGen {
 
   public static void updateMatch() throws IOException {
     Map<String, Object> match = new HashMap<String, Object>();
-    match.put(ContainerConstants.GAME_ID, Long.valueOf(6544293208522752L));
+    match.put(ContainerConstants.GAME_ID, Long.valueOf(6403555720167424L));
     List<Long> playerIds = new ArrayList<Long>();
-    playerIds.add(4714705859903488L);
-    playerIds.add(5840605766746112L);
+    playerIds.add(4996180836614144L);
+    playerIds.add(6122080743456768L);
     match.put(ContainerConstants.PLAYER_IDS, playerIds);
-    match.put(ContainerConstants.PLAYER_THAT_HAS_TURN, Long.valueOf(4714705859903488L));
+    match.put(ContainerConstants.PLAYER_THAT_HAS_TURN, Long.valueOf(6122080743456768L));
     List<Map<String, Object>> history = new LinkedList<Map<String, Object>>();
     Map<String, Object> his_entity = new HashMap<String, Object>();
     Map<String, Object> state = new HashMap<String, Object>();
@@ -79,7 +79,7 @@ public class DummyDataGen {
     history.add(his_entity);
     match.put(ContainerConstants.HISTORY, history);
 
-    long matchId = 5277655813324800L;
+    long matchId = 5559130790035456L;
     if (DatabaseDriver.updateMatchEntity(matchId, match)) {
       System.out.println("SUCCESS");
     }
