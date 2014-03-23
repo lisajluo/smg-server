@@ -1,6 +1,6 @@
 //Test under jQuery and QUnit
-//var StaticURL = "http://1.smg-server.appspot.com"; 
-var StaticURL = "http://localhost:8888";
+var StaticURL = "http://1.smg-server.appspot.com"; 
+//var StaticURL = "http://localhost:8888";
 function joinObject(dst,src) {
   for (var k in src) {
     if (src[k] != undefined){
@@ -14,6 +14,7 @@ function joinObject(dst,src) {
 //player id: stored in str
 var playerId = [];
 var accessSignature = [];
+var registerEmail = "blablaa@gmail.com";
 
 function addPlayerId(id) {
   playerId.push(id);
@@ -62,6 +63,7 @@ function testAjax(method, testUrl, sendingMessage, before) {
       data:JSON.stringify(sendingMessage),
       async: false,
       success: function(data, textStatus, jqXHR) {
+    	  alert(JSON.stringify(data));
     	temp = data;
       },
       error: function(data) {
@@ -156,7 +158,7 @@ function testPlayerV1() {
     "method":"POST",
     "testUrl":"/players",
     "sendingMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -190,7 +192,7 @@ function testPlayerV1() {
     "method":"POST",
     "testUrl":"/players",
     "sendingMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -210,7 +212,7 @@ function testPlayerV1() {
     "sendingMessage":{
     },
     "expectedMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
     },
     "expectedUnknownFields":["accessSignature"],
     "testTitle":"Login player",
