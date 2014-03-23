@@ -21,6 +21,10 @@ public final class ContainerConstants {
  public static final String GAME_STATE = "gameState";
  public static final String LAST_MOVE = "lastMove";
  public static final String OPERATIONS = "operations";
+ public static final String STATE = "state";
+ public static final String VISIBLE_TO = "visibleTo";
+ public static final String PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT = "playerIdToNumberOfTokensInPot";
+ 
  
  // Various properties in the Player
  public static final String PLAYER_ID = "playerId";
