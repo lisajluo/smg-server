@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -20,7 +21,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
@@ -127,6 +127,12 @@ public class DatabaseDriver {
     txn.commit();
   }
 
+  /**
+   * Insert a new match to datastore
+   * @param match
+   * @return matchId
+   * @throws JSONException
+   */
   public static long insertMatchEntity(JSONObject match) throws JSONException {
     Transaction txn = datastore.beginTransaction();
     //Key key = KeyFactory.createKey("Match", match.getInt("matchId"));
@@ -146,5 +152,34 @@ public class DatabaseDriver {
     datastore.put(entity);
     txn.commit();
     return entity.getKey().getId();
+  }
+  
+  /**
+   * Update Match entity after making a move
+   * @param matchId
+   * @param match
+   * @return true: update, false: exception happened
+   */
+  public static boolean updateMatchEntity(long matchId, Map<String, Object> match) {
+    Transaction txn = datastore.beginTransaction();
+    JSONObject matchJSON = new JSONObject(match);
+    Key key = KeyFactory.createKey(ContainerConstants.MATCH, matchId);
+    Entity entity;
+    try {
+      entity = datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      return false;
+    }
+    try {
+      entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
+          matchJSON.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+      entity.setUnindexedProperty(ContainerConstants.HISTORY, 
+          matchJSON.getJSONArray(ContainerConstants.HISTORY).toString());
+    } catch (JSONException e) {
+      return false;
+    }
+    datastore.put(entity);
+    txn.commit();
+    return true;
   }
 }
