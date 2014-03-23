@@ -65,6 +65,14 @@ public class Player {
     return this.properties;
   }
   
+  /**
+   * Set property of player
+   * If property is null then throw IllegalArgumentException, which indicate an external failure.
+   * 
+   * @param property
+   * @param value
+   * @return
+   */
   public boolean setProperty(PlayerProperty property, String value) {
     if (property == null) {
       throw new IllegalArgumentException();

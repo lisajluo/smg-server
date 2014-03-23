@@ -77,9 +77,11 @@ public class DatabaseDriverTest {
   public void testLogin() throws EntityNotFoundException {
     String resp = DatabaseDriver.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
-    String resp2 = DatabaseDriver.loginPlayer(playerId, "foobar");
+    String resp2 = DatabaseDriver.loginPlayer(playerId, "foobar")[0];
     if (resp2 == "WRONG_PASSWORD") {
       fail("wrong password");
+    } else {
+      assertEquals(resp2,legalPlayer.getProperty(PlayerProperty.EMAIL));
     }
   }
 }

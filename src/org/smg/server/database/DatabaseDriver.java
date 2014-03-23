@@ -1,6 +1,7 @@
 package org.smg.server.database;
 
 import java.util.List;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -12,6 +13,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,7 @@ public class DatabaseDriver {
     entity.setUnindexedProperty("history", match.getJSONArray("history").toString());
     datastore.put(entity);
     txn.commit();
+  }
   //MODEL NAME DEFINE
   private static final String PLAYER = "PLAYER";
 
@@ -189,11 +192,11 @@ public class DatabaseDriver {
    * If login fail, throw EntityNotFoundException for WRONG_PLAYER_ID
    * @param playerId
    * @param originalPassword
-   * @return new access signature if login success or "WRONG_PASSWORD" if 
+   * @return {@code email+' '+accessSignature} if login success or "WRONG_PASSWORD" if 
    * password incorrect
    * @throws EntityNotFoundException if WRONG_PLAYER_ID
    */
-  public static String loginPlayer(long playerId, String originalPassword) throws EntityNotFoundException {
+  public static String[] loginPlayer(long playerId, String originalPassword) throws EntityNotFoundException {
     Key playerKey = KeyFactory.createKey(PLAYER, playerId);
     synchronized (loginMutex) {
       Entity playerDB = datastore.get(playerKey);
@@ -201,12 +204,13 @@ public class DatabaseDriver {
       if (playerDB.getProperty(PlayerProperty.HASHEDPASSWORD.toString()).equals(hashedPassword)) {
 
         String accessSignature = AccessSignatureUtil.getAccessSignature(String.valueOf(playerId));
+        String email = (String) playerDB.getProperty(PlayerProperty.EMAIL.toString());
         playerDB.setProperty(PlayerProperty.ACCESSSIGNATURE.toString(), accessSignature);
         datastore.put(playerDB);
-        return accessSignature;
+        return new String[] {email, accessSignature};
 
       } else {
-        return "WRONG_PASSWORD";
+        return new String[] {"WRONG_PASSWORD"};
       }
     }
   }

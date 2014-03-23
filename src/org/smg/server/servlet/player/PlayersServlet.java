@@ -20,15 +20,50 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 /**
- * Function: Insert a player Url pattern: /players
- * 
+ * player servlet to handle player request
+ * Insert:
+ *    method: POST
+ *    url:/players
+ *    required input:email, password
+ *    return:  {"playerId": 1234, "accessSignature": ...}
+ *             {"error": "EMAIL_EXISTS"}
+ *             {"error": "PASSWORD_TOO_SHORT"} (<6)
+ * Login:
+ *    method: GET
+ *    url:/players/[playerId]?password=
+ *    return: {"email": ..., "accessSignature": ...}
+ *            {"error": "WRONG_PASSWORD"}
+ *            {"error": "WRONG_PLAYER_ID"}
+ * Update:
+ *    method PUT
+ *    url:/players/[playerId]
+ *    required input: accessSignature, password (password to be updated)
+ *    return: {"success": "UPDATED_PLAYER"}
+ *            {"error": "WRONG_ACCESS_SIGNATURE"}
+ *            {"error": "WRONG_PLAYER_ID"}
+ * Delete:
+ *    method DELETE
+ *    url:/players/[playerId]?accessSignature=
+ *    return: {"success": "DELETED_PLAYER"}
+ *            {"error": "WRONG_ACCESS_SIGNATURE"}
+ *            {"error": "WRONG_PLAYER_ID"}
  * @author Archer
  * 
  *         TODO combine this with /players/{playerId}
  */
 @SuppressWarnings("serial")
 public class PlayersServlet extends HttpServlet {
-	@Override
+  /**
+   *  * Login:
+   *    method: GET
+   *    url:/players/[playerId]?password=
+   *    return: {"email": ..., "accessSignature": ...}
+   *            {"error": "WRONG_PASSWORD"}
+   *            {"error": "WRONG_PLAYER_ID"}
+ *
+   */
+	@SuppressWarnings("unchecked")
+  @Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
@@ -38,11 +73,19 @@ public class PlayersServlet extends HttpServlet {
 			player = req.getPathInfo().substring(1);
 		else
 			player = null;
+		//getParameterMap() return String
 		Map<String, Object> map = req.getParameterMap();
-		resp.getWriter().println("Player: " + player);
-		resp.getWriter().println("Parameter: ");
-		for (String key : map.keySet()) {
-			resp.getWriter().print("    " + key + ":" + map.get(key));
+		if (map.containsKey("password")) {
+		  //Login
+		  System.out.println(req.getPathInfo().split("/")[1]);
+		  System.out.println(req.getParameter("password"));
+		  //System.out.println(password);
+		  //String [] result = DatabaseDriver.loginPlayer(playerId, password);
+		  return;
+		} else {
+		  //cannot find password
+		  //output {"error": "WRONG_PASSWORD"}
+		  return;
 		}
 	}
 
@@ -62,7 +105,7 @@ public class PlayersServlet extends HttpServlet {
 		json = buffer.toString();
 		System.out.println(json);
 		JSONObject returnValue = new JSONObject();
-		if (json != null || json.length() != 0) {
+		if (json != null && json.length() != 0) {
 			Map<String, Object> jsonMap = JSONUtil.parse(json);
 			String email = (String) jsonMap
 					.get(PlayerProperty.EMAIL.toString());
