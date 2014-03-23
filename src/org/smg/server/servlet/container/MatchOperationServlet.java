@@ -168,9 +168,19 @@ public class MatchOperationServlet extends HttpServlet {
 
     // There is only one history record here.
     // TODO Make sure which one will be the lastest state.
-    GameState currentState = mi.getHistory().get(0).getGameState();
-    currentState.makeMove(operations);
+    GameState currentState;
+    if (mi.getHistory().size() == 0) {
+      // There is not GameState in History. Initial move.
+      currentState = new GameState();
 
+      GameStateHistoryItem gshi = new GameStateHistoryItem();
+      gshi.setGameState(currentState);
+
+      mi.getHistory().add(gshi);
+    } else {
+      currentState = mi.getHistory().get(0).getGameState();
+    }
+    currentState.makeMove(operations);
     return currentState;
   }
 }
