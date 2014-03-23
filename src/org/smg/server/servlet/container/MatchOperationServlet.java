@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.DummyDataGen;
 import org.smg.server.servlet.container.GameApi.GameState;
 import org.smg.server.servlet.container.GameApi.Operation;
 import org.smg.server.util.CORSUtil;
@@ -32,9 +31,9 @@ public class MatchOperationServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    DummyDataGen.addGame();
-    DummyDataGen.addPlayer();
-    DummyDataGen.updateMatch();
+    // DummyDataGen.addGame();
+    // DummyDataGen.addPlayer();
+    // DummyDataGen.updateMatch();
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     long matchId = Long.parseLong(req.getPathInfo().substring(1));
@@ -47,7 +46,7 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     long playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
-    if (!ContainerVerification.matchIdVerify(playerId)) {
+    if (!ContainerVerification.playerIdVerify(playerId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
         returnValue.write(resp.getWriter());

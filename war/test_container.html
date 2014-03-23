@@ -69,10 +69,11 @@ $(document).ready(function() {
   });
   $("#GetMatchInfo").on("click", function(event) {
       $.ajax({
-        url: "http://localhost:8888/matches/123123?accessSignature=HJJIIKKSJF&playerId=5348024557502464", 
+        url: "http://localhost:8888/matches/5277655813324800?accessSignature=HJJIIKKSJF&playerId=4714705859903488", 
         type: "GET",
         success: function(data, textStatus, jqXHR) {
-          alert("SUCCESS");
+        	var j = JSON.parse(data);
+          alert(j["playerThatHasTurn"]);
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -95,8 +96,8 @@ function ajaxCall(url) {
 
 function ajaxCallNewMatch(url) {
   var jsonObj = { 'accessSignature': 'HJJIIKKSJF',
-                  'playerIds': [5348024557502464,6473924464345088],
-                  'gameId': 4644337115725824 }
+                  'playerIds': [4714705859903488,5840605766746112],
+                  'gameId': 6544293208522752 }
   $.ajax({
     url: url, 
     type: 'POST',

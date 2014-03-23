@@ -13,7 +13,7 @@ public class GsonTest {
     try {
 
       // read from file, convert it to user class
-      User user = mapper.readValue(new File("/home/owwlo/test.json"), User.class);
+      MatchInfoooo user = mapper.readValue(new File("/home/owwlo/json"), MatchInfoooo.class);
 
       // display to console
       System.out.println(user);
