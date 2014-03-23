@@ -53,7 +53,8 @@ $(document).ready(function() {
   
   $("#DELETE-A-PLAYER").on("click", function(event){
 	  ajaxCallDelete("http://localhost:8888/players/");
-
+  });
+  
 	$("#CORSlinkPut").on("click", function(event) {
     ajaxCallMethod("http://localhost:8888/test","PUT");
   });
@@ -133,7 +134,6 @@ function ajaxCallInsert(url){
 			             'NICKNAME': 'AS'};
 	 
     var jsonString = JSON.stringify(jsonObj);
-    alert(jsonString);
     $.ajax({
       url: url,
       //dataType: 'json',
