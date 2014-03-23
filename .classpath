@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-testing.jar"/>
+	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

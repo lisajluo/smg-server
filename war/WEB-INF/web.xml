@@ -5,28 +5,20 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
-		<servlet-name>Smg_server</servlet-name>
-		<servlet-class>org.smg.server.Smg_serverServlet</servlet-class>
+		<servlet-name>developers</servlet-name>
+		<servlet-class>org.smg.server.servlet.developer.DeveloperServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Smg_server</servlet-name>
-		<url-pattern>/smg_server</url-pattern>
+		<servlet-name>developers</servlet-name>
+		<url-pattern>/developers/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>Test</servlet-name>
-		<servlet-class>org.smg.server.TestServlet</servlet-class>
+		<servlet-name>games</servlet-name>
+		<servlet-class>org.smg.server.servlet.game.GameServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Test</servlet-name>
-		<url-pattern>/test</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>developer</servlet-name>
-		<servlet-class>org.smg.server.servlet.DeveloperServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>developer</servlet-name>
-		<url-pattern>/developer</url-pattern>
+		<servlet-name>games</servlet-name>
+		<url-pattern>/games/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
     <servlet-name>newMatch</servlet-name>
