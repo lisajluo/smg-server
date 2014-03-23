@@ -77,15 +77,56 @@ public class PlayersServlet extends HttpServlet {
 		}
 		Player player = JSONUtil.jSON2Player(json);
 		String saveResult = DatabaseDriver.savePlayer(player);
-		if (saveResult.equals("UPDATED_PLAYER")){
+		if (saveResult.equals("UPDATED_PLAYER")) {
 			try {
-				returnValue.put("PLAYERID", player.getProperty(PlayerProperty.PLAYERID));
-				returnValue.put("ACCESSSIGNATURE", player.getProperty(PlayerProperty.ACCESSSIGNATURE));
+				returnValue.put("PLAYERID",
+						player.getProperty(PlayerProperty.PLAYERID));
+				returnValue.put("ACCESSSIGNATURE",
+						player.getProperty(PlayerProperty.ACCESSSIGNATURE));
 				returnValue.write(resp.getWriter());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			return;
+		} else if (saveResult.equals("WRONG_ACCESS_SIGNATURE")) {
+			try {
+				returnValue.put("ERROR", "WRONG_ACCESS_SIGNATURE");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.equals("WRONG_PLAYER_ID")) {
+			try {
+				returnValue.put("ERROR", "WRONG_PLAYER_ID");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.equals("EMAIL_EXITSTS")) {
+			try {
+				returnValue.put("ERROR", "EMAIL_EXISTS");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.startsWith("SUCCESS:")) {
+			try {
+				
+				returnValue.put("PLAYERID", saveResult.split(":")[1]);
+				returnValue.put("ACCESSSIGNATURE", saveResult.split(":")[2]);
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
 		}
 		return;
 
