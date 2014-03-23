@@ -13,6 +13,8 @@
 <a href = "#" id = "CORSlink">CORS AJAX</a>
 <br><a href = "#" id = "NewMatch">Insert New Match</a>
 <br><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a>
+<p><a href = "#" id = "MakeMove">Make A Move</a></p>
+<p><a href = "#" id = "GetMatchInfo">Get Match Info</a></p>
 
 
 <script type="text/javascript">
@@ -27,11 +29,54 @@ $(document).ready(function() {
   });
   
   $("#NewMatch").on("click", function(event) {
-    ajaxCallNewMatch("http://localhost:8888/matches");
+    ajaxCallNewMatch("http://localhost:8888/newMatch");
   });
   
   $("#NewMatch_parse_error").on("click", function(event) {
-    ajaxCallNewMatch_parse_error("http://localhost:8888/matches");
+    ajaxCallNewMatch_parse_error("http://localhost:8888/newMatch");
+  });
+  
+  $("#MakeMove").on("click", function(event) {
+      var jsonObj = {
+          "accessSignature": "HJJIIKKSJF",
+          'playerIds': [5348024557502464,6473924464345088],
+          "operations": [
+              {
+                  "value": "sd",
+                  "type": "Set",
+                  "visibleToPlayerIds": "ALL",
+                  "key": "k"
+              },
+              {
+                  "to": 54,
+                  "from": 23,
+                  "type": "SetRandomInteger",
+                  "key": "xcv"
+              }
+          ]
+      };
+      $.ajax({
+        url: "http://localhost:8888/matches/1231231", 
+        type: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+          alert("SUCCESS");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+  $("#GetMatchInfo").on("click", function(event) {
+      $.ajax({
+        url: "http://localhost:8888/matches/123123?accessSignature=HJJIIKKSJF&playerId=5348024557502464", 
+        type: "GET",
+        success: function(data, textStatus, jqXHR) {
+          alert("SUCCESS");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
   });
 });
 
