@@ -17,17 +17,21 @@ public final class ContainerConstants {
  public static final String GAME_OVER_SCORES = "gameOverScores";
  public static final String GAME_OVER_REASON = "gameOverReason";
  public static final String HISTORY = "history";
- public static final String ACCESS_SIGNATURE = "accessSignature";
+ 
+ public static final String GAME_STATE = "gameState";
+ public static final String LAST_MOVE = "lastMove";
+ public static final String OPERATIONS = "operations";
  
  // Various properties in the Player
  public static final String PLAYER_ID = "playerId";
+ public static final String ACCESS_SIGNATURE = "accessSignature";
  
  // Error messages
  public static final String ERROR = "error";
  public static final String NO_DATA_RECEIVED = "NO_DATA_RECEIVED";
  public static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
  public static final String WRONG_GAME_ID = "WRONG_GAME_ID";
+ public static final String WRONG_MATCH_ID = "WROING_MATCH_ID";
  public static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
  
 }
-
