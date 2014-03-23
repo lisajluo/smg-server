@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Model of normal player in the datastore.
- * Field are defined in {@code PlayerProperty}
- * Mandatory fields: playerId (after insertion), email, hashedPassword
+ * Model of normal player in the datastore. Field are defined in
+ * {@code PlayerProperty} Mandatory fields: playerId (after insertion), email,
+ * hashedPassword
  * 
  * @author Archer
- *
+ * 
  */
 public class Player {
   private Map<String,String> properties = new HashMap<String, String>();

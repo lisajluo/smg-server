@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.util.AccessSignatureUtil;
 import org.smg.util.CORSUtil;
@@ -68,24 +70,16 @@ public class PlayersServlet extends HttpServlet {
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		resp.setContentType("text/plain");
-		String player = null;
+		String playerId = null;
 		if (req.getPathInfo().length() != 0 && req.getPathInfo() != null)
-			player = req.getPathInfo().substring(1);
+			playerId = req.getPathInfo().substring(1);
 		else
-			player = null;
-		//getParameterMap() return String
+			playerId = null;
 		Map<String, Object> map = req.getParameterMap();
-		if (map.containsKey("password")) {
-		  //Login
-		  System.out.println(req.getPathInfo().split("/")[1]);
-		  System.out.println(req.getParameter("password"));
-		  //System.out.println(password);
-		  //String [] result = DatabaseDriver.loginPlayer(playerId, password);
-		  return;
-		} else {
-		  //cannot find password
-		  //output {"error": "WRONG_PASSWORD"}
-		  return;
+		resp.getWriter().println("Player: " + playerId);
+		resp.getWriter().println("Parameter: ");
+		for (String key : map.keySet()) {
+			resp.getWriter().print("    " + key + ":" + map.get(key));
 		}
 	}
 
@@ -103,39 +97,73 @@ public class PlayersServlet extends HttpServlet {
 		while ((line = br.readLine()) != null)
 			buffer.append(line);
 		json = buffer.toString();
-		System.out.println(json);
+		Map<String, Object> map = JSONUtil.parse(json);
+		String originalString = (String) map.get("PASSWORD");
 		JSONObject returnValue = new JSONObject();
-		if (json != null && json.length() != 0) {
-			Map<String, Object> jsonMap = JSONUtil.parse(json);
-			String email = (String) jsonMap
-					.get(PlayerProperty.EMAIL.toString());
-			String password = (String) jsonMap.get("PASSWORD");
-			String firstName = (String) jsonMap.get(PlayerProperty.FIRSTNAME
-					.toString());
-			String lastName = (String) jsonMap.get(PlayerProperty.LASTNAME
-					.toString());
-			String nickName = (String) jsonMap.get(PlayerProperty.NICKNAME
-					.toString());
+		if (originalString.length() < 6) {
 			try {
-				returnValue.put(PlayerProperty.EMAIL.toString(), email);
-				returnValue.put(PlayerProperty.HASHEDPASSWORD.toString(),
-						AccessSignatureUtil.getHashedPassword(password));
-				returnValue.put(PlayerProperty.FIRSTNAME.toString(), firstName);
-				returnValue.put(PlayerProperty.LASTNAME.toString(), lastName);
-				returnValue.put(PlayerProperty.NICKNAME.toString(), nickName);
-
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(returnValue);
-			try {
+				returnValue.put("ERROR", "PASSWORD_TOO_SHORT");
 				returnValue.write(resp.getWriter());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			return;
 		}
+		Player player = JSONUtil.jSON2Player(json);
+		String saveResult = DatabaseDriver.savePlayer(player);
+		if (saveResult.equals("UPDATED_PLAYER")) {
+			try {
+				returnValue.put("PLAYERID",
+						player.getProperty(PlayerProperty.PLAYERID));
+				returnValue.put("ACCESSSIGNATURE",
+						player.getProperty(PlayerProperty.ACCESSSIGNATURE));
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.equals("WRONG_ACCESS_SIGNATURE")) {
+			try {
+				returnValue.put("ERROR", "WRONG_ACCESS_SIGNATURE");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.equals("WRONG_PLAYER_ID")) {
+			try {
+				returnValue.put("ERROR", "WRONG_PLAYER_ID");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.equals("EMAIL_EXITSTS")) {
+			try {
+				returnValue.put("ERROR", "EMAIL_EXISTS");
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		} else if (saveResult.startsWith("SUCCESS:")) {
+			try {
+				
+				returnValue.put("PLAYERID", saveResult.split(":")[1]);
+				returnValue.put("ACCESSSIGNATURE", saveResult.split(":")[2]);
+				returnValue.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		return;
 
 	}
 
