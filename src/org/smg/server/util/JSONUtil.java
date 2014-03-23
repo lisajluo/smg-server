@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JSONUtil {

@@ -8,9 +8,12 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.2.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.2.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.2.3.jar"/>
-	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-endpoints.jar"/>
+  <classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-testing.jar"/>
-	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
