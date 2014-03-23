@@ -1,3 +1,4 @@
+
 package org.smg.server.servlet.container;
 
 import java.util.ArrayList;
@@ -22,22 +23,29 @@ public final class GameApi {
 
   /** playerId for the Artificial Intelligence (AI) player. */
   public static final int AI_PLAYER_ID = 0;
-  /** playerId for a user viewing a match; a viewer can't make any moves in the game. */
+  /**
+   * playerId for a user viewing a match; a viewer can't make any moves in the
+   * game.
+   */
   public static final int VIEWER_ID = -1;
 
   public interface Container {
     void sendGameReady();
+
     void sendVerifyMoveDone(VerifyMoveDone verifyMoveDone);
+
     void sendMakeMove(List<Operation> operations);
   }
 
   public interface Game {
     void sendVerifyMove(VerifyMove verifyMove);
+
     void sendUpdateUI(UpdateUI updateUI);
   }
 
   /**
-   * A container for games that can iterates over all the players and send them Game API messages.
+   * A container for games that can iterates over all the players and send them
+   * Game API messages.
    */
   public static class IteratingPlayerContainer implements Container {
     private final Game game;
@@ -55,7 +63,7 @@ public final class GameApi {
       for (int i = 0; i < numberOfPlayers; i++) {
         int playerId = 42 + i;
         playerIds.add(playerId);
-        playersInfo.add(ImmutableMap.<String, Object>of(PLAYER_ID, playerId));
+        playersInfo.add(ImmutableMap.<String, Object> of(PLAYER_ID, playerId));
       }
       this.playerIds = ImmutableList.copyOf(playerIds);
     }
@@ -101,8 +109,8 @@ public final class GameApi {
   }
 
   public static class GameState {
-    private final Map<String, Object> state = Maps.newHashMap();
-    private final Map<String, Object> visibleTo = Maps.newHashMap();
+    private Map<String, Object> state = Maps.newHashMap();
+    private Map<String, Object> visibleTo = Maps.newHashMap();
     private Map<Integer, Integer> playerIdToNumberOfTokensInPot = Maps.newHashMap();
 
     public GameState copy() {
@@ -189,6 +197,27 @@ public final class GameApi {
       }
       return res;
     }
+
+    public final Map<String, Object> getState() {
+      return state;
+    }
+
+    public final void setState(Map<String, Object> state) {
+      this.state = state;
+    }
+
+    public final Map<String, Object> getVisibleTo() {
+      return visibleTo;
+    }
+
+    public final void setVisibleTo(Map<String, Object> visibleTo) {
+      this.visibleTo = visibleTo;
+    }
+
+    public final void setPlayerIdToNumberOfTokensInPot(
+        Map<Integer, Integer> playerIdToNumberOfTokensInPot) {
+      this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
+    }
   }
 
   public static class VerifyMove extends Message {
@@ -197,23 +226,25 @@ public final class GameApi {
     protected final Map<String, Object> lastState;
 
     /**
-     * You should verify this lastMove is legal given lastState; some imperfect information
-     * games will need to also examine state to determine if the lastMove was legal.
+     * You should verify this lastMove is legal given lastState; some imperfect
+     * information games will need to also examine state to determine if the
+     * lastMove was legal.
      */
     protected final List<Operation> lastMove;
 
     /**
-     * lastMovePlayerId can either be the ID of a player in playersInfo,
-     * or 0 for the Artificial Intelligence (AI) player.
+     * lastMovePlayerId can either be the ID of a player in playersInfo, or 0
+     * for the Artificial Intelligence (AI) player.
      */
     protected final int lastMovePlayerId;
 
     /**
-     * The number of tokens each player currently has in the pot (see {@link AttemptChangeTokens});
-     * The sum of values is always non-negative (i.e., the total pot can NOT be negative).
-     * If the game ends when the total pot is non-zero,
-     * the pot is given to the player with the highest score (see {@link EndGame}),
-     * or if all players have the same score then the pot is distributed evenly.
+     * The number of tokens each player currently has in the pot (see
+     * {@link AttemptChangeTokens}); The sum of values is always non-negative
+     * (i.e., the total pot can NOT be negative). If the game ends when the
+     * total pot is non-zero, the pot is given to the player with the highest
+     * score (see {@link EndGame}), or if all players have the same score then
+     * the pot is distributed evenly.
      */
     protected final Map<Integer, Integer> playerIdToNumberOfTokensInPot;
 
@@ -238,7 +269,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList(
+      return Arrays.<Object> asList(
           "playersInfo", playersInfo, "state", state,
           "lastState", lastState, "lastMove", lastMove, "lastMovePlayerId", lastMovePlayerId,
           "playerIdToNumberOfTokensInPot", playerIdToNumberOfTokensInPot);
@@ -304,10 +335,10 @@ public final class GameApi {
 
   public static class UpdateUI extends VerifyMove {
     /**
-     * yourPlayerId can either be the ID of a player in playersInfo,
-     * or 0 for the Artificial Intelligence (AI) player,
-     * or -1 to represent that you're VIEWING a match (i.e., you're not one of the players and
-     * therefore you cannot make moves).
+     * yourPlayerId can either be the ID of a player in playersInfo, or 0 for
+     * the Artificial Intelligence (AI) player, or -1 to represent that you're
+     * VIEWING a match (i.e., you're not one of the players and therefore you
+     * cannot make moves).
      */
     protected final int yourPlayerId;
 
@@ -329,7 +360,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList(
+      return Arrays.<Object> asList(
           "yourPlayerId", yourPlayerId, "playersInfo", playersInfo, "state", state,
           "lastState", lastState, "lastMove", lastMove, "lastMovePlayerId", lastMovePlayerId,
           "playerIdToNumberOfTokensInPot", playerIdToNumberOfTokensInPot);
@@ -352,7 +383,8 @@ public final class GameApi {
     }
   }
 
-  public abstract static class Operation extends Message { }
+  public abstract static class Operation extends Message {
+  }
 
   public static class EndGame extends Operation {
     private final Map<Integer, Integer> playerIdToScore;
@@ -374,7 +406,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("playerIdToScore", playerIdToScore);
+      return Arrays.<Object> asList("playerIdToScore", playerIdToScore);
     }
 
     public Map<Integer, Integer> getPlayerIdToScore() {
@@ -408,7 +440,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList(
+      return Arrays.<Object> asList(
           "key", key, "value", value, "visibleToPlayerIds", visibleToPlayerIds);
     }
 
@@ -426,8 +458,8 @@ public final class GameApi {
   }
 
   /**
-   * An operation to set a random integer in the range [from,to),
-   * so from {@code from} (inclusive) until {@code to} (exclusive).
+   * An operation to set a random integer in the range [from,to), so from
+   * {@code from} (inclusive) until {@code to} (exclusive).
    */
   public static class SetRandomInteger extends Operation {
     private final String key;
@@ -447,7 +479,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("key", key, "from", from, "to", to);
+      return Arrays.<Object> asList("key", key, "from", from, "to", to);
     }
 
     public String getKey() {
@@ -487,7 +519,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("key", key, "visibleToPlayerIds", visibleToPlayerIds);
+      return Arrays.<Object> asList("key", key, "visibleToPlayerIds", visibleToPlayerIds);
     }
 
     public String getKey() {
@@ -501,9 +533,10 @@ public final class GameApi {
 
   public static class SetTurn extends Operation {
     private final int playerId;
-    /** The number of seconds playerId will have to send MakeMove;
-     * if it is 0 then the container will decide on the time limit
-     * (or the container may decide that there is no time limit).
+    /**
+     * The number of seconds playerId will have to send MakeMove; if it is 0
+     * then the container will decide on the time limit (or the container may
+     * decide that there is no time limit).
      */
     private final int numberOfSecondsForTurn;
 
@@ -523,7 +556,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("playerId", playerId,
+      return Arrays.<Object> asList("playerId", playerId,
           "numberOfSecondsForTurn", numberOfSecondsForTurn);
     }
 
@@ -550,7 +583,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("key", key);
+      return Arrays.<Object> asList("key", key);
     }
 
     public String getKey() {
@@ -560,38 +593,35 @@ public final class GameApi {
 
   public static class AttemptChangeTokens extends Operation {
     /**
-     * Map each playerId to the number of tokens that should be increased/decreased.
-     * The server will verify that the total change in tokens (in playerIdToTokenChange)
-     * is equal to minus the total change in the pot (in playerIdToNumberOfTokensInPot).
-     *
-     * For example, suppose the total pot is initially empty, i.e.,
-     * playerIdToNumberOfTokensInPot={} (see {@link VerifyMove})
-     * Then you do the operation:
-     * AttemptChangeTokens({42: -3000, 43: -2000}, {42: 3000, 43: 2000})
-     * If playerId=42 indeed has at least 3000 tokens and playerId=43 has at least 2000 tokens
-     * then the operation will succeed and the total pot will have 5000 tokens and you will have
-     * in {@link VerifyMove}:
-     * playerIdToNumberOfTokensInPot={42: 3000, 43: 2000}
-     * If one of the players does not have sufficient token then the operation will fail, and
-     * playerIdToNumberOfTokensInPot={}
-     *
-     * Assume the operation succeeded. As the game continues, playerId=43 might risk more money:
-     * AttemptChangeTokens({43: -3000}, {42: 3000, 43: 5000})
-     * and if he has enough tokens then the total pot will increase to 8000:
-     * playerIdToNumberOfTokensInPot={42: 3000, 43: 5000}
-     * When the game ends you should distribute the pot, e.g., if the game ends in a tie you could
-     * call:
-     * AttemptChangeTokens({42: 4000, 43: 4000}, {42: 0, 43:0})
-     * and then the total pot will be 0.
-     * If the game ends when the total pot is non-zero,
-     * the pot is given to the player with the highest score (see {@link EndGame}).
+     * Map each playerId to the number of tokens that should be
+     * increased/decreased. The server will verify that the total change in
+     * tokens (in playerIdToTokenChange) is equal to minus the total change in
+     * the pot (in playerIdToNumberOfTokensInPot). For example, suppose the
+     * total pot is initially empty, i.e., playerIdToNumberOfTokensInPot={} (see
+     * {@link VerifyMove}) Then you do the operation: AttemptChangeTokens({42:
+     * -3000, 43: -2000}, {42: 3000, 43: 2000}) If playerId=42 indeed has at
+     * least 3000 tokens and playerId=43 has at least 2000 tokens then the
+     * operation will succeed and the total pot will have 5000 tokens and you
+     * will have in {@link VerifyMove}: playerIdToNumberOfTokensInPot={42: 3000,
+     * 43: 2000} If one of the players does not have sufficient token then the
+     * operation will fail, and playerIdToNumberOfTokensInPot={} Assume the
+     * operation succeeded. As the game continues, playerId=43 might risk more
+     * money: AttemptChangeTokens({43: -3000}, {42: 3000, 43: 5000}) and if he
+     * has enough tokens then the total pot will increase to 8000:
+     * playerIdToNumberOfTokensInPot={42: 3000, 43: 5000} When the game ends you
+     * should distribute the pot, e.g., if the game ends in a tie you could
+     * call: AttemptChangeTokens({42: 4000, 43: 4000}, {42: 0, 43:0}) and then
+     * the total pot will be 0. If the game ends when the total pot is non-zero,
+     * the pot is given to the player with the highest score (see
+     * {@link EndGame}).
      */
     private final Map<Integer, Integer> playerIdToTokenChange;
 
     /**
-     * The number of tokens each player currently has in the pot;
-     * The sum of values is always non-negative (i.e., the total pot can NOT be negative).
-     * When the game ends, the pot is given to the player with the highest score.
+     * The number of tokens each player currently has in the pot; The sum of
+     * values is always non-negative (i.e., the total pot can NOT be negative).
+     * When the game ends, the pot is given to the player with the highest
+     * score.
      */
     protected final Map<Integer, Integer> playerIdToNumberOfTokensInPot;
 
@@ -608,7 +638,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("playerIdToTokenChange", playerIdToTokenChange,
+      return Arrays.<Object> asList("playerIdToTokenChange", playerIdToTokenChange,
           "playerIdToNumberOfTokensInPot", playerIdToNumberOfTokensInPot);
     }
 
@@ -635,7 +665,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("keys", keys);
+      return Arrays.<Object> asList("keys", keys);
     }
 
     public List<String> getKeys() {
@@ -664,7 +694,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("operations", operations);
+      return Arrays.<Object> asList("operations", operations);
     }
 
     public List<Operation> getOperations() {
@@ -694,7 +724,7 @@ public final class GameApi {
 
     @Override
     public List<Object> getFieldsNameAndValue() {
-      return Arrays.<Object>asList("hackerPlayerId", hackerPlayerId, "message", message);
+      return Arrays.<Object> asList("hackerPlayerId", hackerPlayerId, "message", message);
     }
 
     public int getHackerPlayerId() {
@@ -915,13 +945,13 @@ public final class GameApi {
     return result;
   }
 
-
-
   /**
-   * Checks the object has a JSON-supported data type, i.e.,
-   * the object is either a primitive (String, Integer, Double, Boolean, null)
-   * or the object is a List and every element in the list has a JSON-supported data type,
-   * or the object is a Map and the keys are String and the values have JSON-supported data types.
+   * Checks the object has a JSON-supported data type, i.e., the object is
+   * either a primitive (String, Integer, Double, Boolean, null) or the object
+   * is a List and every element in the list has a JSON-supported data type, or
+   * the object is a Map and the keys are String and the values have
+   * JSON-supported data types.
+   * 
    * @return the given object.
    */
   static <T> T checkHasJsonSupportedType(T object) {
@@ -955,6 +985,7 @@ public final class GameApi {
         "The object doesn't have a JSON-supported data type! object=" + object);
   }
 
-  private GameApi() { }
+  private GameApi() {
+  }
 
 }
