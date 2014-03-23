@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-import org.smg.util.AccessSignatureUtil;
+import org.smg.server.util.AccessSignatureUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;

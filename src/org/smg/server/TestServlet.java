@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.smg.util.CORSUtil;
+import org.smg.server.util.CORSUtil;
 
 @SuppressWarnings("serial")
 public class TestServlet extends HttpServlet {

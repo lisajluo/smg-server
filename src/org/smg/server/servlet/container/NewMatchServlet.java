@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.DummyDataGen;
-import org.smg.util.CORSUtil;
-import org.smg.util.JSONUtil;
+import org.smg.server.util.CORSUtil;
+import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;

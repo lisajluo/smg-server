@@ -33,7 +33,7 @@ public class Player {
     
     public static PlayerProperty findByValue(String value) {
       for (PlayerProperty p: values()) {
-        if (p.toString().equals(value)){
+        if (p.toString().equals(value.toUpperCase())){
           return p;
         }
       }

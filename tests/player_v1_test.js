@@ -1,6 +1,6 @@
 //Test under jQuery and QUnit
-var StaticURL = "http://1.smg-server.appspot.com"; 
-
+//var StaticURL = "http://1.smg-server.appspot.com"; 
+var StaticURL = "http://localhost:8888";
 function joinObject(dst,src) {
   for (var k in src) {
     if (src[k] != undefined){
@@ -13,6 +13,7 @@ function joinObject(dst,src) {
 
 //player id: stored in str
 var playerId = [];
+var accessSignature = [];
 
 function addPlayerId(id) {
   playerId.push(id);
@@ -26,13 +27,21 @@ function getPlayerId(index) {
   }
 }
 
+function getAccessSignature(index) {
+	  if (accessSignature[index] != undefined) {
+	    return accessSignature[index];
+	  } else {
+	    return accessSignature[accessSignature.length-1];
+	  }
+	}
+
 function testEqual(testing, expected, title) {
   deepEqual( testing, expected, "We expect two objects are equal.");
 }
 
 //Make AJAX call and return the responce object
 function testAjax(method, testUrl, sendingMessage, before) {
-  if (before != undefined) {
+  if (false && before != undefined) {
     for (var i = 0; i < before.length; i ++){
       var beforeOb = before[i];
       var t = syncAjax(
@@ -44,19 +53,22 @@ function testAjax(method, testUrl, sendingMessage, before) {
       joinObject(sendingMessage,t);
     }
   }
+  //alert(JSON.stringify(sendingMessage));
   var temp = {}
   $.ajax({
     url: testUrl,
     dataType: 'json',
       type:method,
       data:JSON.stringify(sendingMessage),
-      success: function(data) {
-        temp = data;
+      async: false,
+      success: function(data, textStatus, jqXHR) {
+    	temp = data;
       },
       error: function(data) {
         temp = data;
       }
   });
+  //alert(JSON.stringify(temp));
   return temp;
 }
 
@@ -106,6 +118,9 @@ function runTestCase(c) {
     if (ob["playerId"] != undefined) {
       playerId.push(ob["playerId"]);
     }
+    if (ob["accessSignature"] != undefined) {
+    	accessSignature.push(ob["accessSignature"]);
+    }
     var expectedUnknown = c["expectedUnknownFields"];
     var expectedMessage = c["expectedMessage"];
     for (var i = 0; i < expectedUnknown.length; i ++) {
@@ -117,7 +132,7 @@ function runTestCase(c) {
     setTimeout(function() {
       testEqual(ob,expectedMessage,c["testTitle"]);
       start();
-    },1500);
+    },1);
   })
 }
 
@@ -143,15 +158,33 @@ function testPlayerV1() {
     "sendingMessage":{
       "email":"blablabla@gmail.com",
       "password":"foobar",
-      "firstName":"foo",
-      "lastName":"bar",
-      "nickName":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar",
     },
     "expectedMessage":{
     },
-    "expectedUnknownFields":["playerId"],
+    "expectedUnknownFields":["playerId","accessSignature"],
     "testTitle":"Inserting a new player",
   },
+  ];
+  setTimeout(function() {alert(playerId)},3000);
+
+  //Waiting time parameter
+  var waitTime = 0;
+  var waitTimeInc = 5000;
+
+  for (var i = 0; i < testCases.length; i ++) {
+    var c = testCases[i];
+    setTimeout(runTestCase(c), waitTime);
+    //runTestCase(c);
+    waitTime += waitTimeInc;
+  }
+
+  //Wait Until user is created
+  setTimeout( function() {
+	  //alert(getPlayerId(0));
+  var testCasesDependent = [
   //Add the same player, should return an error
   {
     "method":"POST",
@@ -159,9 +192,9 @@ function testPlayerV1() {
     "sendingMessage":{
       "email":"blablabla@gmail.com",
       "password":"foobar",
-      "firstName":"foo",
-      "lastName":"bar",
-      "nickName":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar",
     },
     "expectedMessage":{
       "error": "EMAIL_EXISTS"
@@ -169,28 +202,12 @@ function testPlayerV1() {
     "expectedUnknownFields":[],
     "testTitle":"Inserting a new player with existing email",
   },
-  ];
-
-  //Waiting time parameter
-  var waitTime = 0;
-  var waitTimeInc = 2000;
-
-  for (var i = 0; i < testCases.length; i ++) {
-    var c = testCases[i];
-    setTimeout(runTestCase(c), waitTime);
-    waitTime += waitTimeInc;
-  }
-
-  //Wait Until user is created
-  setTimeout( function() {
-  var testCasesDependent = [
   //Login player
   //TODO get playerId from previous call
   {
     "method":"GET",
-    "testUrl":"/players/"+getPlayerId(0),
+    "testUrl":"/players/"+getPlayerId(0)+"?password=foobar",
     "sendingMessage":{
-      "password":"foobar",
     },
     "expectedMessage":{
       "email":"blablabla@gmail.com",
@@ -201,9 +218,8 @@ function testPlayerV1() {
   //Login player with wrong password
   {
     "method":"GET",
-    "testUrl":"/players/"+getPlayerId(0),
+    "testUrl":"/players/"+getPlayerId(0)+"?password=foobarla",
     "sendingMessage":{
-      "password":"foobarla",
     },
     "expectedMessage":{
       "error": "WRONG_PASSWORD",
@@ -214,9 +230,8 @@ function testPlayerV1() {
   //Loginplayer with wrong id
   {
     "method":"GET",
-    "testUrl":"/players/12345",
+    "testUrl":"/players/12345"+"?password=foobar",
     "sendingMessage":{
-      "password":"foobar",
     },
     "expectedMessage":{
       "error": "WRONG_PLAYER_ID",
@@ -226,32 +241,31 @@ function testPlayerV1() {
   },
   //Submit a game request
   //TODO: Obtain game Id from previous call
-  {
-    "method":"POST",
-    "testUrl":"/matcher",
-    "sendingMessage":{
-      "playerIds":getPlayerId(0),
-      "gameId":1,
-    },
-    "expectedMessage":{
-    },
-    "expectedUnknownFields":["matchId"],
-    "before": {
-      "method":"GET",
-      "testUrl":"/players/"+getPlayerId(0),
-      "sendingMessage":{
-        "password":"foobar",
-      },
-      "requiredKeys":["accessSignature"]
-    },
-    "testTitle":"Delete a player with wrong Id",
-  },
+//  {
+//    "method":"POST",
+//    "testUrl":"/matcher",
+//    "sendingMessage":{
+//      "playerIds":getPlayerId(0),
+//      "gameId":1,
+//    },
+//    "expectedMessage":{
+//    },
+//    "expectedUnknownFields":["matchId"],
+//    "before": {
+//      "method":"GET",
+//      "testUrl":"/players/"+getPlayerId(0),
+//      "sendingMessage":{
+//        "password":"foobar",
+//      },
+//      "requiredKeys":["accessSignature"]
+//    },
+//    "testTitle":"Delete a player with wrong Id",
+//  },
   //Delete a player Info with wrong accessSignature
   {
     "method":"DELETE",
-    "testUrl":"/players/"+getPlayerId(0),
+    "testUrl":"/players/"+getPlayerId(0)+"?accessSignature=foobar",
     "sendingMessage":{
-      "accessSignature":"foobarwrongsignature",
     },
     "expectedMessage":{
       "error": "WRONG_ACCESS_SIGNATURE",
@@ -262,7 +276,7 @@ function testPlayerV1() {
   //Delete a player Info with wrong Id
   {
     "method":"DELETE",
-    "testUrl":"/players/12345",
+    "testUrl":"/players/12345"+"?accessSignature="+getAccessSignature(0),
     "sendingMessage":{
     },
     "expectedMessage":{
@@ -279,10 +293,23 @@ function testPlayerV1() {
     },
     "testTitle":"Delete a player with wrong Id",
   },
+  ];
+
+  for (var i = 0; i < testCasesDependent.length; i ++) {
+    var c = testCasesDependent[i];
+    //wait between test cases
+    //setTimeout is async
+    setTimeout(runTestCase(c), waitTime);
+    //runTestCase(c);
+    waitTime += waitTimeInc*4;
+  }
+  }, 5000);
+  setTimeout( function() {
+  var testCasesTearDown = [
   //Deleting a player
   {
     "method":"DELETE",
-    "testUrl":"/players/"+getPlayerId(0),
+    "testUrl":"/players/"+getPlayerId(0)+"?accessSignature="+getAccessSignature(1),
     "sendingMessage":{
     },
     "expectedMessage":{
@@ -298,17 +325,19 @@ function testPlayerV1() {
       "requiredKeys":["accessSignature"]
     },
     "testTitle":"Delete a player",
-  },
-  ];
-
-  for (var i = 0; i < testCasesDependent.length; i ++) {
-    var c = testCases[i];
-    //wait between test cases
-    //setTimeout is async
-    setTimeout(runTestCase(c), waitTime);
-    waitTime += waitTimeInc;
-  }
-  }, 5000);
-
+  }];
+  for (var i = 0; i < testCasesTearDown.length; i ++) {
+	    var c = testCasesTearDown[i];
+	    //wait between test cases
+	    //setTimeout is async
+	    setTimeout(runTestCase(c), waitTime);
+	    //runTestCase(c);
+	    waitTime += waitTimeInc*4;
+	  }
+	  }, 10000);
+  
 }
 
+$(document).ready(function() {
+testPlayerV1();
+});

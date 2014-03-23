@@ -70,7 +70,7 @@ function ajaxCall(url) {
     url: url, 
     type: "GET",
     success: function(data, textStatus, jqXHR) {
-      alert("SUCCESS");
+      alert("SUCCESS:" +JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -101,11 +101,11 @@ function ajaxCallPost(url){
 	  alert(jsonString);
 	  $.ajax({
 	    url: url,
-	    //dataType: 'json',
+	    dataType: 'json',
 	    data: jsonString,
 	    type: "POST",
 	    success: function(data, textStatus, jqXHR){
-	      alert("SUCCESS");
+	      alert("SUCCESS:" +JSON.Stringify(data));
 	    },
 	    error: function(jqXHR, textStatus, errorThrown){
 	      alert("ERROR: " + textStatus + " " + errorThrown);
@@ -118,7 +118,7 @@ function ajaxCallGet(url){
 		  url: url,
 		  type: "GET",
 		  success: function(data, textStatus, jqXHR){
-			  alert("SUCCESS");
+			  alert("SUCCESS:" +JSON.stringify(data));
 		  },
 		  error: function(jqXHR, textStatus, errorThrown){
 			  alert("ERROR: " + textStatus + " " + errorThworn);
@@ -128,7 +128,7 @@ function ajaxCallGet(url){
 
 function ajaxCallInsert(url){
 	  var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
-			             'PASSWORD': 'password', 
+			             'password': 'password', 
 			             'FIRSTNAME': 'Allen',
 			             'LASTNAME': 'Sa',
 			             'NICKNAME': 'AS'};
@@ -136,11 +136,11 @@ function ajaxCallInsert(url){
     var jsonString = JSON.stringify(jsonObj);
     $.ajax({
       url: url,
-      //dataType: 'json',
+      dataType: 'json',
       data: jsonString,
       type: "POST",
       success: function(data, textStatus, jqXHR){
-        alert("SUCCESS");
+        alert("SUCCESS:" +JSON.stringify(data));
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -153,7 +153,7 @@ function ajaxCallLogin(url){
       url: url,
       type: "GET",
       success: function(data, textStatus, jqXHR){
-        alert("SUCCESS");
+        alert("SUCCESS:" +JSON.stringify(data));
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -163,7 +163,7 @@ function ajaxCallLogin(url){
 
 function ajaxCallUpdate(url){
     var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
-                   'PASSWORD': 'password', 
+                   'password': 'password', 
                    'FIRSTNAME': 'Allen',
                    'LASTNAME': 'Sa',
                    'NICKNAME': 'AS'};
@@ -176,7 +176,7 @@ function ajaxCallUpdate(url){
       data: jsonString,
       type: "POST",
       success: function(data, textStatus, jqXHR){
-        alert("SUCCESS");
+        alert("SUCCESS:" +JSON.stringify(data));
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -186,7 +186,7 @@ function ajaxCallUpdate(url){
 
 function ajaxCallDelete(url){
     var jsonObj = {'EMAIL': 'aaaa@nyu.edu', 
-                   'PASSWORD': 'password', 
+                   'password': 'password', 
                    'FIRSTNAME': 'Allen',
                    'LASTNAME': 'Sa',
                    'NICKNAME': 'AS'};
@@ -199,7 +199,7 @@ function ajaxCallDelete(url){
       data: jsonString,
       type: "DELETE",
       success: function(data, textStatus, jqXHR){
-        alert("SUCCESS");
+        alert("SUCCESS:" +JSON.stringify(data));
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -213,7 +213,7 @@ function ajaxCallMethod(url,method) {
     url: url, 
     type: method,
     success: function(data, textStatus, jqXHR) {
-      alert("SUCCESS");
+      alert("SUCCESS:" +JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
