@@ -29,11 +29,11 @@ $(document).ready(function() {
   });
   
   $("#NewMatch").on("click", function(event) {
-    ajaxCallNewMatch("http://localhost:8888/matches");
+    ajaxCallNewMatch("http://localhost:8888/newMatch");
   });
   
   $("#NewMatch_parse_error").on("click", function(event) {
-    ajaxCallNewMatch_parse_error("http://localhost:8888/matches");
+    ajaxCallNewMatch_parse_error("http://localhost:8888/newMatch");
   });
   
   $("#MakeMove").on("click", function(event) {

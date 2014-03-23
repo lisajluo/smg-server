@@ -3,7 +3,9 @@ package org.smg.server.database;
 
 import org.smg.server.servlet.developer.DeveloperConstants;
 import org.smg.server.servlet.container.ContainerConstants;
+import org.smg.server.util.JSONUtil;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,10 +161,13 @@ public class DatabaseDriver {
    * @param matchId
    * @param match
    * @return true: update, false: exception happened
+   * @throws IOException 
    */
-  public static boolean updateMatchEntity(long matchId, Map<String, Object> match) {
+  public static boolean updateMatchEntity(long matchId, Map<String, Object> match) throws IOException {
     Transaction txn = datastore.beginTransaction();
-    JSONObject matchJSON = new JSONObject(match);
+    String json = new JSONObject(match).toString();
+    Map<String,Object> jsonMap = JSONUtil.parse(json);
+    JSONObject jsonObj = new JSONObject(jsonMap);
     Key key = KeyFactory.createKey(ContainerConstants.MATCH, matchId);
     Entity entity;
     try {
@@ -171,10 +176,11 @@ public class DatabaseDriver {
       return false;
     }
     try {
+      //Currently make move affects two properties change 
       entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
-          matchJSON.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+          jsonObj.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
       entity.setUnindexedProperty(ContainerConstants.HISTORY, 
-          matchJSON.getJSONArray(ContainerConstants.HISTORY).toString());
+          jsonObj.opt(ContainerConstants.HISTORY).toString());
     } catch (JSONException e) {
       return false;
     }

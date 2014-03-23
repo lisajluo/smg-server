@@ -4,8 +4,6 @@ package org.smg.server.servlet.container;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.smg.server.servlet.container.MatchInfo.GameOverReason;
-
 import com.google.appengine.labs.repackaged.com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableList;
 
@@ -18,13 +16,13 @@ public class MatchInfoManager {
         matchInfoMap = Maps.newConcurrentMap();
 
         // For test only.
-        generateTestData();
+//        generateTestData();
     }
 
-    private void generateTestData() {
-        matchInfoMap.put(123123, new MatchInfo(123123, 456, ImmutableList.<Integer> of(42, 43), 42,
-                new HashMap<String,Integer>(), GameOverReason.NOT_OVER));
-    }
+//    private void generateTestData() {
+//        matchInfoMap.put(123123L, new MatchInfo(123123, 456, ImmutableList.<Integer> of(42, 43), 42,
+//                new HashMap<String,Integer>(), "NOT_OVER"));
+//    }
 
     public static MatchInfoManager getInstance() {
         if (instance == null) {
