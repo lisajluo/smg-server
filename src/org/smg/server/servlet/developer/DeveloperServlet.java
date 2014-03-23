@@ -53,7 +53,7 @@ public class DeveloperServlet extends HttpServlet {
     Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
     
     if (developerId == INVALID || developer == null) {  // No developer found for developerId
-      jsonPut(json, writer, ERROR, DEVELOPER_ID);
+      jsonPut(json, writer, ERROR, WRONG_DEVELOPER_ID);
     }
     else if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
       DatabaseDriver.deleteEntity(DEVELOPER, developerId);
