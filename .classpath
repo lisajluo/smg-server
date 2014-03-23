@@ -2,14 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.2.3.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.2.3.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-16.0.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-all-1.9.11.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/lib/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="war/lib/guava-16.0.1.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-all-1.9.11.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-databind-2.2.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

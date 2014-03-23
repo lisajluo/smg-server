@@ -62,6 +62,19 @@ public class DummyDataGen {
     state2.add(2);
     state.put("state2", state2);
     List<Object> lastmove = new LinkedList<Object>();
+    Map<String,Object> visibleTo = new HashMap<String,Object>();
+    visibleTo.put("key3", "value3");
+    visibleTo.put("key4", "value4");
+    
+    Map<String,Object> playerIdToNumberOfTokensInPot = new HashMap<String,Object>();
+    playerIdToNumberOfTokensInPot.put("1",111);
+    playerIdToNumberOfTokensInPot.put("2",222);
+    Map<String,Object> gameState = new HashMap<String,Object>();
+    gameState.put(ContainerConstants.STATE,state);
+    gameState.put(ContainerConstants.VISIBLE_TO,visibleTo);
+    gameState.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, 
+        playerIdToNumberOfTokensInPot);
+    
     Map<String,Object> op1 = new HashMap<String,Object>();
     op1.put("value", "sd");
     op1.put("type", "Set");    
@@ -74,7 +87,7 @@ public class DummyDataGen {
     op2.put("key", "xcv");
     lastmove.add(op1);
     lastmove.add(op2);
-    his_entity.put(ContainerConstants.GAME_STATE, state);
+    his_entity.put(ContainerConstants.GAME_STATE, gameState);
     his_entity.put(ContainerConstants.LAST_MOVE, lastmove);
     history.add(his_entity);
     match.put(ContainerConstants.HISTORY,history);
