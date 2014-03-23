@@ -12,7 +12,7 @@ public class GameStateHistoryItem {
    */
   private List<Map<String, Object>> lastMove;
 
-  private GameState currentState;
+  private GameState gameState;
 
   public final List<Map<String, Object>> getLastMove() {
     return lastMove;
@@ -22,11 +22,12 @@ public class GameStateHistoryItem {
     this.lastMove = lastMove;
   }
 
-  public final GameState getCurrentState() {
-    return currentState;
+  public final GameState getGameState() {
+    return gameState;
   }
 
-  public final void setCurrentState(GameState currentState) {
-    this.currentState = currentState;
+  public final void setGameState(GameState gameState) {
+    this.gameState = gameState;
   }
+
 }

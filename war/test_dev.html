@@ -22,7 +22,7 @@ $(document).ready(function() {
     var jsonObj = { "key": "value2" };
     
     $.ajax({
-      url: "http://localhost:8888/developers/5000?password=soldkfjlaskdf", 
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?password=soldkfjlaskdf", 
       dataType: "json",
      // contentType: "application/json; charset=utf-8",
       type: "GET",
@@ -51,7 +51,7 @@ $(document).ready(function() {
     
     
     $.ajax({
-      url: "http://localhost:8888/developers", 
+      url: "http://1-dot-smg-server.appspot.com/developers", 
       dataType: "json",
      // contentType: "application/json; charset=utf-8",
       type: "POST",
@@ -73,7 +73,7 @@ $(document).ready(function() {
     e.preventDefault();
 
     $.ajax({
-      url: "http://localhost:8888/developers/5000?accessSignature=abc",
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?accessSignature=abc",
       dataType: "json",
      // contentType: "application/json; charset=utf-8",
       type: "DELETE",
