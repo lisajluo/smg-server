@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.database.DummyDataGen;
 import org.smg.server.servlet.container.GameApi.GameState;
@@ -23,6 +22,7 @@ import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
@@ -32,9 +32,6 @@ public class MatchOperationServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    DummyDataGen.addGame();
-    DummyDataGen.addPlayer();
-    DummyDataGen.updateMatch();
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     long matchId = Long.parseLong(req.getPathInfo().substring(1));
@@ -47,7 +44,7 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     long playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
-    if (!ContainerVerification.matchIdVerify(playerId)) {
+    if (!ContainerVerification.playerIdVerify(playerId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
         returnValue.write(resp.getWriter());
@@ -136,32 +133,37 @@ public class MatchOperationServlet extends HttpServlet {
         }
         return;
       }
-
+      // TODO: add dummy
+      //DummyDataGen.updateMatch();
       // From now, processing the MakeMoveRequest.
       Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
-
+      Map<String,Object> match = entity.getProperties(); 
       // Convert the JSON string to Object.
-      ObjectMapper mapper = new ObjectMapper();
-      MakeMoveRequest makeMoveRequest = mapper.readValue(json, MakeMoveRequest.class);
-
-      try {
-        MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
-        GameState currentState = mi.getGameStateHistory().get(0).getCurrentState();
-        List<Operation> operations = GameStateManager.messageToOperationList(makeMoveRequest
-            .getOperations());
-        currentState.makeMove(operations);
-
-        // Write the object back to JSON formation.
-        String jsn = mapper.writeValueAsString(mi);
-
-        // TODO Don't know how to convert MatchInfo object to a new JSONObject
-        // or a Map<String, Object>.
-        DatabaseDriver.updateMatchEntity(matchId, new HashMap<String, Object>());
-      } catch (JSONException e) {
-        // This will be reached if there is something wrong with the formation
-        // in Entity.
-        e.printStackTrace();
-      }
+//      ObjectMapper mapper = new ObjectMapper();
+//      MakeMoveRequest makeMoveRequest = mapper.readValue(json, MakeMoveRequest.class);
+      String lastMoveString = getLastMoveString(match);
+      List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
+      
+           
+      System.out.println("here");
+//      try {
+//        MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
+//        GameState currentState = mi.getGameStateHistory().get(0).getCurrentState();
+//        List<Operation> operations = GameStateManager.messageToOperationList(makeMoveRequest
+//            .getOperations());
+//        currentState.makeMove(operations);
+//
+//        // Write the object back to JSON formation.
+//        String jsn = mapper.writeValueAsString(mi);
+//
+//        // TODO Don't know how to convert MatchInfo object to a new JSONObject
+//        // or a Map<String, Object>.
+//        DatabaseDriver.updateMatchEntity(matchId, new HashMap<String, Object>());
+//      } catch (JSONException e) {
+//        // This will be reached if there is something wrong with the formation
+//        // in Entity.
+//        e.printStackTrace();
+//      }
 
     } else {
       try {
@@ -175,5 +177,25 @@ public class MatchOperationServlet extends HttpServlet {
       returnValue.write(resp.getWriter());
     } catch (JSONException e) {
     }
+  }
+  
+  private String getLastMoveString (Map<String,Object> match) throws IOException{
+    String strHitory = (String)match.get(ContainerConstants.HISTORY);
+    List<HashMap<String,Object>> history = JSONUtil.parseHistory(strHitory);  
+    String lastMoveString = "[]";
+    // currently only one history record
+    if ( ! history.isEmpty()) {
+      HashMap<String,Object> hisItem = history.get(0);
+      @SuppressWarnings("unchecked")
+      List<Object> lastMove = (ArrayList<Object>)hisItem.get(ContainerConstants.LAST_MOVE);      
+      try {
+        JSONArray jsonArray = new JSONArray(lastMove.toArray());
+        lastMoveString = jsonArray.toString();
+      } catch (JSONException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }      
+    }
+    return lastMoveString;
   }
 }
