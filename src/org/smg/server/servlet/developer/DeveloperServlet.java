@@ -39,16 +39,19 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
+    String devIdStr = "";
     
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
-    String devIdStr = req.getPathInfo().substring(1);
-    long developerId = INVALID;
+    if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
+      devIdStr = req.getPathInfo().substring(1);
+    }
+    long developerId;
     
     try {
       developerId = Long.parseLong(devIdStr);
     }
     catch (NumberFormatException e) {
-      //
+      developerId = INVALID;
     }
     Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
     
@@ -81,16 +84,19 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
+    String devIdStr = "";
+    long developerId;
     
     String password = req.getParameter(PASSWORD);
-    String devIdStr = req.getPathInfo().substring(1);
-    long developerId = INVALID;
+    if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
+      devIdStr = req.getPathInfo().substring(1);
+    }
     
     try {
       developerId = Long.parseLong(devIdStr);
     }
     catch (NumberFormatException e) {
-      //
+      developerId = INVALID;
     }
     Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
 

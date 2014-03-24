@@ -77,7 +77,7 @@ public class PlayersServlet extends HttpServlet {
 		resp.setContentType("text/plain");
 		JSONObject returnValue = new JSONObject();
 		String playerId = null;
-		if (req.getPathInfo().length() != 0 && req.getPathInfo() != null) {
+		if (req.getPathInfo() != null && req.getPathInfo().length() != 0) {
 			playerId = req.getPathInfo().substring(1);
 		}
 		else {
