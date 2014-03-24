@@ -14,7 +14,7 @@ function joinObject(dst,src) {
 //player id: stored in str
 var playerId = [];
 var accessSignature = [];
-var registerEmail = "blablaa@gmail.com";
+var registerEmail = "blablabaa@gmail.com";
 
 function addPlayerId(id) {
   playerId.push(id);
@@ -54,22 +54,26 @@ function testAjax(method, testUrl, sendingMessage, before) {
       joinObject(sendingMessage,t);
     }
   }
-  //alert(JSON.stringify(sendingMessage));
+  alert(testUrl);
   var temp = {}
-  $.ajax({
+  var callObj = {
     url: testUrl,
     dataType: 'json',
-      type:method,
-      data:JSON.stringify(sendingMessage),
-      async: false,
-      success: function(data, textStatus, jqXHR) {
-    	  alert(JSON.stringify(data));
-    	temp = data;
-      },
-      error: function(data) {
-        temp = data;
-      }
-  });
+    type:method,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      alert(JSON.stringify(data));
+      temp = data;
+    },
+    error: function(data) {
+      temp = data;
+    }
+  };
+  if (method === "PUT" || method === "POST") {
+	  alert(1);
+	  callObj["data"] = JSON.stringify(sendingMessage);
+  }
+  $.ajax(callObj);
   //alert(JSON.stringify(temp));
   return temp;
 }

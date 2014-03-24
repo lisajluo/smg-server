@@ -60,8 +60,10 @@ $(document).ready(function() {
   });
   
   $("#CORSlinkDelete").on("click", function(event) {
-    ajaxCallMethod("http://localhost:8888/test","DELETE");
+    ajaxCallMethod("http://1.smg-server.appspot.com/players/5649050225344512?accessSignature=61bc6558c0bd8ce031b16e45a4d2b1f7","DELETE");
   });
+  //5649050225344512
+  //61bc6558c0bd8ce031b16e45a4d2b1f7
 });
 
 function ajaxCall(url) {
@@ -212,6 +214,7 @@ function ajaxCallMethod(url,method) {
   $.ajax({
     url: url, 
     type: method,
+    //data:{1:2,3:4},
     success: function(data, textStatus, jqXHR) {
       alert("SUCCESS:" +JSON.stringify(data));
     },
