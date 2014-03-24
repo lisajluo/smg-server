@@ -14,7 +14,7 @@ public class ContainerVerification {
    */
   public static boolean accessSignatureVerify(String accessSignature, long playerId) {
     Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
-    if (entity.getProperty(ContainerConstants.ACCESS_SIGNATURE).equals(accessSignature)) {
+    if (entity.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
       return true;
     }
     return false;
