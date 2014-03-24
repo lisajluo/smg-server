@@ -28,24 +28,11 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.util.AccessSignatureUtil;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class DatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

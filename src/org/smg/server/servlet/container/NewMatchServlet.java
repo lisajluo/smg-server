@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.DummyDataGen;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
@@ -55,21 +53,15 @@ public class NewMatchServlet extends HttpServlet {
       json = br.readLine();
     }
     JSONObject returnValue = new JSONObject();
-//    json = "{\"email\":\"foo@nyu.edu\"}";
     if (json != null ) {
       Map<String,Object> jsonMap = JSONUtil.parse(json);
 
-      // TODO: put test data in DS
-      //DummyDataGen.addPlayer();
-      //DummyDataGen.addGame();
-      
       // verify accessSignature and playerIds
       ArrayList<Long> playerIds = (ArrayList<Long>)jsonMap.get(ContainerConstants.PLAYER_IDS);
-      String accessSignature = (String)jsonMap.get(ContainerConstants.ACCESS_SIGNATURE);
+      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
       boolean foundAS = false;
-      for (Long playerId : playerIds){
-      //  List<Entity> result = DatabaseDriver.queryByProperty(
-      //      Constants.PLAYER, "ID/Name", playerId);
+      for (Object obj : playerIds){
+        long playerId = Long.parseLong(String.valueOf(obj));
         Entity result = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
         if (result == null) {
           try {
@@ -80,7 +72,6 @@ public class NewMatchServlet extends HttpServlet {
             e.printStackTrace();
           }
         } else {
-          //TODO
           if (result.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
             foundAS = true;
             break;
@@ -97,9 +88,8 @@ public class NewMatchServlet extends HttpServlet {
         }
       } 
       // verify gameId existed
-      Long gameId = (Long)jsonMap.get(ContainerConstants.GAME_ID);
-//      List<Entity> result = DatabaseDriver.queryByProperty(
-//          Constants.GAME, Constants.GAME_ID, gameId);
+      Long gameId = Long.parseLong(String.valueOf(
+          jsonMap.get(ContainerConstants.GAME_ID)));
       Entity result = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
       if (result == null) {
         try {
@@ -111,12 +101,10 @@ public class NewMatchServlet extends HttpServlet {
         }
       } 
       // insert new match
-      // TODO constant match ID
       long matchId = 0;
       JSONObject match = new JSONObject();
       
       try {
-        //match.put(Constants.MATCH_ID, matchId);
         match.put(ContainerConstants.GAME_ID, gameId);
         JSONArray jaPlayerIds = new JSONArray(playerIds);
         match.put(ContainerConstants.PLAYER_IDS, jaPlayerIds);
@@ -148,7 +136,6 @@ public class NewMatchServlet extends HttpServlet {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-//    System.out.println("here");
   }
   
 }
