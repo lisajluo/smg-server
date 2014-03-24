@@ -26,11 +26,16 @@ import org.smg.server.util.CORSUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private boolean gameNameDuplicate(long gameId, HttpServletRequest req)
+	{
+		 return GameManager.checkGameNameDuplicate(gameId,req);
+		
+	}
 	private boolean signatureRight(HttpServletRequest req)
 	{
 		long developerId = Long.parseLong(req.getParameter("developerId"));
 		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		if (req.getParameter("developerId").equals(developer.get("accessSignature")))
+		if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
 			return true;
 		else
 			return false;
@@ -111,6 +116,7 @@ public class GameServlet extends HttpServlet{
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
+        System.out.println("I am here");
         if (gameNameDuplicate(req)==true)
         {
         	CORSUtil.addCORSHeader(resp);
@@ -228,7 +234,7 @@ public class GameServlet extends HttpServlet{
 			return;			
 		}
 		
-	    if (gameNameDuplicate(req)==true)
+	    if (gameNameDuplicate(Long.parseLong(gameId),req)==true)
 	    {
 	        	CORSUtil.addCORSHeader(resp);
 	        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
