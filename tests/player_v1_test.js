@@ -54,7 +54,6 @@ function testAjax(method, testUrl, sendingMessage, before) {
       joinObject(sendingMessage,t);
     }
   }
-  alert(testUrl);
   var temp = {}
   var callObj = {
     url: testUrl,
@@ -62,7 +61,6 @@ function testAjax(method, testUrl, sendingMessage, before) {
     type:method,
     async: false,
     success: function(data, textStatus, jqXHR) {
-      alert(JSON.stringify(data));
       temp = data;
     },
     error: function(data) {
@@ -70,11 +68,9 @@ function testAjax(method, testUrl, sendingMessage, before) {
     }
   };
   if (method === "PUT" || method === "POST") {
-	  alert(1);
 	  callObj["data"] = JSON.stringify(sendingMessage);
   }
   $.ajax(callObj);
-  //alert(JSON.stringify(temp));
   return temp;
 }
 
@@ -174,7 +170,6 @@ function testPlayerV1() {
     "testTitle":"Inserting a new player",
   },
   ];
-  setTimeout(function() {alert(playerId)},3000);
 
   //Waiting time parameter
   var waitTime = 0;
