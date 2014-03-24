@@ -40,11 +40,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 
 //To-do-List: parse the json object
 public class GameManager {
-	
+	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	static public long  saveGameMetaInfo(HttpServletRequest req) throws IOException
 	{
 		
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			//JSONParser parser=new JSONParser();
 			Key versionKey=KeyFactory.createKey("Version", "versionOne");
 //			Key idKey=KeyFactory.createKey(versionKey, "idKey","currentIdKey");
@@ -113,7 +112,6 @@ public class GameManager {
 			Key versionKey=KeyFactory.createKey("Version", versionNum);
 			long ID = Long.parseLong(gameId);
 			Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			return datastore.get(gameKey);
 		}
 		catch (Exception e)
@@ -125,10 +123,8 @@ public class GameManager {
 	{
 		try
 		{
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			String versionNum="versionOne";
 			Key versionKey=KeyFactory.createKey("Version", versionNum);
-			System.out.println(req.getParameter("gameName"));
 			Filter nameFilter =new FilterPredicate("gameName",FilterOperator.EQUAL,req.getParameter("gameName"));
 			Query q = new Query("gameMetaInfo").setFilter(nameFilter);
 			PreparedQuery pq = datastore.prepare(q);
@@ -143,6 +139,23 @@ public class GameManager {
 		}
 	    
 	}
+	static public boolean checkGameNameDuplicate(long gameId,HttpServletRequest req)
+	{
+		Key versionKey=KeyFactory.createKey("Version", "versionOne");
+		Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", gameId);
+		try
+		{
+		   Entity game = datastore.get(gameKey);
+		   if (game.getProperty("gameName").equals(req.getParameter("gameName")))
+			   return false;
+		   else
+			   return checkGameNameDuplicate(req);
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
 	static public boolean checkGameNameDuplicate(String gameName,HttpServletRequest req)
 	{
 		try
@@ -150,7 +163,6 @@ public class GameManager {
 			String versionNum="versionOne";
 			Key versionKey=KeyFactory.createKey("Version", versionNum);
 			Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo",gameName);
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			try
 			{
 				datastore.get(gameKey);
@@ -171,7 +183,6 @@ public class GameManager {
 	{
 		try
 		{
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			String versionNum="versionOne";
 			Key versionKey=KeyFactory.createKey("Version", versionNum);
 			long ID = Long.parseLong(gameId);
@@ -198,7 +209,6 @@ public class GameManager {
 		Key versionKey=KeyFactory.createKey("Version", versionNum);
 		long ID = Long.parseLong(gameId);
 		Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		datastore.delete(gameKey);
     }
 	static public void update(String gameId,HttpServletRequest req) throws EntityNotFoundException, IOException
@@ -207,7 +217,6 @@ public class GameManager {
 		Key versionKey=KeyFactory.createKey("Version", "versionOne");
 		long ID = Long.parseLong(gameId);
 		Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity target = datastore.get(gameKey);
 		
 		if (req.getParameter("description")!=null)
