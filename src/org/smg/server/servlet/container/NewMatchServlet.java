@@ -40,7 +40,7 @@ public class NewMatchServlet extends HttpServlet {
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
   }
-  
+
   @SuppressWarnings("unchecked")
   @Override 
   public void doPost(HttpServletRequest req, HttpServletResponse resp)

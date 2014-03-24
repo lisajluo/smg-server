@@ -1,6 +1,6 @@
 //Test under jQuery and QUnit
-//var StaticURL = "http://1.smg-server.appspot.com"; 
-var StaticURL = "http://localhost:8888";
+var StaticURL = "http://1.smg-server.appspot.com"; 
+//var StaticURL = "http://localhost:8888";
 function joinObject(dst,src) {
   for (var k in src) {
     if (src[k] != undefined){
@@ -14,6 +14,7 @@ function joinObject(dst,src) {
 //player id: stored in str
 var playerId = [];
 var accessSignature = [];
+var registerEmail = "blablabaa@gmail.com";
 
 function addPlayerId(id) {
   playerId.push(id);
@@ -53,22 +54,23 @@ function testAjax(method, testUrl, sendingMessage, before) {
       joinObject(sendingMessage,t);
     }
   }
-  //alert(JSON.stringify(sendingMessage));
   var temp = {}
-  $.ajax({
+  var callObj = {
     url: testUrl,
     dataType: 'json',
-      type:method,
-      data:JSON.stringify(sendingMessage),
-      async: false,
-      success: function(data, textStatus, jqXHR) {
-    	temp = data;
-      },
-      error: function(data) {
-        temp = data;
-      }
-  });
-  //alert(JSON.stringify(temp));
+    type:method,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      temp = data;
+    },
+    error: function(data) {
+      temp = data;
+    }
+  };
+  if (method === "PUT" || method === "POST") {
+	  callObj["data"] = JSON.stringify(sendingMessage);
+  }
+  $.ajax(callObj);
   return temp;
 }
 
@@ -156,7 +158,7 @@ function testPlayerV1() {
     "method":"POST",
     "testUrl":"/players",
     "sendingMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -168,7 +170,6 @@ function testPlayerV1() {
     "testTitle":"Inserting a new player",
   },
   ];
-  setTimeout(function() {alert(playerId)},3000);
 
   //Waiting time parameter
   var waitTime = 0;
@@ -190,7 +191,7 @@ function testPlayerV1() {
     "method":"POST",
     "testUrl":"/players",
     "sendingMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -210,7 +211,7 @@ function testPlayerV1() {
     "sendingMessage":{
     },
     "expectedMessage":{
-      "email":"blablabla@gmail.com",
+      "email":registerEmail,
     },
     "expectedUnknownFields":["accessSignature"],
     "testTitle":"Login player",
