@@ -23,13 +23,13 @@ $(document).ready(function() {
     ajaxCall("http://localhost:8888/games");
   });
    $("#getGame").on("click", function(event) {
-    ajaxCall_get("http://localhost:8888/games/5066549580791808");
+    ajaxCall_get("http://localhost:8888/games/5910974510923776");
   });
     $("#deleteGame").on("click", function(event) {
-    ajaxCall_delete("http://localhost:8888/games/5066549580791808?developerId=SMG_GAME&accessSignature=5629499534213120");
+    ajaxCall_delete("http://localhost:8888/games/5910974510923776?developerId=5629499534213120&accessSignature=d2fc5c11e7c51e74d06b00a942c11db7");
   });
    $("#putGame").on("click", function(event) {
-    ajaxCall_put("http://localhost:8888/games/5066549580791808");
+    ajaxCall_put("http://localhost:8888/games/5910974510923776");
   });
 });
 
@@ -39,13 +39,14 @@ function ajaxCall(url) {
     url: url, 
     type: "POST",
     data: {
-        "gameName": "newTest",
+        "gameName": "fireFox2",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,
         "height" : 100,
         "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
-        "developerId" : "SMG_GAME"
+        "developerId" : "5629499534213120",
+        "accessSignature" : "d2fc5c11e7c51e74d06b00a942c11db7"
     },
     success: function(data, textStatus, jqXHR) {
       alert(data);
@@ -86,13 +87,14 @@ function ajaxCall_put(url) {
     type: "PUT",
     crossDomain: true,
     data: {
-        "gameName": "LOL",
+        "gameName": "fireFox2",
         "url" : "www.foo2.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,
         "height" : 100,
         "pic" : "{\"icon\" : \"www.google.com\" ,\"screenshots\" : [\"www.test3.com\",\"www.test2.com\"]}",
-        "developerId" : "SMG_GAME"
+        "developerId" : "5629499534213120",
+        "accessSignature" : "d2fc5c11e7c51e74d06b00a942c11db7"
     },
     success: function(data, textStatus, jqXHR) {
       alert(data);
