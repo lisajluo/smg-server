@@ -24,14 +24,9 @@ $(document).ready(function() {
     $.ajax({
       url: "http://1-dot-smg-server.appspot.com/developers/5000?password=soldkfjlaskdf", 
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "GET",
-//      data: JSON.stringify(jsonObj),
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-      //console.log(jQuery.parseJSON(data));
-    //    console.log(jQuery.parseJSON(data));
-     //   alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -53,12 +48,10 @@ $(document).ready(function() {
     $.ajax({
       url: "http://1-dot-smg-server.appspot.com/developers", 
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "POST",
       data: JSON.stringify(jsonObj),
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-        //alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -75,12 +68,9 @@ $(document).ready(function() {
     $.ajax({
       url: "http://1-dot-smg-server.appspot.com/developers/5000?accessSignature=abc",
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "DELETE",
-      //data: jsonObj,
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-        //alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);

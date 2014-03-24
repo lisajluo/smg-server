@@ -9,37 +9,53 @@
 <body>
 <h3> Test Page</h3>
 
-<p><a href = "#" id = "nonCORSlink">nonCORS AJAX</a></p>
-<a href = "#" id = "CORSlink">CORS AJAX</a>
-<br><a href = "#" id = "NewMatch">Insert New Match</a>
-<br><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a>
+<p><br><a href = "#" id = "NewPlayer">Insert New Player</a></p>
+<p><br><a href = "#" id = "NewPlayer2">Insert New Player2</a></p>
+
+<p><br><a href = "#" id = "NewDevloper">Insert New Developer</a></p>
+<p><br><a href = "#" id = "NewGame">Insert New Game</a></p>
+
+<p><br><a href = "#" id = "NewMatch">Insert New Match</a></p>
+<p><br><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a></p>
 <p><a href = "#" id = "MakeMove">Make A Move</a></p>
 <p><a href = "#" id = "GetMatchInfo">Get Match Info</a></p>
 
 
 <script type="text/javascript">
 
+//var domainUrl = "http://1-dot-smg-server-rl.appspot.com";
+var domainUrl = "http://localhost:8888";
+
 $(document).ready(function() {
-  $("#nonCORSlink").on("click", function(event) {
-    ajaxCall("http://localhost:8888/smg_server");
+  
+  $("#NewPlayer").on("click", function(event) {
+    ajaxCallNewPlayer( domainUrl+"/players");
   });
 
-  $("#CORSlink").on("click", function(event) {
-    ajaxCall("http://localhost:8888/test");
+  $("#NewPlayer2").on("click", function(event) {
+    ajaxCallNewPlayer2( domainUrl+"/players");
   });
-  
+
+  $("#NewDevloper").on("click", function(event) {
+    ajaxCallNewDeveloper( domainUrl+"/developers");
+  });
+
+  $("#NewGame").on("click", function(event) {
+    ajaxCallNewGame( domainUrl+"/games");
+  });
+
   $("#NewMatch").on("click", function(event) {
-    ajaxCallNewMatch("http://localhost:8888/newMatch");
+    ajaxCallNewMatch( domainUrl+"/newMatch");
   });
   
   $("#NewMatch_parse_error").on("click", function(event) {
-    ajaxCallNewMatch_parse_error("http://localhost:8888/newMatch");
+    ajaxCallNewMatch_parse_error(domainUrl+"/newMatch");
   });
   
   $("#MakeMove").on("click", function(event) {
       var jsonObj = {
-          "accessSignature": "HJJIIKKSJF",
-          'playerIds': [5348024557502464,6473924464345088],
+          "accessSignature": '896b8605208e52d49c205b148ee65607',
+          'playerIds': [4785074604081152, 5910974510923776],
           "operations": [
               {
                   "value": "sd",
@@ -56,12 +72,12 @@ $(document).ready(function() {
           ]
       };
       $.ajax({
-        url: "http://localhost:8888/matches/1231231", 
+        url: domainUrl+"/matches/5277655813324800", 
         type: "POST",
         dataType: 'json',
         data: JSON.stringify(jsonObj),
         success: function(data, textStatus, jqXHR) {
-          alert("SUCCESS");
+          alert(JSON.stringify(data));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -69,11 +85,11 @@ $(document).ready(function() {
   });
   $("#GetMatchInfo").on("click", function(event) {
       $.ajax({
-        url: "http://localhost:8888/matches/5277655813324800?accessSignature=HJJIIKKSJF&playerId=4714705859903488", 
+        url: domainUrl+"/matches/5910974510923776?accessSignature=896b8605208e52d49c205b148ee65607&playerId=5910974510923776", 
         type: "GET",
         success: function(data, textStatus, jqXHR) {
         	var j = JSON.parse(data);
-          alert(j["playerThatHasTurn"]);
+          alert(JSON.stringify(j));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -81,22 +97,9 @@ $(document).ready(function() {
   });
 });
 
-function ajaxCall(url) {
-  var jsonObj = { "key": "value2" };
-  $.ajax({
-    url: url, 
-    type: "GET",
-    success: function(data, textStatus, jqXHR) {
-      alert("SUCCESS");
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert("ERROR: " + textStatus + " " + errorThrown);
-    }});
-}
-
 function ajaxCallNewMatch(url) {
-  var jsonObj = { 'accessSignature': 'HJJIIKKSJF',
-                  'playerIds': [4996180836614144, 6122080743456768],
+  var jsonObj = { 'accessSignature': '896b8605208e52d49c205b148ee65607',
+                  'playerIds': [4785074604081152, 5910974510923776],
                   'gameId': 6403555720167424 }
   $.ajax({
     url: url, 
@@ -110,6 +113,92 @@ function ajaxCallNewMatch(url) {
       alert("ERROR: " + textStatus + " " + errorThrown);
     }
     });
+}
+
+function ajaxCallNewPlayer(url) {
+  var jsonObj = { 
+      "email":"blablabla@gmail.com",
+      "password":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar" }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+      alert("error: " + data['error'] + " playerId: " + data['playerId'] + " accessSignature: " + data["accessSignature"]);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallNewPlayer2(url) {
+  var jsonObj = { 
+      "email":"player2@gmail.com",
+      "password":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar" }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+      alert("error: " + data['error'] + " playerId: " + data['playerId'] + " accessSignature: " + data["accessSignature"]);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallNewDeveloper(url) {
+  var jsonObj =  { "email": "blahblaasdaaaasdfsffh@bladsfah.com", 
+      "password": "soldkfjlaskdf",
+      "nickname": "blahb lah blah",
+      "whatever": "some thing should be deleted"
+    }
+
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+      alert("error: " + data['error'] + " developerId: " + data['developerId'] + " accessSignature: " + data["accessSignature"]);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallNewGame(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "POST",
+    data: {
+        "gameName": "newTest",
+        "url" : "www.foo.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+        "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
+        "developerId" : 6192449487634432,
+        "accessSignature": "28e548a94332cf98bc8aaaed2fc94134"
+    },
+    success: function(data, textStatus, jqXHR) {
+      alert(JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
 }
 
 function ajaxCallNewMatch_parse_error(url) {

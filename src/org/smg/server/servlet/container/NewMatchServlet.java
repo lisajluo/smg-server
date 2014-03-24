@@ -75,7 +75,8 @@ public class NewMatchServlet extends HttpServlet {
             e.printStackTrace();
           }
         } else {
-          if (result.getProperty(ContainerConstants.ACCESS_SIGNATURE).equals(accessSignature)) {
+          //TODO
+          if (result.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
             foundAS = true;
             break;
           }

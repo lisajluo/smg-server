@@ -6,7 +6,8 @@ public final class ContainerConstants {
   
  //entity Name
  public static final String MATCH = "Match";
- public static final String PLAYER = "Player";
+// public static final String PLAYER = "Player";
+ public static final String PLAYER = "PLAYER";
  public static final String GAME = "Game";
  
  // Various properties in the Match
@@ -29,6 +30,7 @@ public final class ContainerConstants {
  // Various properties in the Player
  public static final String PLAYER_ID = "playerId";
  public static final String ACCESS_SIGNATURE = "accessSignature";
+ public static final String DS_ACCESS_SIGNATURE = "ACCESSSIGNATURE";
  
  // Error messages
  public static final String ERROR = "error";
