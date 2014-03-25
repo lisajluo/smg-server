@@ -419,11 +419,15 @@ public class DatabaseDriver {
       game.setProperty("width", req.getParameter("width"));
       game.setProperty("height", req.getParameter("height"));
       String picInfo=req.getParameter("pic");
+      if (picInfo!=null)
+      {
       Map<String, Object> jObj = JSONUtil.parse(picInfo);
         game.setProperty("icon",jObj.get("icon"));
         ArrayList<String> screenshot=(ArrayList<String>) (jObj.get("screenshots"));
-        System.out.println(screenshot);
+      
         game.setProperty("screenshots", screenshot);
+      }
+
       List<String> developerList=new ArrayList<String> ();
       developerList.add(req.getParameter("developerId"));
       game.setProperty("developerId", developerList);

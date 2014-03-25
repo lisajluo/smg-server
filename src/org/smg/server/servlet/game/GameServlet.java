@@ -25,6 +25,19 @@ import org.smg.server.util.CORSUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private void put (JSONObject jObj,String key,String value,HttpServletResponse resp)
+	{
+		try
+		{
+              jObj.put(key, value);
+              resp.setContentType("text/plain");
+              jObj.write(resp.getWriter());
+		}
+		catch (Exception e)
+		{
+			return;
+		}
+	}
 	private boolean parsePathForPost(String pathInfo)
 	{
 		if (pathInfo==null)
@@ -94,19 +107,33 @@ public class GameServlet extends HttpServlet{
 	private boolean requiredFieldsComplete(HttpServletRequest req)
 	{
 		if (req.getParameter("developerId")==null)
+		{
 			return false;
+		}
 		if (req.getParameter("gameName")==null)
+		{
+			//System.out.println("gameName");
 			return false;
+		}
 		if (req.getParameter("description")==null)
+		{
+			//System.out.println("description");
 			return false;
+		}
 		if (req.getParameter("url")==null)
+		{
+			//System.out.println("url");
 			return false;
+		}
 		if (req.getParameter("width")==null)
-			return false;
+				//System.out.println("width");
+				return false;
 		if (req.getParameter("height")==null)
-			return false;
+			
+				return false;
+			
 		if (req.getParameter("accessSignature")==null)
-			return false;
+				return false;
 		return true;
 		
 		
@@ -149,35 +176,39 @@ public class GameServlet extends HttpServlet{
     public void doPost(HttpServletRequest req, HttpServletResponse resp)  throws IOException{
 		String pathInfo=req.getPathInfo();
 		CORSUtil.addCORSHeader(resp);
+		JSONObject jObj = new JSONObject();
 		if (parsePathForPost(pathInfo)==false)
 		{
 			
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			put(jObj,"error","URL_PATH_ERROR",resp);
+			
+        //	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
         	return;
 		}
 		
 		if (requiredFieldsComplete(req)==false)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
+			put(jObj,"error","MISSING_INFO",resp);
+        //	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
         	return;
         }
         if (developerIdExists(req.getParameter("developerId"))==false)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	System.out.println(req.getParameter("developerId"));
+        	put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
         if (signatureRight(req)==false)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
+        	put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
         if (gameNameDuplicate(req)==true)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
+        	put(jObj,new String("error"),new String("GAME_EXISTS"),resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
         	return;
         }
         else
@@ -188,14 +219,14 @@ public class GameServlet extends HttpServlet{
         	   long gameId=DatabaseDriver.saveGameMetaInfo(req);
                CORSUtil.addCORSHeader(resp);
                resp.setContentType("text/plain");
-               JSONObject jObj = new JSONObject();
+              
         	    jObj.put("gameId",gameId);
         	    jObj.write(resp.getWriter());
         	}
         	catch (Exception e)
         	{
-        		
-            	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
+        		put(jObj,"error","INVALID_JSON_FORMAT",resp);
+            	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
             	return;	
         	}
         	
@@ -205,6 +236,7 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
 		String targetId=null;
+		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
 		try
 		{
@@ -213,15 +245,15 @@ public class GameServlet extends HttpServlet{
 		}
 		catch (Exception e)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			put(jObj,"error","URL_PATH_ERROR",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
 		//S (ystem.out.println(targetId);
 		if (gameIdExist(targetId)==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
+			put(jObj,"error","WRONG_GAME_ID",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 			
 		}
@@ -232,7 +264,8 @@ public class GameServlet extends HttpServlet{
 				returnMetaInfo(targetId,"versionOne",resp);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"PARSE_ERROR\"}");
+				put(jObj,"error","PARSE_ERROR",resp);
+				//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"PARSE_ERROR\"}");
 			}
 		}
 		
@@ -246,6 +279,7 @@ public class GameServlet extends HttpServlet{
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		String targetId=null;
+		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
 		try
 		{
@@ -254,8 +288,8 @@ public class GameServlet extends HttpServlet{
 		}
 		catch (Exception e)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			put(jObj,"error","URL_PATH_ERROR",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
 		
@@ -263,29 +297,29 @@ public class GameServlet extends HttpServlet{
 		String developerId= req.getParameter("developerId");
 		if (developerIdExists(developerId)==false)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+			put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
 		if (signatureRight(req)==false)
 		{
 
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
+			put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
+			put(jObj,"error","WRONG_GAME_ID",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 		}
 		Entity targetEntity=DatabaseDriver.getEntity(gameId, "versionOne");
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(developerId)==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
+			put(jObj,"error","WRONG_DEVELOPER_ID",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		
@@ -298,6 +332,7 @@ public class GameServlet extends HttpServlet{
 	@Override 
 	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
+		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
 		String gameId=null;
 		try
@@ -307,39 +342,39 @@ public class GameServlet extends HttpServlet{
 		}
 		catch (Exception e)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			put(jObj,"error","URL_PATH_ERROR",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
 		if (requiredFieldForUpdate(req)==false)
 		{
-		
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
+			put(jObj,"error","MISSING_INFO",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
 			return;		
 		}
 		if (developerIdExists(req.getParameter("developerId"))==false)
         {
-        	
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+			put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
 		if (signatureRight(req)==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
+			put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
 			return;		
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
+			put(jObj,"error","WRONG_GAME_ID",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;			
 		}
 		
 	    if (gameNameDuplicate(Long.parseLong(gameId),req)==true)
 	    {
-	        	
-	        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
+	    	    put(jObj,"error","GAME_EXISTS",resp);
+	        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
 	        	return;
 	    }
 		String version = "versionOne";
@@ -347,21 +382,21 @@ public class GameServlet extends HttpServlet{
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(req.getParameter("developerId"))==false)
 		{
-			
-			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
+			put(jObj,"error","WRONG_DEVELOPER_ID",resp);
+			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		try
 		{
 		 
 		  DatabaseDriver.update(gameId,req);		  
-		  resp.setContentType("text/plain");
-	      resp.getWriter().println("{\"success\" : \"UPDATED_GAME\"}");  
+		  
+		  put(jObj,"success","GAME_UPDATED",resp);  
 		}
 		catch (Exception e)
 		{
-			
-        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
+			put(jObj,"error","INVALID_JSON_FORMAT",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
         	return;	
 		}
 	}
