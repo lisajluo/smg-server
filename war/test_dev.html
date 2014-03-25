@@ -22,16 +22,11 @@ $(document).ready(function() {
     var jsonObj = { "key": "value2" };
     
     $.ajax({
-      url: "http://localhost:8888/developers/5000?password=soldkfjlaskdf", 
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?password=soldkfjlaskdf", 
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "GET",
-//      data: JSON.stringify(jsonObj),
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-      //console.log(jQuery.parseJSON(data));
-    //    console.log(jQuery.parseJSON(data));
-     //   alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -51,14 +46,12 @@ $(document).ready(function() {
     
     
     $.ajax({
-      url: "http://localhost:8888/developers", 
+      url: "http://1-dot-smg-server.appspot.com/developers", 
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "POST",
       data: JSON.stringify(jsonObj),
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-        //alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);
@@ -73,14 +66,11 @@ $(document).ready(function() {
     e.preventDefault();
 
     $.ajax({
-      url: "http://localhost:8888/developers/5000?accessSignature=abc",
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?accessSignature=abc",
       dataType: "json",
-     // contentType: "application/json; charset=utf-8",
       type: "DELETE",
-      //data: jsonObj,
       success: function(data, textStatus, jqXHR) {
         console.log(data);
-        //alert("SUCCESS");
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert("ERROR: " + textStatus + " " + errorThrown);

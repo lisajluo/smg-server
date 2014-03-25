@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
@@ -12,11 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.DummyDataGen;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -35,6 +32,11 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
  */
 @SuppressWarnings("serial")
 public class NewMatchServlet extends HttpServlet {
+  
+  @Override
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    CORSUtil.addCORSHeader(resp);
+  }
 
   @SuppressWarnings("unchecked")
   @Override 
@@ -50,52 +52,52 @@ public class NewMatchServlet extends HttpServlet {
       json = br.readLine();
     }
     JSONObject returnValue = new JSONObject();
-//    json = "{\"email\":\"foo@nyu.edu\"}";
     if (json != null ) {
-      Map<String,Object> jsonMap = JSONUtil.parse(json);
-
-      // TODO: put test data in DS
-      //DummyDataGen.addPlayer();
-      //DummyDataGen.addGame();
-      
-      // verify accessSignature and playerIds
-      ArrayList<Long> playerIds = (ArrayList<Long>)jsonMap.get(ContainerConstants.PLAYER_IDS);
-      String accessSignature = (String)jsonMap.get(ContainerConstants.ACCESS_SIGNATURE);
-      boolean foundAS = false;
-      for (Long playerId : playerIds){
-      //  List<Entity> result = DatabaseDriver.queryByProperty(
-      //      Constants.PLAYER, "ID/Name", playerId);
-        Entity result = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
-        if (result == null) {
-          try {
-            returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
-            returnValue.write(resp.getWriter());
-            return;
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-        } else {
-          if (result.getProperty(ContainerConstants.ACCESS_SIGNATURE).equals(accessSignature)) {
-            foundAS = true;
-            break;
-          }
+      //parse json message to jsonMap
+      Map<String, Object> jsonMap = null;
+      try {
+        jsonMap = JSONUtil.parse(json);
+      } catch (IOException e) {
+        try {
+          returnValue.put(ContainerConstants.ERROR, e.getMessage());
+          returnValue.write(resp.getWriter());
+        } catch (JSONException e2) {
         }
+        return;
       }
-      if (!foundAS){
+
+      // verify playerIds      
+      ArrayList<Long> playerIds = (ArrayList<Long>) jsonMap.get(ContainerConstants.PLAYER_IDS);
+      if (!ContainerVerification.playerIdsVerify(playerIds)) {
+        try {
+          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
+          returnValue.write(resp.getWriter());
+        } catch (JSONException e) {
+        }
+        return;
+      }
+      // verify accessSignature
+      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
+      if (!ContainerVerification.accessSignatureVerify(accessSignature, playerIds)) {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_ACCESS_SIGNATURE);
           returnValue.write(resp.getWriter());
-          return;
         } catch (JSONException e) {
-          e.printStackTrace();
         }
-      } 
-      // verify gameId existed
-      Long gameId = (Long)jsonMap.get(ContainerConstants.GAME_ID);
-//      List<Entity> result = DatabaseDriver.queryByProperty(
-//          Constants.GAME, Constants.GAME_ID, gameId);
-      Entity result = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
-      if (result == null) {
+        return;
+      }
+      // parse gameID and verify gameId existed
+      long gameId = 0;
+      try {
+        gameId = Long.parseLong(String.valueOf(jsonMap.get(ContainerConstants.GAME_ID)));
+      } catch (Exception e) {        
+        try {
+          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_GAME_ID);
+          returnValue.write(resp.getWriter());
+        } catch (JSONException e1) { }
+        return;
+      }
+      if (!ContainerVerification.gameIdVerify(gameId)) {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_GAME_ID);
           returnValue.write(resp.getWriter());
@@ -103,14 +105,12 @@ public class NewMatchServlet extends HttpServlet {
         } catch (JSONException e) {
           e.printStackTrace();
         }
-      } 
+      }      
       // insert new match
-      // TODO constant match ID
       long matchId = 0;
       JSONObject match = new JSONObject();
       
       try {
-        //match.put(Constants.MATCH_ID, matchId);
         match.put(ContainerConstants.GAME_ID, gameId);
         JSONArray jaPlayerIds = new JSONArray(playerIds);
         match.put(ContainerConstants.PLAYER_IDS, jaPlayerIds);
@@ -142,7 +142,6 @@ public class NewMatchServlet extends HttpServlet {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-//    System.out.println("here");
   }
   
 }

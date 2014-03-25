@@ -427,6 +427,7 @@ public class DatabaseDriver {
       
         game.setProperty("screenshots", screenshot);
       }
+
       List<String> developerList=new ArrayList<String> ();
       developerList.add(req.getParameter("developerId"));
       game.setProperty("developerId", developerList);
