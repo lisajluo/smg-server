@@ -1,403 +1,297 @@
-//Test case for Make a Move - Send
-function testMakeMove (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ", 
-            "operations": {
-                "op1": "op1_detail",
-                "op2": "op2_detail",
-                "flag": "some_flag"
-            }
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
+var domainUrl = "http://localhost:8888";
+var playerIds = [];
+var accessSignatures = [];
+var gameId = 0;
+var matchId = 0;
+var developerId = 0;
+var developerAS = "";
+
+function ajaxCallNewPlayer(url, userMail) {
+  var jsonObj = { 
+      "email":userMail,
+      "password":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar" }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+      console.log(data);
+      if(data["error"] == undefined) {
+          playerIds.push(parseInt(data['playerId']));
+          accessSignatures.push(data["accessSignature"]);
+      }
+      ok(true);
+      start();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("ERROR: " + textStatus + " " + errorThrown);
+    }
     });
 }
 
-test ("Make Move", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);
+asyncTest("Add Player1", function() {
+    ajaxCallNewPlayer( domainUrl+"/players", "aaaa@163.com");
+});
 
-    testMakeMove(function(actural) {
-        var expected = {
-            "accessSignature": "hD7d7DDdjsh12WQ", 
-            "gameState": { 
-                "s_1":"s_1",
-                "s_2":"s_2",
-                "s_3":"s_3",
-                "flag":"some_flag"
-            }
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        
-        start();
-    })
-})
+asyncTest("Add Player failed email used", function() {
+    ajaxCallNewPlayer( domainUrl+"/players", "aaaa@163.com");
+});
 
-//Test case for Make a Move - Illegal access signature
-function testMakeMoveIllegalAS (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": illegal_access_signature, 
-            "operations": {
-                "op1": "op1_detail",
-                "op2": "op2_detail",
-                "flag": "some_flag"
-            }
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
+asyncTest("Add Player2", function() {
+    ajaxCallNewPlayer( domainUrl+"/players", "bbbbb@msn.com");
+});
+
+function ajaxCallNewDeveloper(url) {
+  var jsonObj =  { "email": "blahblaasdaaaasdfsffh@bladsfah.com", 
+      "password": "soldkfjlaskdf",
+      "nickname": "blahb lah blah",
+      "whatever": "some thing should be deleted"
+    }
+
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {     
+        console.log(data);
+        if(data["error"] == undefined) {
+            developerId = parseInt(data['developerId']);
+            developerAS = data["accessSignature"];
         }
+        ok(true);
+        start();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("ERROR: " + textStatus + " " + errorThrown);
+    }
     });
 }
 
-test ("Make Move with Illegal Access Signature", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);
+asyncTest("Add Developer", function() {
+    ajaxCallNewDeveloper( domainUrl+"/developers");
+});
 
-    testMakeMoveIllegalAS(function(actural) {
-        var expected = {
-            "error" : "accessSignature Illegal"
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        
+// asyncTest("Add Developer failed email used", function() {
+//     ajaxCallNewDeveloper( domainUrl+"/developers");
+// });
+
+function ajaxCallNewGame(url, dId, dAs) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "POST",
+    data: {
+        "gameName": "newTest",
+        "url" : "www.foo.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+        "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
+        "developerId" : dId,
+        "accessSignature": dAs
+    },
+    success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        if(data["error"] == undefined) {
+            gameId = JSON.parse(data)["gameId"];
+        }
+        ok(true);
         start();
-    })
-})
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        ok(true);
+        start();
+    }});
+}
 
-//Test case for Receive game state
-function testGetGameState (successCallback){
+asyncTest("Add Game", function() {
+    ajaxCallNewGame( domainUrl+"/games", developerId, developerAS );
+});
+
+asyncTest("Add Game failed wrong developerId", function() {
+    ajaxCallNewGame( domainUrl+"/games", 0, developerAS  );
+});
+
+asyncTest("Add Game failed wrong accessSignature", function() {
+    ajaxCallNewGame( domainUrl+"/games", developerId, 0  );
+});
+
+function ajaxCallNewMatch(url, as, pIds, gId) {
+  var jsonObj = { 'accessSignature': as,
+                  'playerIds': pIds,
+                  'gameId': gId }
     $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001?accessSignature=hD7d7DDdjsh12WQ",
-        dataType: "json",
+        url: url, 
+        type: 'POST',
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) { 
+            console.log(data);
+            if(data["error"] == undefined) {
+                matchId = parseInt(data['matchId']);
+            }
+            ok(true);
+            start();  
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            ok(true);
+            start();  
+        }
+        });
+}
+
+asyncTest("Add Match", function() {
+    ajaxCallNewMatch( domainUrl+"/newMatch", accessSignatures[0], playerIds, gameId);
+});
+
+asyncTest("Add Match failed wrong accessSignature", function() {
+    ajaxCallNewMatch( domainUrl+"/newMatch", 0, playerIds, gameId);
+});
+
+asyncTest("Add Match failed wrong playerIds", function() {
+    ajaxCallNewMatch( domainUrl+"/newMatch", accessSignatures[0], [0, 1], gameId);
+});
+
+asyncTest("Add Match failed wrong gameId", function() {
+    ajaxCallNewMatch( domainUrl+"/newMatch", accessSignatures[0], playerIds, 0);
+});
+
+function ajaxCallGetMatchInfo(url) {
+    $.ajax({
+        url: url+"/"+matchId+"?accessSignature="+accessSignatures
+        [0]+"&playerId="+playerIds[0]+"", 
         type: "GET",
-        data: {},
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
-}
-
-test ("Get Game State", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testGetGameState(function(actural) {
-        var expected = {
-            "accessSignature": "hD7d7DDdjsh12WQ", 
-            "gameState": { 
-                "s_1":"s_1",
-                "s_2":"s_2",
-                "s_3":"s_3",
-                "flag":"some_flag"
-            }
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
-
-// Test case for Receive game state - Illegal AS
-function testGetGameStateIllegalAS (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001?accessSignature=hD7d7DDdjsh12WQ",
-        dataType: "json",
-        type: "GET",
-        data: {},
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
-}
-
-test ("Get Game State with Illegal Access Signature", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testGetGameStateIllegalAS(function(actural) {
-        var expected = {
-            "error" : "accessSignature Illegal"
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
-
-//Test case for get user profile
-function testGetUserProfile (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/users/43?accessSignature=hD7d7DDdjsh12WQ",
-        dataType: "json",
-        type: "GET",
-        data: {},
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
-}
-
-test ("Get User Profile", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testGetUserProfile(function(actural) {
-        var expected = {
-            "player_id": 43,
-            "nickname": "foo",
-            "image": "http://www.foo.com/bar.gif",
-            "rank": {
-                1001:1,
-                1002:200,
-                1003:20
-            },
-            "tokens": 2000
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
-
-//Test case for get user profile - Illegal AS
-function testGetUserProfileIllegalAS (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/users/43?accessSignature=hD7d7DDdjsh12WQ",
-        dataType: "json",
-        type: "GET",
-        data: {},
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
-}
-
-test ("Get User Profile with Illegal Access Signature", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testGetUserProfileIllegalAS(function(actural) {
-        var expected = {
-            "error" : "accessSignature Illegal"
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
-
-//Test case for insert a match
-function testInsertAMatch (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "playerIds": [42, 43],
-            "gameId": 1001
+        success: function(data, textStatus, jqXHR) {
+            var j = JSON.parse(data);
+            console.log(data);
+            ok(true);
+            start();  
         },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
 }
 
-test ("Insert a Match", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testInsertAMatch(function(actual) {
-        var expected = { 
-          "matchId": 10001
-        };
-        // How to know the 10001? 
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
+asyncTest("Get Match Info", function() {
+    ajaxCallGetMatchInfo( domainUrl+"/matches");
+});
 
-//Test case for insert a match - Illegal AS
-function testInsertAMatchIllegalAS (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/",
-        dataType: "json",
+function ajaxCallMakeNewMove(url, as, pIds) {
+    var jsonObj = {
+          "accessSignature": as,
+          'playerIds': pIds,
+          "operations": [
+              {
+                  "value": "sd",
+                  "type": "Set",
+                  "visibleToPlayerIds": "ALL",
+                  "key": "k"
+              },
+              {
+                  "to": 54,
+                  "from": 23,
+                  "type": "SetRandomInteger",
+                  "key": "xcv"
+              }
+          ]
+      };
+      $.ajax({
+        url: url+"/"+matchId+"", 
         type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "playerIds": [42, 43],
-            "gameId": 1001
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+            console.log(data);
+            ok(true);
+            start();  
         },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            ok(true);
+            start();  
+        }});
 }
 
-test ("Insert a Match with Illegal Access Signature", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testInsertAMatchIllegalAS(function(actual) {
-        var expected = {
-            "error" : "accessSignature Illegal"
-        };
-        // How to know the 10001? 
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
+asyncTest("Make a Move", function() {
+    ajaxCallMakeNewMove(domainUrl+"/matches", accessSignatures[0].toString(), playerIds);
+});
 
-//Test case for insert a match - Illegal Game Id
-function testInsertAMatchIllegalGameId (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "playerIds": [42, 43],
-            "gameId": 9009
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
+asyncTest("Make a Move failed wrong accessSignature", function() {
+    ajaxCallMakeNewMove(domainUrl+"/matches", "12123123", playerIds);
+});
+
+asyncTest("Make a Move failed wrong playerIds", function() {
+    ajaxCallMakeNewMove(domainUrl+"/matches", accessSignatures[0].toString(), [0,1]);
+});
+
+asyncTest("Get Match Info After", function() {
+    ajaxCallGetMatchInfo( domainUrl+"/matches");
+});
+
+function ajaxCallDelPlayer(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+      ok(true);
+      start();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
 }
 
-test ("Insert a Match with Illegal Game Id", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testInsertAMatchIllegalGameId(function(actual) {
-        var expected = {
-            "error" : "Game Id Illegal"
-        };
-        // How to know the 10001? 
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
+asyncTest("Delete Player1", function() {
+    ajaxCallDelPlayer( domainUrl+"/players/"+playerIds[0]+"?accessSignature="+accessSignatures[0]);
+});
 
-//Test case for normal end game
-function testNormalEndMatch (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001/endgame",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "matchId": 10001,
-            "result": {
-                "normal_end": true,
-                "win": 42,
-                "lose": 43,
-                "token_game": true,
-                "win_token": 100,
-                "lose_token": 50,
-                "win_score": 30,
-                "lose_score": 10
-            }
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
+asyncTest("Delete Player2", function() {
+    ajaxCallDelPlayer( domainUrl+"/players/"+playerIds[1]+"?accessSignature="+accessSignatures[1]);
+});
+
+function ajaxCallDelGame(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+      ok(true);
+      start();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
 }
 
-test ("Normal End Match", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testNormalEndMatch(function(actual) {
-        var expected = { 
-          "matchId": 10001
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
+asyncTest("Delete Game", function() {
+   ajaxCallDelGame( domainUrl+"/games/"+gameId+"?developerId="+developerId+"&accessSignature="+developerAS);
+});
 
-//Test case for normal end game - Illegal AS
-function testNormalEndMatchIllegalAS (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001/endgame",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "matchId": 10001,
-            "result": {
-                "normal_end": true,
-                "win": 42,
-                "lose": 43,
-                "token_game": true,
-                "win_token": 100,
-                "lose_token": 50,
-                "win_score": 30,
-                "lose_score": 10
-            }
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
+function ajaxCallDelDeveloper(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+      ok(true);
+      start();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
 }
 
-test ("Normal End Match with Illegal Access Signature", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testNormalEndMatchIllegalAS(function(actual) {
-        var expected = {
-            "error" : "accessSignature Illegal"
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
-
-//Test case for normal end game - Illegal match Id
-function testNormalEndMatchIllegalMatchId (successCallback){
-    $.ajax({
-        url: "http://1.smg-server.appspot.com/matches/10001/endgame",
-        dataType: "json",
-        type: "POST",
-        data: {
-            "accessSignature": "hD7d7DDdjsh12WQ",
-            "matchId": 10001,
-            "result": {
-                "normal_end": true,
-                "win": 42,
-                "lose": 43,
-                "token_game": true,
-                "win_token": 100,
-                "lose_token": 50,
-                "win_score": 30,
-                "lose_score": 10
-            }
-        },
-        success: successCallback,
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("error " + textStatus + " " + errorThrown);
-        }
-    });
-}
-
-test ("Normal End Match with Illegal Match Id", function() {
-    // Pause the test, and fail it if start() isn"t called after one second
-    stop(1000);     
-    testNormalEndMatchIllegalMatchId(function(actual) {
-        var expected = {
-            "error" : "Match Id Illegal"
-        };
-        deepEqual(expected, actual, "Expected data does not match actual data.");
-        start();
-    })
-})
+asyncTest("Delete Developer", function() {
+    ajaxCallDelDeveloper( domainUrl+"/developers/"+developerId+"?accessSignature="+developerAS);
+});
