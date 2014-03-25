@@ -148,34 +148,35 @@ public class GameServlet extends HttpServlet{
 	@Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)  throws IOException{
 		String pathInfo=req.getPathInfo();
+		CORSUtil.addCORSHeader(resp);
 		if (parsePathForPost(pathInfo)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
         	return;
 		}
 		
 		if (requiredFieldsComplete(req)==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
         	return;
         }
         if (developerIdExists(req.getParameter("developerId"))==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
         if (signatureRight(req)==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
         if (gameNameDuplicate(req)==true)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
         	return;
         }
@@ -193,7 +194,7 @@ public class GameServlet extends HttpServlet{
         	}
         	catch (Exception e)
         	{
-        		CORSUtil.addCORSHeader(resp);
+        		
             	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
             	return;	
         	}
@@ -203,28 +204,30 @@ public class GameServlet extends HttpServlet{
     }
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
-		String targetId=req.getPathInfo().substring(1);
+		String targetId=null;
+		CORSUtil.addCORSHeader(resp);
 		try
 		{
+			 targetId=req.getPathInfo().substring(1);
 			Long.parseLong(targetId);
 		}
 		catch (Exception e)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
 		//S (ystem.out.println(targetId);
 		if (gameIdExist(targetId)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 			
 		}
 		else
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			try {
 				returnMetaInfo(targetId,"versionOne",resp);
 			} catch (JSONException e) {
@@ -242,36 +245,38 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		String targetId=req.getPathInfo().substring(1);
+		String targetId=null;
+		CORSUtil.addCORSHeader(resp);
 		try
 		{
+			targetId=req.getPathInfo().substring(1);
 			Long.parseLong(targetId);
 		}
 		catch (Exception e)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
-		CORSUtil.addCORSHeader(resp);
+		
 		String gameId= req.getPathInfo().substring(1);
 		String developerId= req.getParameter("developerId");
 		if (developerIdExists(developerId)==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
 		if (signatureRight(req)==false)
 		{
 
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			//CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 		}
@@ -279,13 +284,13 @@ public class GameServlet extends HttpServlet{
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(developerId)==false)
 		{
-			//CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		
 		DatabaseDriver.delete(gameId,"versionOne");
-		//CORSUtil.addCORSHeader(resp);
+		
 		resp.setContentType("text/plain");
         resp.getWriter().println("{\"success\" : \"DELETED_GAME\"}");  
 	}
@@ -293,45 +298,47 @@ public class GameServlet extends HttpServlet{
 	@Override 
 	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		String gameId = req.getPathInfo().substring(1);
+		CORSUtil.addCORSHeader(resp);
+		String gameId=null;
 		try
 		{
+			gameId = req.getPathInfo().substring(1);
 			Long.parseLong(gameId);
 		}
 		catch (Exception e)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
 		if (requiredFieldForUpdate(req)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+		
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
 			return;		
 		}
 		if (developerIdExists(req.getParameter("developerId"))==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
 		if (signatureRight(req)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
 			return;		
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;			
 		}
 		
 	    if (gameNameDuplicate(Long.parseLong(gameId),req)==true)
 	    {
-	        	CORSUtil.addCORSHeader(resp);
+	        	
 	        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
 	        	return;
 	    }
@@ -340,20 +347,20 @@ public class GameServlet extends HttpServlet{
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(req.getParameter("developerId"))==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		try
 		{
-		  CORSUtil.addCORSHeader(resp);
+		 
 		  DatabaseDriver.update(gameId,req);		  
 		  resp.setContentType("text/plain");
 	      resp.getWriter().println("{\"success\" : \"UPDATED_GAME\"}");  
 		}
 		catch (Exception e)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
         	return;	
 		}
