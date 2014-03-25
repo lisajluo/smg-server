@@ -7,23 +7,19 @@
   <script type="text/javascript" src="../resources/json2.js"></script>
 </head>
 <body>
-<h3> Test Page</h3>
+<h3> Demo Page - Container</h3>
 
-<p><a href = "#" id = "NewPlayer">Insert New Player</a></p>
-<p><a href = "#" id = "NewPlayer2">Insert New Player2</a></p>
-<p><a href = "#" id = "DelPlayer">Delete New Player</a></p>
-<p><a href = "#" id = "DelPlayer2">Delete New Player2</a></p>
+<br><a href = "#" id = "NewPlayers">Insert Two Players</a>
+<br><a href = "#" id = "NewDevloper">Insert New Developer</a>
+<br><a href = "#" id = "NewGame">Insert New Game</a>
+<br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
 <br>
-<p><a href = "#" id = "NewDevloper">Insert New Developer</a></p>
-<p><a href = "#" id = "DelDevloper">Delete New Developer</a></p>
-<br>
-<p><a href = "#" id = "NewGame">Insert New Game</a></p>
-<p><a href = "#" id = "DelGame">Delete New Game</a></p>
-<br>
-<p><a href = "#" id = "NewMatch">Insert New Match</a></p>
-<p><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a></p>
-<p><a href = "#" id = "MakeMove">Make A Move</a></p>
-<p><a href = "#" id = "GetMatchInfo">Get Match Info</a></p>
+<br><a href = "#" id = "NewMatch">Insert New Match</a>
+<br><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a>
+<br><a href = "#" id = "MakeMove">Make A Move</a>
+<br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
+<h4>Response</h4>
+<div id="response"></div>
 
 <script type="text/javascript">
 
@@ -41,36 +37,24 @@ var developerAS = "";
 
 $(document).ready(function() {
   
-  $("#NewPlayer").on("click", function(event) {
+  $("#NewPlayers").on("click", function(event) {
     ajaxCallNewPlayer( domainUrl+"/players");
-  });
-
-  $("#NewPlayer2").on("click", function(event) {
     ajaxCallNewPlayer2( domainUrl+"/players");
-  });
-
-  $("#DelPlayer").on("click", function(event) {
-    ajaxCallDelPlayer( domainUrl+"/players/"+playerId+"?accessSignature="+accessSignature);
-  });
-
-  $("#DelPlayer2").on("click", function(event) {
-    ajaxCallDelPlayer2( domainUrl+"/players/"+playerId2+"?accessSignature="+accessSignature2);
   });
 
   $("#NewDevloper").on("click", function(event) {
     ajaxCallNewDeveloper( domainUrl+"/developers");
   });
 
-  $("#DelDevloper").on("click", function(event) {
-    ajaxCallDelDeveloper( domainUrl+"/developers/"+developerId+"?accessSignature="+developerAS);
-  });
-
   $("#NewGame").on("click", function(event) {
     ajaxCallNewGame( domainUrl+"/games");
   });
 
-  $("#DelGame").on("click", function(event) {
+  $("#Clear").on("click", function(event) {
+    ajaxCallDelPlayer( domainUrl+"/players/"+playerId+"?accessSignature="+accessSignature);
+    ajaxCallDelPlayer2( domainUrl+"/players/"+playerId2+"?accessSignature="+accessSignature2);
     ajaxCallDelGame( domainUrl+"/games/"+gameId+"?developerId="+developerId+"&accessSignature="+developerAS);
+    ajaxCallDelDeveloper( domainUrl+"/developers/"+developerId+"?accessSignature="+developerAS);
   });
 
   $("#NewMatch").on("click", function(event) {
@@ -109,7 +93,7 @@ $(document).ready(function() {
         dataType: 'json',
         data: JSON.stringify(jsonObj),
         success: function(data, textStatus, jqXHR) {
-          alert(JSON.stringify(data));
+          $("#response").append("<br>" + JSON.stringify(data));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -120,12 +104,8 @@ $(document).ready(function() {
         url: domainUrl+"/matches/"+matchId+"?accessSignature="+accessSignature+"&playerId="+playerId, 
         type: "GET",
         success: function(data, textStatus, jqXHR) {
-        	var jsonObj = JSON.parse(data);          
-          if (data['error'] == undefined) {
-            alert(JSON.stringify(jsonObj));
-          } else {
-            alert(JSON.stringify(jsonObj));
-          }
+          var jsonObj = $.parseJSON(data);
+        	$("#response").append("<br>" + JSON.stringify(jsonObj));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -135,7 +115,7 @@ $(document).ready(function() {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"forcontainertest@gmail.com",
+      "email":"forcontainertestNEW@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -149,10 +129,8 @@ function ajaxCallNewPlayer(url) {
       if (data['error'] == undefined) {
         playerId = parseInt(data['playerId']);
         accessSignature = data["accessSignature"];
-        alert("playerId: " + data['playerId'] + " accessSignature: " + data["accessSignature"]);
-      } else {
-        alert("error: " + data['error']);
-      }
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -162,7 +140,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"forcontainertest2@gmail.com",
+      "email":"forcontainertestNEW2@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -176,10 +154,8 @@ function ajaxCallNewPlayer2(url) {
       if (data['error'] == undefined) {
         playerId2 = parseInt(data['playerId']);
         accessSignature2 = data["accessSignature"];
-        alert("playerId: " + data['playerId'] + " accessSignature: " + data["accessSignature"]);
-      } else {
-        alert("error: " + data['error']);
-      }    
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));    
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -194,7 +170,7 @@ function ajaxCallDelPlayer(url) {
     crossDomain: true,
     async: false,
     success: function(data, textStatus, jqXHR) {
-      alert(data);
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -208,7 +184,7 @@ function ajaxCallDelPlayer2(url) {
     crossDomain: true,
     async: false,
     success: function(data, textStatus, jqXHR) {
-      alert(data);
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -216,7 +192,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "forcontainertest3@bladsfah.com", 
+  var jsonObj =  { "email": "forcontainertestNEW3@bladsfah.com", 
       "password": "soldkfjlaskdf",
       "nickname": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -230,10 +206,8 @@ function ajaxCallNewDeveloper(url) {
       if (data['error'] == undefined) {
         developerId = parseInt(data['developerId']);
         developerAS = data["accessSignature"];
-        alert("developerId: " + data['developerId'] + " accessSignature: " + data["accessSignature"]);
-      } else {
-        alert("error: " + data['error']);
-      }    
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));   
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -248,7 +222,7 @@ function ajaxCallDelDeveloper(url) {
     crossDomain: true,
     async: false,
     success: function(data, textStatus, jqXHR) {
-      alert(data);
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -261,7 +235,7 @@ function ajaxCallNewGame(url) {
     url: url, 
     type: "POST",
     data: {
-        "gameName": "game for container",
+        "gameName": "TEST GAME for container",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,
@@ -274,10 +248,8 @@ function ajaxCallNewGame(url) {
       var jsonObj = $.parseJSON(data);
       if (data['error'] == undefined) {
         gameId = parseInt(jsonObj['gameId']);
-        alert("gameId: " + jsonObj['gameId']);
-      } else {
-        alert("error: " + jsonObj['error']);
-      }
+      } 
+      $("#response").append("<br>" + JSON.stringify(jsonObj));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -291,7 +263,7 @@ function ajaxCallDelGame(url) {
     crossDomain: true,
     async: false,
     success: function(data, textStatus, jqXHR) {
-      alert(data);
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -313,10 +285,8 @@ function ajaxCallNewMatch(url) {
     success: function(data, textStatus, jqXHR) { 
       if (data['error'] == undefined) {
         matchId = parseInt(data['matchId']);
-        alert("matchId: " + data['matchId']);
-      } else {
-        alert("error: " + data['error']);
-      }    
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));    
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -331,7 +301,7 @@ function ajaxCallNewMatch_parse_error(url) {
     dataType: 'json',
     data: 'dfdf=sdfsdf',
     success: function(data, textStatus, jqXHR) {     
-      alert("error: " + data['error']);
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
