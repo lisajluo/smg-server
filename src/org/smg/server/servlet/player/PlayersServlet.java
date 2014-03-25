@@ -77,7 +77,7 @@ public class PlayersServlet extends HttpServlet {
 		resp.setContentType("text/plain");
 		JSONObject returnValue = new JSONObject();
 		String playerId = null;
-		if (req.getPathInfo().length() != 0 && req.getPathInfo() != null) {
+		if (req.getPathInfo() != null && req.getPathInfo().length() > 0 ) {
 			playerId = req.getPathInfo().substring(1);
 		}
 		else {
@@ -145,7 +145,6 @@ public class PlayersServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		PrintWriter res = resp.getWriter();
 		CORSUtil.addCORSHeader(resp);
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -204,7 +203,7 @@ public class PlayersServlet extends HttpServlet {
     resp.setContentType("text/plain");
     JSONObject returnValue = new JSONObject();
     String playerId = null;
-    if (req.getPathInfo().length() != 0 && req.getPathInfo() != null) {
+    if (req.getPathInfo() != null && req.getPathInfo().length() > 0 ) {
       playerId = req.getPathInfo().substring(1);
     }
     else {
@@ -285,7 +284,7 @@ public class PlayersServlet extends HttpServlet {
     JSONObject returnValue = new JSONObject();
     Player player = JSONUtil.jSON2Player(json);
     String playerId = null;
-    if (req.getPathInfo().length() != 0 && req.getPathInfo() != null) {
+    if (req.getPathInfo() != null && req.getPathInfo().length() > 0 ) {
       playerId = req.getPathInfo().substring(1);
     }
     if (playerId == null) {
