@@ -20,25 +20,68 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.GameManager;
 import org.smg.server.util.CORSUtil;
 
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private boolean parsePathForPost(String pathInfo)
+	{
+		if (pathInfo==null)
+			return true;
+		if (pathInfo.length()>0)
+		{
+			if (pathInfo.length()==1)
+			{
+				if (pathInfo.charAt(0)!='/')
+				{
+					return false;
+					
+				}
+				else
+					return true;
+			}
+			return false;
+			
+		}
+		return true;
+	}
+	private boolean developerIdExists(String idAsStr)
+	{
+		try 
+		{
+		long developerId = Long.parseLong(idAsStr);
+		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		if (developer==null)
+			return false;
+		else
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
 	private boolean gameNameDuplicate(long gameId, HttpServletRequest req)
 	{
-		 return GameManager.checkGameNameDuplicate(gameId,req);
+		 return DatabaseDriver.checkGameNameDuplicate(gameId,req);
 		
 	}
 	private boolean signatureRight(HttpServletRequest req)
 	{
-		long developerId = Long.parseLong(req.getParameter("developerId"));
-		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
-			return true;
-		else
+		try
+		{
+		  long developerId = Long.parseLong(req.getParameter("developerId"));
+		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		  if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
+			  return true;
+		  else
 			return false;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 		
 	}
 	
@@ -70,22 +113,22 @@ public class GameServlet extends HttpServlet{
 	}
 	private boolean gameNameDuplicate(HttpServletRequest req)
 	{
-		return GameManager.checkGameNameDuplicate(req);
+		return DatabaseDriver.checkGameNameDuplicate(req);
 	}
 	
 	private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
 	{
-		return GameManager.checkGameNameDuplicate(gameName,req);
+		return DatabaseDriver.checkGameNameDuplicate(gameName,req);
 	}
 	private boolean gameIdExist(String GameId)
 	{
-		return GameManager.checkIdExists(GameId);
+		return DatabaseDriver.checkIdExists(GameId);
 	}
 	private void returnMetaInfo(String gameName,String versionNum,HttpServletResponse resp) throws IOException, JSONException
 	{
 		JSONObject metainfo=new JSONObject();
 		resp.setContentType("text/plain");
-		Entity targetEntity=GameManager.getEntity(gameName, versionNum);
+		Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
 		metainfo.put("version", targetEntity.getProperty("version"));
 		metainfo.put("gameName", targetEntity.getProperty("gameName"));
 		metainfo.put("url", targetEntity.getProperty("url"));
@@ -104,22 +147,36 @@ public class GameServlet extends HttpServlet{
 	
 	@Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)  throws IOException{
-        if (requiredFieldsComplete(req)==false)
+		String pathInfo=req.getPathInfo();
+		CORSUtil.addCORSHeader(resp);
+		if (parsePathForPost(pathInfo)==false)
+		{
+			
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+        	return;
+		}
+		
+		if (requiredFieldsComplete(req)==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
         	return;
         }
+        if (developerIdExists(req.getParameter("developerId"))==false)
+        {
+        	
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
         if (signatureRight(req)==false)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
-        System.out.println("I am here");
         if (gameNameDuplicate(req)==true)
         {
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
         	return;
         }
@@ -128,7 +185,7 @@ public class GameServlet extends HttpServlet{
         	
         	try
         	{
-        	   long gameId=GameManager.saveGameMetaInfo(req);
+        	   long gameId=DatabaseDriver.saveGameMetaInfo(req);
                CORSUtil.addCORSHeader(resp);
                resp.setContentType("text/plain");
                JSONObject jObj = new JSONObject();
@@ -137,7 +194,7 @@ public class GameServlet extends HttpServlet{
         	}
         	catch (Exception e)
         	{
-        		CORSUtil.addCORSHeader(resp);
+        		
             	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
             	return;	
         	}
@@ -147,18 +204,30 @@ public class GameServlet extends HttpServlet{
     }
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
-		String targetId=req.getPathInfo().substring(1);
-		//System.out.println(targetId);
+		String targetId=null;
+		CORSUtil.addCORSHeader(resp);
+		try
+		{
+			 targetId=req.getPathInfo().substring(1);
+			Long.parseLong(targetId);
+		}
+		catch (Exception e)
+		{
+			
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
+		//S (ystem.out.println(targetId);
 		if (gameIdExist(targetId)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 			
 		}
 		else
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			try {
 				returnMetaInfo(targetId,"versionOne",resp);
 			} catch (JSONException e) {
@@ -176,37 +245,52 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		
+		String targetId=null;
 		CORSUtil.addCORSHeader(resp);
+		try
+		{
+			targetId=req.getPathInfo().substring(1);
+			Long.parseLong(targetId);
+		}
+		catch (Exception e)
+		{
+			
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
+		
 		String gameId= req.getPathInfo().substring(1);
 		String developerId= req.getParameter("developerId");
-		System.out.println("gamdId: "+gameId);
-		System.out.println("developerId: "+developerId);
-		System.out.println("sig: "+req.getParameter("accessSignature"));
+		if (developerIdExists(developerId)==false)
+        {
+        	
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
 		if (signatureRight(req)==false)
 		{
 
-        	CORSUtil.addCORSHeader(resp);
+        	
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			//CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 		}
-		Entity targetEntity=GameManager.getEntity(gameId, "versionOne");
+		Entity targetEntity=DatabaseDriver.getEntity(gameId, "versionOne");
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(developerId)==false)
 		{
-			//CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		
-		GameManager.delete(gameId,"versionOne");
-		//CORSUtil.addCORSHeader(resp);
+		DatabaseDriver.delete(gameId,"versionOne");
+		
 		resp.setContentType("text/plain");
         resp.getWriter().println("{\"success\" : \"DELETED_GAME\"}");  
 	}
@@ -214,51 +298,69 @@ public class GameServlet extends HttpServlet{
 	@Override 
 	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		String gameId = req.getPathInfo().substring(1);
+		CORSUtil.addCORSHeader(resp);
+		String gameId=null;
+		try
+		{
+			gameId = req.getPathInfo().substring(1);
+			Long.parseLong(gameId);
+		}
+		catch (Exception e)
+		{
+			
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
 		if (requiredFieldForUpdate(req)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+		
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
 			return;		
 		}
+		if (developerIdExists(req.getParameter("developerId"))==false)
+        {
+        	
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
 		if (signatureRight(req)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
 			return;		
 		}
 		if (gameIdExist(gameId)==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;			
 		}
 		
 	    if (gameNameDuplicate(Long.parseLong(gameId),req)==true)
 	    {
-	        	CORSUtil.addCORSHeader(resp);
+	        	
 	        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
 	        	return;
 	    }
 		String version = "versionOne";
-		Entity targetEntity=GameManager.getEntity(gameId, version);
+		Entity targetEntity=DatabaseDriver.getEntity(gameId, version);
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(req.getParameter("developerId"))==false)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
 		try
 		{
-		  CORSUtil.addCORSHeader(resp);
-		  GameManager.update(gameId,req);		  
+		 
+		  DatabaseDriver.update(gameId,req);		  
 		  resp.setContentType("text/plain");
 	      resp.getWriter().println("{\"success\" : \"UPDATED_GAME\"}");  
 		}
 		catch (Exception e)
 		{
-			CORSUtil.addCORSHeader(resp);
+			
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
         	return;	
 		}

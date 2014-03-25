@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,9 +27,13 @@ public class JSONUtil {
 		    pp = PlayerProperty.findByValue(key);
         value = (String)jsonMap.get(key);
 		  }
-		  boolean success = player.setProperty(pp, value);
-			if(!success)
-				throw new IllegalArgumentException();
+		  boolean success;
+      try {
+        success = player.setProperty(pp, value);
+      } catch (Exception e) {
+        System.err.println("Trying to set illegal property to player: "+key);
+        e.printStackTrace();
+      }
 		}
 		return player;
 	}

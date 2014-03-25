@@ -3,8 +3,6 @@ package org.smg.server.servlet.container;
 import java.util.List;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.GameManager;
-
 import com.google.appengine.api.datastore.Entity;
 
 public class ContainerVerification {
@@ -92,7 +90,7 @@ public class ContainerVerification {
    */
   public static boolean gameIdVerify(long gameId) {
     //Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
-    Entity entity = GameManager.getEntity(String.valueOf(gameId), "versionOne");
+    Entity entity = DatabaseDriver.getEntity(String.valueOf(gameId), "versionOne");
     if (entity == null) {
       return false;
     }
