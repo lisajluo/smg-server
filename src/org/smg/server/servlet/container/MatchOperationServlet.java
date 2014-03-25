@@ -35,7 +35,16 @@ public class MatchOperationServlet extends HttpServlet {
     
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
-    long matchId = Long.parseLong(req.getPathInfo().substring(1));
+    long matchId = 0;
+    try {
+      matchId = Long.parseLong(req.getPathInfo().substring(1));
+    } catch (Exception e) {
+      try {
+        returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
+        returnValue.write(resp.getWriter());
+      } catch (JSONException e1) { }
+      return;
+    }
     if (!ContainerVerification.matchIdVerify(matchId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
@@ -44,7 +53,17 @@ public class MatchOperationServlet extends HttpServlet {
       }
       return;
     }
-    long playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
+    
+    long playerId = 0;
+    try {
+      playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
+    } catch (Exception e) {
+      try {
+        returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
+        returnValue.write(resp.getWriter());
+      } catch (JSONException e1) { }
+      return;
+    }
     if (!ContainerVerification.playerIdVerify(playerId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
