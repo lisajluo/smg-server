@@ -20,15 +20,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
-import org.smg.server.database.GameManager;
 import org.smg.server.util.CORSUtil;
 
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private boolean developerIdExists(String idAsStr)
+	{
+		try 
+		{
+		long developerId = Long.parseLong(idAsStr);
+		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		if (developer==null)
+			return false;
+		else
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
 	private boolean gameNameDuplicate(long gameId, HttpServletRequest req)
 	{
-		 return GameManager.checkGameNameDuplicate(gameId,req);
+		 return DatabaseDriver.checkGameNameDuplicate(gameId,req);
 		
 	}
 	private boolean signatureRight(HttpServletRequest req)
@@ -70,22 +85,22 @@ public class GameServlet extends HttpServlet{
 	}
 	private boolean gameNameDuplicate(HttpServletRequest req)
 	{
-		return GameManager.checkGameNameDuplicate(req);
+		return DatabaseDriver.checkGameNameDuplicate(req);
 	}
 	
 	private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
 	{
-		return GameManager.checkGameNameDuplicate(gameName,req);
+		return DatabaseDriver.checkGameNameDuplicate(gameName,req);
 	}
 	private boolean gameIdExist(String GameId)
 	{
-		return GameManager.checkIdExists(GameId);
+		return DatabaseDriver.checkIdExists(GameId);
 	}
 	private void returnMetaInfo(String gameName,String versionNum,HttpServletResponse resp) throws IOException, JSONException
 	{
 		JSONObject metainfo=new JSONObject();
 		resp.setContentType("text/plain");
-		Entity targetEntity=GameManager.getEntity(gameName, versionNum);
+		Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
 		metainfo.put("version", targetEntity.getProperty("version"));
 		metainfo.put("gameName", targetEntity.getProperty("gameName"));
 		metainfo.put("url", targetEntity.getProperty("url"));
@@ -110,13 +125,18 @@ public class GameServlet extends HttpServlet{
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
         	return;
         }
+        if (developerIdExists(req.getParameter("developerId"))==false)
+        {
+        	CORSUtil.addCORSHeader(resp);
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
         if (signatureRight(req)==false)
         {
         	CORSUtil.addCORSHeader(resp);
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
-        System.out.println("I am here");
         if (gameNameDuplicate(req)==true)
         {
         	CORSUtil.addCORSHeader(resp);
@@ -128,7 +148,7 @@ public class GameServlet extends HttpServlet{
         	
         	try
         	{
-        	   long gameId=GameManager.saveGameMetaInfo(req);
+        	   long gameId=DatabaseDriver.saveGameMetaInfo(req);
                CORSUtil.addCORSHeader(resp);
                resp.setContentType("text/plain");
                JSONObject jObj = new JSONObject();
@@ -183,6 +203,12 @@ public class GameServlet extends HttpServlet{
 		System.out.println("gamdId: "+gameId);
 		System.out.println("developerId: "+developerId);
 		System.out.println("sig: "+req.getParameter("accessSignature"));
+		if (developerIdExists(developerId)==false)
+        {
+        	CORSUtil.addCORSHeader(resp);
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
 		if (signatureRight(req)==false)
 		{
 
@@ -196,7 +222,7 @@ public class GameServlet extends HttpServlet{
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
 			return;
 		}
-		Entity targetEntity=GameManager.getEntity(gameId, "versionOne");
+		Entity targetEntity=DatabaseDriver.getEntity(gameId, "versionOne");
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(developerId)==false)
 		{
@@ -205,7 +231,7 @@ public class GameServlet extends HttpServlet{
 			return;
 		}
 		
-		GameManager.delete(gameId,"versionOne");
+		DatabaseDriver.delete(gameId,"versionOne");
 		//CORSUtil.addCORSHeader(resp);
 		resp.setContentType("text/plain");
         resp.getWriter().println("{\"success\" : \"DELETED_GAME\"}");  
@@ -221,6 +247,12 @@ public class GameServlet extends HttpServlet{
 			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
 			return;		
 		}
+		if (developerIdExists(req.getParameter("developerId"))==false)
+        {
+        	CORSUtil.addCORSHeader(resp);
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
+        	return;	
+        }
 		if (signatureRight(req)==false)
 		{
 			CORSUtil.addCORSHeader(resp);
@@ -241,7 +273,7 @@ public class GameServlet extends HttpServlet{
 	        	return;
 	    }
 		String version = "versionOne";
-		Entity targetEntity=GameManager.getEntity(gameId, version);
+		Entity targetEntity=DatabaseDriver.getEntity(gameId, version);
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
 		if (developerList.contains(req.getParameter("developerId"))==false)
 		{
@@ -252,7 +284,7 @@ public class GameServlet extends HttpServlet{
 		try
 		{
 		  CORSUtil.addCORSHeader(resp);
-		  GameManager.update(gameId,req);		  
+		  DatabaseDriver.update(gameId,req);		  
 		  resp.setContentType("text/plain");
 	      resp.getWriter().println("{\"success\" : \"UPDATED_GAME\"}");  
 		}
