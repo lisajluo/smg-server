@@ -27,7 +27,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean accessSignatureVerify(String accessSignature, List<Long> playerIds) {
-    for (long playerId : playerIds) {
+    for (Object obj : playerIds) {
+      long playerId = Long.parseLong(String.valueOf(obj));
       if (accessSignatureVerify(accessSignature,playerId)) {
         return true;
       }
@@ -41,7 +42,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean playerIdsVerify(List<Long> playerIds) {
-    for (Long playerId : playerIds) {
+    for (Object obj: playerIds) {
+      long playerId = Long.parseLong(String.valueOf(obj));
       if (!playerIdVerify(playerId)) {
         return false;
       }

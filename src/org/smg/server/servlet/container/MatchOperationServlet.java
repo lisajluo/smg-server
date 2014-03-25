@@ -32,10 +32,7 @@ public class MatchOperationServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    // DummyDataGen.addGame();
-    // DummyDataGen.addPlayer();
-    // DummyDataGen.updateMatch();
-
+    
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     long matchId = Long.parseLong(req.getPathInfo().substring(1));
@@ -124,7 +121,7 @@ public class MatchOperationServlet extends HttpServlet {
         }
         return;
       }
-      String accessSignature = (String) jsonMap.get(ContainerConstants.ACCESS_SIGNATURE);
+      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
       if (!ContainerVerification.accessSignatureVerify(accessSignature, playerIds)) {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_ACCESS_SIGNATURE);
