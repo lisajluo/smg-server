@@ -301,10 +301,11 @@ public class PlayersServlet extends HttpServlet {
     String saveResult = DatabaseDriver.savePlayer(player);
     if (saveResult.equals("UPDATED_PLAYER")) {
       try {
-        returnValue.put("PLAYERID",
-            player.getProperty(PlayerProperty.PLAYERID));
-        returnValue.put("ACCESSSIGNATURE",
-            player.getProperty(PlayerProperty.ACCESSSIGNATURE));
+        returnValue.put("success", "UPDATED_PLAYER");
+//        returnValue.put("PLAYERID",
+//            player.getProperty(PlayerProperty.PLAYERID));
+//        returnValue.put("ACCESSSIGNATURE",
+//            player.getProperty(PlayerProperty.ACCESSSIGNATURE));
         returnValue.write(resp.getWriter());
       } catch (JSONException e) {
         // TODO Auto-generated catch block
