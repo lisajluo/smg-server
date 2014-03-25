@@ -1,4 +1,5 @@
-var domainUrl = "http://localhost:8888";
+//var domainUrl = "http://localhost:8888";
+var domainUrl = "http://1-dot-smg-server.appspot.com";
 var playerIds = [];
 var accessSignatures = [];
 var gameId = 0;
@@ -86,7 +87,7 @@ function ajaxCallNewGame(url, dId, dAs) {
     url: url, 
     type: "POST",
     data: {
-        "gameName": "newTest",
+        "gameName": "blaaaaaaaaaGameName",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,
