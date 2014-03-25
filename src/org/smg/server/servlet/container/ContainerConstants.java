@@ -8,7 +8,8 @@ public final class ContainerConstants {
  public static final String MATCH = "Match";
 // public static final String PLAYER = "Player";
  public static final String PLAYER = "PLAYER";
- public static final String GAME = "Game";
+// public static final String GAME = "Game";
+ public static final String GAME = "gameMetaInfo";
  
  // Various properties in the Match
  public static final String MATCH_ID = "matchId";
