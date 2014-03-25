@@ -331,6 +331,8 @@ public class DatabaseDriver {
 		Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
 		Entity target = datastore.get(gameKey);
 		
+		if (req.getParameter("gameName")!=null)
+			target.setProperty("gameName", req.getParameter("gameName"));
 		if (req.getParameter("description")!=null)
 			target.setProperty("description", req.getParameter("description"));
 		if (req.getParameter("url")!=null)

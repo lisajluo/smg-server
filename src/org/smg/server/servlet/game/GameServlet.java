@@ -25,6 +25,27 @@ import org.smg.server.util.CORSUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private boolean parsePathForPost(String pathInfo)
+	{
+		if (pathInfo==null)
+			return true;
+		if (pathInfo.length()>0)
+		{
+			if (pathInfo.length()==1)
+			{
+				if (pathInfo.charAt(0)!='/')
+				{
+					return false;
+					
+				}
+				else
+					return true;
+			}
+			return false;
+			
+		}
+		return true;
+	}
 	private boolean developerIdExists(String idAsStr)
 	{
 		try 
@@ -48,12 +69,19 @@ public class GameServlet extends HttpServlet{
 	}
 	private boolean signatureRight(HttpServletRequest req)
 	{
-		long developerId = Long.parseLong(req.getParameter("developerId"));
-		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
-			return true;
-		else
+		try
+		{
+		  long developerId = Long.parseLong(req.getParameter("developerId"));
+		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		  if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
+			  return true;
+		  else
 			return false;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 		
 	}
 	
@@ -119,7 +147,15 @@ public class GameServlet extends HttpServlet{
 	
 	@Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)  throws IOException{
-        if (requiredFieldsComplete(req)==false)
+		String pathInfo=req.getPathInfo();
+		if (parsePathForPost(pathInfo)==false)
+		{
+			CORSUtil.addCORSHeader(resp);
+        	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+        	return;
+		}
+		
+		if (requiredFieldsComplete(req)==false)
         {
         	CORSUtil.addCORSHeader(resp);
         	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
@@ -168,7 +204,17 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
 		String targetId=req.getPathInfo().substring(1);
-		//System.out.println(targetId);
+		try
+		{
+			Long.parseLong(targetId);
+		}
+		catch (Exception e)
+		{
+			CORSUtil.addCORSHeader(resp);
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
+		//S (ystem.out.println(targetId);
 		if (gameIdExist(targetId)==false)
 		{
 			CORSUtil.addCORSHeader(resp);
@@ -196,13 +242,20 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
-		
+		String targetId=req.getPathInfo().substring(1);
+		try
+		{
+			Long.parseLong(targetId);
+		}
+		catch (Exception e)
+		{
+			CORSUtil.addCORSHeader(resp);
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
 		CORSUtil.addCORSHeader(resp);
 		String gameId= req.getPathInfo().substring(1);
 		String developerId= req.getParameter("developerId");
-		System.out.println("gamdId: "+gameId);
-		System.out.println("developerId: "+developerId);
-		System.out.println("sig: "+req.getParameter("accessSignature"));
 		if (developerIdExists(developerId)==false)
         {
         	CORSUtil.addCORSHeader(resp);
@@ -241,6 +294,16 @@ public class GameServlet extends HttpServlet{
 	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		String gameId = req.getPathInfo().substring(1);
+		try
+		{
+			Long.parseLong(gameId);
+		}
+		catch (Exception e)
+		{
+			CORSUtil.addCORSHeader(resp);
+			resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			return;
+		}
 		if (requiredFieldForUpdate(req)==false)
 		{
 			CORSUtil.addCORSHeader(resp);
