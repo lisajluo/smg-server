@@ -1,7 +1,10 @@
 package org.smg.server.servlet.container;
 
 import java.util.List;
+
 import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.GameManager;
+
 import com.google.appengine.api.datastore.Entity;
 
 public class ContainerVerification {
@@ -27,7 +30,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean accessSignatureVerify(String accessSignature, List<Long> playerIds) {
-    for (long playerId : playerIds) {
+    for (Object obj : playerIds) {
+      long playerId = Long.parseLong(String.valueOf(obj));
       if (accessSignatureVerify(accessSignature,playerId)) {
         return true;
       }
@@ -41,7 +45,13 @@ public class ContainerVerification {
    * @return
    */
   public static boolean playerIdsVerify(List<Long> playerIds) {
-    for (Long playerId : playerIds) {
+    for (Object obj: playerIds) {
+      long playerId = 0;
+      try {
+        playerId = Long.parseLong(String.valueOf(obj));
+      } catch (Exception e) {        
+        return false;
+      }
       if (!playerIdVerify(playerId)) {
         return false;
       }
@@ -81,7 +91,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean gameIdVerify(long gameId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    //Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    Entity entity = GameManager.getEntity(String.valueOf(gameId), "versionOne");
     if (entity == null) {
       return false;
     }

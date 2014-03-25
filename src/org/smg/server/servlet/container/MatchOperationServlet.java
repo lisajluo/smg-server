@@ -32,13 +32,19 @@ public class MatchOperationServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    // DummyDataGen.addGame();
-    // DummyDataGen.addPlayer();
-    // DummyDataGen.updateMatch();
-
+    
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
-    long matchId = Long.parseLong(req.getPathInfo().substring(1));
+    long matchId = 0;
+    try {
+      matchId = Long.parseLong(req.getPathInfo().substring(1));
+    } catch (Exception e) {
+      try {
+        returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
+        returnValue.write(resp.getWriter());
+      } catch (JSONException e1) { }
+      return;
+    }
     if (!ContainerVerification.matchIdVerify(matchId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
@@ -47,7 +53,17 @@ public class MatchOperationServlet extends HttpServlet {
       }
       return;
     }
-    long playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
+    
+    long playerId = 0;
+    try {
+      playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
+    } catch (Exception e) {
+      try {
+        returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
+        returnValue.write(resp.getWriter());
+      } catch (JSONException e1) { }
+      return;
+    }
     if (!ContainerVerification.playerIdVerify(playerId)) {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
@@ -106,25 +122,16 @@ public class MatchOperationServlet extends HttpServlet {
         }
         return;
       }
-      long matchId = Long.parseLong(req.getPathInfo().substring(1));
-      if (!ContainerVerification.matchIdVerify(matchId)) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e) {
-        }
-        return;
-      }
+
       ArrayList<Long> playerIds = (ArrayList<Long>) jsonMap.get(ContainerConstants.PLAYER_IDS);
       if (!ContainerVerification.playerIdsVerify(playerIds)) {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
           returnValue.write(resp.getWriter());
-        } catch (JSONException e) {
-        }
+        } catch (JSONException e) {  }
         return;
       }
-      String accessSignature = (String) jsonMap.get(ContainerConstants.ACCESS_SIGNATURE);
+      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
       if (!ContainerVerification.accessSignatureVerify(accessSignature, playerIds)) {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_ACCESS_SIGNATURE);
@@ -133,7 +140,24 @@ public class MatchOperationServlet extends HttpServlet {
         }
         return;
       }
-
+      long matchId = 0;
+      try {
+        matchId = Long.parseLong(req.getPathInfo().substring(1));
+      } catch (Exception e) {
+        try {
+          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
+          returnValue.write(resp.getWriter());
+        } catch (JSONException e1) { }
+        return;
+      }
+      if (!ContainerVerification.matchIdVerify(matchId)) {
+        try {
+          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
+          returnValue.write(resp.getWriter());
+        } catch (JSONException e) {
+        }
+        return;
+      }
       // Get entity for MatchInfo from database.
       Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
 
