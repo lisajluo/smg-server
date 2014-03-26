@@ -22,9 +22,15 @@ public class GameDatabaseDriver /*implements EndGameInterface*/ {
     return null;
   }
   
+  Entity getStats(long gameId) {
+    // TODO write this method
+    return null;
+  }
+  
   //@Override
   // TODO override when Container is finished
   void updateStats(Map<String, Object> winInfo) {
+    // (iin the beginning there are no stats for a game)
     /*
      * winInfo:
       PlayerIds: [ ] (long)

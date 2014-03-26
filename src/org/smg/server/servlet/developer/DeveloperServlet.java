@@ -34,7 +34,7 @@ public class DeveloperServlet extends HttpServlet {
    * Delete a developer with developerId and accessSignature 
    * (/developers/{developerId}?accessSignature=...).
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({ "rawtypes" })
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
@@ -65,8 +65,8 @@ public class DeveloperServlet extends HttpServlet {
     
     try {
       json.write(writer);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
+    } 
+    catch (JSONException e) {
       e.printStackTrace();
     }
   }
