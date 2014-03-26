@@ -2,17 +2,32 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="war/lib"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-endpoints.jar"/>
-	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
-	<classpathentry kind="lib" path="lib/appengine-api.jar"/>
-	<classpathentry kind="lib" path="lib/appengine-testing.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-annotations-2.2.3.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-2.2.3.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-databind-2.2.3.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-16.0.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-all-1.9.11.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="war/lib/appengine-api-1.0-sdk-1.2.0.jar"/>
+	<classpathentry kind="lib" path="war/lib/appengine-api-labs-1.6.6.jar"/>
+	<classpathentry kind="lib" path="war/lib/appengine-api-stubs-1.5.2.jar"/>
+	<classpathentry kind="lib" path="war/lib/appengine-endpoints-1.7.5.jar"/>
+	<classpathentry kind="lib" path="war/lib/appengine-testing-1.4.0.jar"/>
+	<classpathentry kind="lib" path="war/lib/com.fasterxml.jackson.core.jar"/>
+	<classpathentry kind="lib" path="war/lib/guava-16.0.1.jar"/>
+	<classpathentry kind="lib" path="war/lib/guava-gwt-16.0.1.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-annotations-2.0.1.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-core-2.3.2.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-core-asl-1.9.11.jar"/>
+	<classpathentry kind="lib" path="war/lib/jackson-databind-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/lib/java-json.jar"/>
+	<classpathentry kind="lib" path="war/lib/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-endpoints-deps.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.9.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.9.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/asm-4.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr107cache-1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jdo-api-3.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
