@@ -118,4 +118,10 @@ public class DeveloperDatabaseDriver {
     }
   }
   
+  public boolean verifyDeveloperAccess (long developerId, String accessSignature) 
+      throws EntityNotFoundException {
+    // TODO implement this!
+    return true;
+  }
+  
 }
