@@ -405,12 +405,20 @@ public class DatabaseDriver {
     return true;
   }
   
-  static public long  saveGameMetaInfo(HttpServletRequest req) throws IOException
+  static public long  saveGameMetaInfo(Map<Object,Object> parameterMap) throws IOException
   {
     
       Key versionKey=KeyFactory.createKey("Version", "versionOne");
       Date date=new Date();
       Entity game=new Entity("gameMetaInfo",versionKey);
+      game.setProperty("postDate", date);
+      for (Object key : parameterMap.keySet())
+      {
+    	  String keyStr=(String) key;
+    	  if (keyStr.equals("accessSignature")==false)
+    	  game.setProperty((String)key, parameterMap.get(key));
+      }
+      /* 
       game.setProperty("version","versionOne");
       game.setProperty("postDate", date);
       game.setProperty("gameName", req.getParameter("gameName"));
@@ -426,10 +434,10 @@ public class DatabaseDriver {
         ArrayList<String> screenshot=(ArrayList<String>) (jObj.get("screenshots"));
       
         game.setProperty("screenshots", screenshot);
-      }
+      }*/
 
       List<String> developerList=new ArrayList<String> ();
-      developerList.add(req.getParameter("developerId"));
+      developerList.add((String)parameterMap.get("developerId"));
       game.setProperty("developerId", developerList);
     //  game.setProperty("gameId", gameId);
       datastore.put(game);
@@ -454,13 +462,13 @@ public class DatabaseDriver {
       return null;
     }
   }
-  static public boolean checkGameNameDuplicate(HttpServletRequest req)
+  static public boolean checkGameNameDuplicate(Map<Object,Object> parameterMap)
   {
     try
     {
       String versionNum="versionOne";
       Key versionKey=KeyFactory.createKey("Version", versionNum);
-      Filter nameFilter =new FilterPredicate("gameName",FilterOperator.EQUAL,req.getParameter("gameName"));
+      Filter nameFilter =new FilterPredicate("gameName",FilterOperator.EQUAL,parameterMap.get("gameName"));
       Query q = new Query("gameMetaInfo").setFilter(nameFilter);
       PreparedQuery pq = datastore.prepare(q);
       if (pq.countEntities()>0)
@@ -474,17 +482,17 @@ public class DatabaseDriver {
     }
       
   }
-  static public boolean checkGameNameDuplicate(long gameId,HttpServletRequest req)
+  static public boolean checkGameNameDuplicate(long gameId,Map<Object,Object> parameterMap)
   {
     Key versionKey=KeyFactory.createKey("Version", "versionOne");
     Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", gameId);
     try
     {
        Entity game = datastore.get(gameKey);
-       if (game.getProperty("gameName").equals(req.getParameter("gameName")))
+       if (game.getProperty("gameName").equals(parameterMap.get("gameName")))
          return false;
        else
-         return checkGameNameDuplicate(req);
+         return checkGameNameDuplicate(parameterMap);
     }
     catch (Exception e)
     {
@@ -546,13 +554,19 @@ public class DatabaseDriver {
     Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
     datastore.delete(gameKey);
   }
-  static public void update(String gameId,HttpServletRequest req) throws EntityNotFoundException, IOException
+  static public void update(String gameId,Map<Object,Object> parameterMap) throws EntityNotFoundException, IOException
   {
     Key versionKey=KeyFactory.createKey("Version", "versionOne");
     long ID = Long.parseLong(gameId);
     Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
     Entity target = datastore.get(gameKey);
-    
+    for (Object key : parameterMap.keySet())
+    {
+      String keyStr = (String) key;
+      if (keyStr.equals("accessSignature")==false&&keyStr.equals("developerId")==false&&keyStr.equals("gameId")==false)
+  	  target.setProperty((String)key, parameterMap.get(key));
+    }
+    /*
     if (req.getParameter("gameName")!=null)
       target.setProperty("gameName", req.getParameter("gameName"));
     if (req.getParameter("description")!=null)
@@ -575,7 +589,7 @@ public class DatabaseDriver {
           
       }
         
-    }
+    }*/
       
     datastore.put(target);
     
