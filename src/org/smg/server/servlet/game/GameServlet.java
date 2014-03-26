@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
@@ -32,13 +33,14 @@ import org.smg.server.util.JSONUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
-	private static final String[] validParams =  { SCREENSHOT, ICON, DEVELOPER_ID, GAME_NAME,
+	private static final String[] validParams =  { HAS_TOKENS,SCREENSHOT, ICON, DEVELOPER_ID, GAME_NAME,
 		DESCRIPTION, URL, WIDTH, HEIGHT, ACCESS_SIGNATURE };
 	private Map<Object, Object> deleteInvalid(Map<Object, Object> params, String[] validParams) {
 	    Map<Object, Object> returnMap = new HashMap<Object, Object>();
 	    for (Map.Entry<Object, Object> entry : params.entrySet()) {
 	      if (Arrays.asList(validParams).contains(entry.getKey())) {
-	        if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+	      //  if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+	    	  if (entry.getKey() instanceof String){
 	          returnMap.put(entry.getKey(), entry.getValue());
 	        }
 	      }
@@ -85,7 +87,7 @@ public class GameServlet extends HttpServlet{
 		try 
 		{
 		long developerId = Long.parseLong(idAsStr);
-		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
 		if (developer==null)
 			return false;
 		else
@@ -105,9 +107,9 @@ public class GameServlet extends HttpServlet{
 	{
 		try
 		{
-		  long developerId = Long.parseLong((String)parameterMap.get("developerId"));
-		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		  if (parameterMap.get("accessSignature").equals(developer.get("accessSignature")))
+		  long developerId = Long.parseLong((String)parameterMap.get(DEVELOPER_ID));
+		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+		  if (parameterMap.get(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
 			  return true;
 		  else
 			return false;
@@ -122,9 +124,9 @@ public class GameServlet extends HttpServlet{
 	{
 		try
 		{
-		  long developerId = Long.parseLong(req.getParameter("developerId"));
-		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		  if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
+		  long developerId = Long.parseLong(req.getParameter(DEVELOPER_ID));
+		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+		  if (req.getParameter(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
 			  return true;
 		  else
 			return false;
@@ -138,49 +140,54 @@ public class GameServlet extends HttpServlet{
 	
 	private boolean requiredFieldForUpdate(Map<Object,Object> parameterMap)
 	{
-		if (parameterMap.get("developerId")==null)
+		if (parameterMap.get(DEVELOPER_ID)==null)
 			return false;
 		return true;
 	}
 	private boolean requiredFieldsComplete(Map<Object,Object> parameterMap)
 	{
-		if (parameterMap.get("developerId")==null)
+		if (parameterMap.get(DEVELOPER_ID)==null)
 		{
 			
 			return false;
 		}
-		if (parameterMap.get("gameName")==null)
+		if (parameterMap.get(GAME_NAME)==null)
 		{
 		
 			//System.out.println("gameName");
 			return false;
 		}
-		if (parameterMap.get("description")==null)
+		if (parameterMap.get(DESCRIPTION)==null)
 		{
 			
 			//System.out.println("description");
 			return false;
 		}
-		if (parameterMap.get("url")==null)
+		if (parameterMap.get(URL)==null)
 		{
 			
 			//System.out.println("url");
 			return false;
 		}
-		if (parameterMap.get("width")==null)
+		if (parameterMap.get(WIDTH)==null)
 		{
 			
 				//System.out.println("width");
 				return false;
 		}
-		if (parameterMap.get("height")==null)
+		if (parameterMap.get(HEIGHT)==null)
 		{
 			
 				return false;
 		}
-		if (parameterMap.get("accessSignature")==null)
+		if (parameterMap.get(ACCESS_SIGNATURE)==null)
 		{
 		
+				return false;
+		}
+		if (parameterMap.get(HAS_TOKENS)==null)
+		{
+		        
 				return false;
 		}
 		return true;
@@ -192,33 +199,34 @@ public class GameServlet extends HttpServlet{
 		return DatabaseDriver.checkGameNameDuplicate(parameterMap);
 	}
 	
-	private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
+	/*private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
 	{
 		return DatabaseDriver.checkGameNameDuplicate(gameName,req);
-	}
+	}*/
 	private boolean gameIdExist(String GameId)
 	{
 		return DatabaseDriver.checkIdExists(GameId);
 	}
-	private void returnMetaInfo(String gameName,String versionNum,HttpServletResponse resp) throws IOException, JSONException
+	private void returnMetaInfo(String gameName,HttpServletResponse resp) throws IOException, JSONException
 	{
 		JSONObject metainfo=new JSONObject();
-		resp.setContentType("text/plain");
-		Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
-		metainfo.put("version", targetEntity.getProperty("version"));
-		metainfo.put("gameName", targetEntity.getProperty("gameName"));
-		metainfo.put("url", targetEntity.getProperty("url"));
-		metainfo.put("description", targetEntity.getProperty("description"));
-		metainfo.put("width", targetEntity.getProperty("width"));
-		metainfo.put("height", targetEntity.getProperty("height"));	
-		metainfo.put("postDate", targetEntity.getProperty("postDate"));
+		//Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
+		Entity targetEntity=DatabaseDriver.getEntity(gameName);
+		//metainfo.put("version", targetEntity.getProperty("version"));
+		metainfo.put(GAME_NAME, targetEntity.getProperty(GAME_NAME));
+		metainfo.put(HAS_TOKENS, targetEntity.getProperty(HAS_TOKENS));
+		metainfo.put(URL, targetEntity.getProperty(URL));
+		metainfo.put(DESCRIPTION, targetEntity.getProperty(DESCRIPTION));
+		metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
+		metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));	
+		metainfo.put(POST_DATE, targetEntity.getProperty(POST_DATE));
 		/*JSONObject jobj=new JSONObject();
 		jobj.put("icon",targetEntity.getProperty("icon"));
 		jobj.put("screenshot", targetEntity.getProperty("screenshots"));
 		metainfo.put("pic", jobj);*/
-		metainfo.put("icon", targetEntity.getProperty("icon"));
-		metainfo.put("screenshot", targetEntity.getProperty("screenshot"));
-		metainfo.put("developerId", targetEntity.getProperty("developerId"));
+		metainfo.put(ICON, targetEntity.getProperty(ICON));
+		metainfo.put(SCREENSHOT, targetEntity.getProperty(SCREENSHOT));
+		metainfo.put(DEVELOPER_ID, targetEntity.getProperty(DEVELOPER_ID));
 		metainfo.write(resp.getWriter());
 		
 		
@@ -240,7 +248,8 @@ public class GameServlet extends HttpServlet{
 			}
 			Map<Object, Object> parameterMap = deleteInvalid(
 					(Map) JSONUtil.parse(buffer.toString()), validParams);
-
+            System.out.println((Map)(JSONUtil.parse(buffer.toString())));
+            System.out.println(parameterMap);
 			if (parsePathForPost(pathInfo) == false) {
 
 				put(jObj, ERROR, URL_ERROR, resp);
@@ -279,20 +288,21 @@ public class GameServlet extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		String targetId = null;
+		String targetIdStr = null;
 		JSONObject jObj = new JSONObject();
+		long targetId = 0;
 		CORSUtil.addCORSHeader(resp);
 		try {
-			targetId = req.getPathInfo().substring(1);
-			Long.parseLong(targetId);
-			if (gameIdExist(targetId) == false) {
+			targetIdStr = req.getPathInfo().substring(1);
+			targetId = Long.parseLong(targetIdStr);
+			if (gameIdExist(targetIdStr) == false) {
 				put(jObj, ERROR, WRONG_GAME_ID, resp);
 				return;
 
 			} else {
 
 				try {
-					returnMetaInfo(targetId, VERSION_ONE, resp);
+					returnMetaInfo(targetIdStr, resp);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					put(jObj, ERROR, INVALID_JSON, resp);
@@ -333,8 +343,7 @@ public class GameServlet extends HttpServlet{
 				put(jObj, ERROR, WRONG_GAME_ID, resp);
 				return;
 			}
-			Entity targetEntity = DatabaseDriver.getEntity(targetId,
-					VERSION_ONE);
+			Entity targetEntity = DatabaseDriver.getEntity(targetId);
 			List<String> developerList = (List<String>) targetEntity
 					.getProperty(DEVELOPER_ID);
 			if (developerList.contains(developerId) == false) {
@@ -342,7 +351,7 @@ public class GameServlet extends HttpServlet{
 				return;
 			}
 
-			DatabaseDriver.delete(targetId, VERSION_ONE);
+			DatabaseDriver.delete(targetId);
 			put(jObj, SUCCESS, DELETED_GAME, resp);
 		} catch (Exception e) {
 			put(jObj, ERROR, URL_ERROR, resp);
@@ -362,7 +371,7 @@ public class GameServlet extends HttpServlet{
 		String line = null;
 		try {
 			gameId = req.getPathInfo().substring(1);
-			Long.parseLong(gameId);
+			System.out.println(gameId);
 			try {
 				BufferedReader reader = req.getReader();
 				while ((line = reader.readLine()) != null) {
@@ -392,8 +401,9 @@ public class GameServlet extends HttpServlet{
 					put(jObj, ERROR, GAME_EXISTS, resp);
 					return;
 				}
-				String version = VERSION_ONE;
-				Entity targetEntity = DatabaseDriver.getEntity(gameId, version);
+			//	String version = VERSION_ONE;
+			//	Entity targetEntity = DatabaseDriver.getEntity(gameId, version);
+				Entity targetEntity = DatabaseDriver.getEntity(gameId);
 				List<String> developerList = (List<String>) targetEntity
 						.getProperty(DEVELOPER_ID);
 				if (developerList.contains(parameterMap.get(DEVELOPER_ID)) == false) {
