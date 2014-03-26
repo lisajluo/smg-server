@@ -238,7 +238,6 @@ public class DatabaseDriver {
    }
  }
   
-  
   /**
    * Returns the entity of kind (ex. DEVELOPER) keyed from keyString.
    */
@@ -252,20 +251,6 @@ public class DatabaseDriver {
     catch (Exception e) {
     }
     return entity;
-  }
-  
-  /**
-   * Returns developer map keyed from developerId, in the form of a (copied) Map.
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static Map getDeveloperMapByKey(long keyId) {
-    Entity entity = getEntityByKey(DeveloperConstants.DEVELOPER, keyId);
-    if (entity == null) {
-      return null;
-    }
-    else {
-      return new HashMap(entity.getProperties());
-    }
   }
 
   /**
@@ -282,54 +267,7 @@ public class DatabaseDriver {
     return result;
   }
 
-  /**
-   * Inserts a developer, keyed by developerId, and adding a property for every <String, Object> 
-   * property in the Map properties. The same transaction also overwrites any entity that has 
-   * the same key. Flat (non-nested) maps only.
-   */
-  public static long insertDeveloper(Map<Object, Object> properties) {
-    long key;
-    Transaction txn = datastore.beginTransaction();
-
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER);
-    
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
-    }
-    
-    if (queryByProperty(DeveloperConstants.DEVELOPER, DeveloperConstants.EMAIL, 
-        (String) properties.get(DeveloperConstants.EMAIL)).isEmpty()) {
-      key = datastore.put(entity).getId();
-    }
-    else {
-      key = -1;
-    }
-    
-    txn.commit();    
-    return key;
-  }
   
-  /**
-   * Inserts an entity with specified keyId (used in the future for AI, etc.).
-   */
-  public static void insertDeveloper(long keyId, Map<Object, Object> properties) {
-    Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER, keyId);
-    
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
-    }
-    
-    datastore.put(entity);
-    txn.commit();    
-  }
-  
-  /**
-   * Updates a (non-nested) developer entity with specified keyId.
-   */
-  public static void updateDeveloper(long keyId, Map<Object, Object> properties) {
-    insertDeveloper(keyId, properties);    
-  }
   
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
@@ -42,30 +43,26 @@ public class DeveloperServlet extends HttpServlet {
     String devIdStr = "";
     
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
-    if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
-      devIdStr = req.getPathInfo().substring(1);
-    }
-    long developerId;
     
     try {
-      developerId = Long.parseLong(devIdStr);
+      if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
+        devIdStr = req.getPathInfo().substring(1);
+      }
+      long developerId = Long.parseLong(devIdStr);
+      Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+      
+      if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
+        DatabaseDriver.deleteEntity(DEVELOPER, developerId);
+        jsonPut(json, writer, SUCCESS, DELETED_DEVELOPER);
+      }
+      else {
+        jsonPut(json, writer, ERROR, WRONG_ACCESS_SIGNATURE);
+      }
     }
-    catch (NumberFormatException e) {
-      developerId = INVALID;
-    }
-    Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-    
-    if (developerId == INVALID || developer == null) {  // No developer found for developerId
+    catch (Exception e) {
       jsonPut(json, writer, ERROR, WRONG_DEVELOPER_ID);
     }
-    else if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-      DatabaseDriver.deleteEntity(DEVELOPER, developerId);
-      jsonPut(json, writer, SUCCESS, DELETED_DEVELOPER);
-    }
-    else {
-      jsonPut(json, writer, ERROR, WRONG_ACCESS_SIGNATURE);
-    }
-
+    
     try {
       json.write(writer);
     } catch (JSONException e) {
@@ -85,37 +82,32 @@ public class DeveloperServlet extends HttpServlet {
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
     String devIdStr = "";
-    long developerId;
-    
     String password = req.getParameter(PASSWORD);
-    if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
-      devIdStr = req.getPathInfo().substring(1);
-    }
     
     try {
-      developerId = Long.parseLong(devIdStr);
+      if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
+        devIdStr = req.getPathInfo().substring(1);
+      }
+      long developerId = Long.parseLong(devIdStr);
+      Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+      
+      if (developer.get(PASSWORD).equals(password)) {
+        developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
+        DeveloperDatabaseDriver.updateDeveloper(developerId, developer);
+        json = new JSONObject(developer);
+      }
+      else {
+        jsonPut(json, writer, ERROR, WRONG_PASSWORD);
+      }
     }
-    catch (NumberFormatException e) {
-      developerId = INVALID;
-    }
-    Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-
-    if (developerId == INVALID || developer == null) {  // No developer found for developerId
+    catch (Exception e) {
       jsonPut(json, writer, ERROR, WRONG_DEVELOPER_ID);
-    }
-    else if (developer.get(PASSWORD).equals(password)) {
-      developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
-      DatabaseDriver.updateDeveloper(developerId, developer);
-      json = new JSONObject(developer);
-    }
-    else {
-      jsonPut(json, writer, ERROR, WRONG_PASSWORD);
     }
 
     try {
       json.write(writer);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
+    } 
+    catch (JSONException e) {
       e.printStackTrace();
     }
   }
@@ -148,7 +140,7 @@ public class DeveloperServlet extends HttpServlet {
       }
       else {
         // Add to database
-        long developerId = DatabaseDriver.insertDeveloper(parameterMap);
+        long developerId = DeveloperDatabaseDriver.insertDeveloper(parameterMap);
         
         if (developerId == INVALID) {
           jsonPut(json, writer, ERROR, EMAIL_EXISTS);
@@ -157,7 +149,7 @@ public class DeveloperServlet extends HttpServlet {
           String accessSignature = AccessSignatureUtil.generate(developerId);
           parameterMap.put(ACCESS_SIGNATURE, accessSignature);
           // Update database with access signature
-          DatabaseDriver.updateDeveloper(developerId, parameterMap);
+          DeveloperDatabaseDriver.updateDeveloper(developerId, parameterMap);
     
           // Return response  
           jsonPut(json, writer, DEVELOPER_ID, developerId);
@@ -172,8 +164,8 @@ public class DeveloperServlet extends HttpServlet {
 
     try {
       json.write(writer);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
+    } 
+    catch (JSONException e) {
       e.printStackTrace();
     }
 
@@ -199,7 +191,8 @@ public class DeveloperServlet extends HttpServlet {
   private void jsonPut(JSONObject json, PrintWriter writer, String obj1, Object obj2) {
     try {
       json.put(obj1, obj2);
-    } catch (JSONException e) {
+    } 
+    catch (JSONException e) {
       e.printStackTrace();
     }
   }
