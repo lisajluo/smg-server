@@ -243,13 +243,13 @@ public class DatabaseDriver {
    * Returns the entity of kind (ex. DEVELOPER) keyed from keyString.
    */
   public static Entity getEntityByKey(String kind, long keyId) {
-    Key key = KeyFactory.createKey(kind, keyId);
     Entity entity = null;
     
     try {
+      Key key = KeyFactory.createKey(kind, keyId);
       entity = datastore.get(key);
     }
-    catch (EntityNotFoundException e) {
+    catch (Exception e) {
     }
     return entity;
   }
@@ -334,11 +334,18 @@ public class DatabaseDriver {
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
-  public static void deleteEntity(String kind, long keyId) {
+  public static boolean deleteEntity(String kind, long keyId) {
     Transaction txn = datastore.beginTransaction();
-    Key key = KeyFactory.createKey(kind, keyId);
-    datastore.delete(key);
-    txn.commit();
+    try {
+      Key key = KeyFactory.createKey(kind, keyId);
+      datastore.delete(key);
+      txn.commit();
+      return true;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
   }
 
   /**
