@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Game Test</title>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
+</head>
+<body>
+<h3> Test Page</h3>
+
+<p><a href = "#" id = "submitGame">Submit</a></p>
+<p><a href = "#" id = "getGame">Get</a></p>
+<p><a href = "#" id = "deleteGame">Delete</a></p>
+<p><a href = "#" id = "putGame">Put</a></p>
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $("#submitGame").on("click", function(event) {
+    ajaxCall("http://localhost:8888/games");
+  });
+   $("#getGame").on("click", function(event) {
+    ajaxCall_get("http://localhost:8888/games/6473924464345088");
+  });
+    $("#deleteGame").on("click", function(event) {
+    ajaxCall_delete("http://localhost:8888/games/5910974510923776?developerId=5629499534213120&accessSignature=d2fc5c11e7c51e74d06b00a942c11db7");
+  });
+   $("#putGame").on("click", function(event) {
+    ajaxCall_put("http://localhost:8888/games/6473924464345088");
+  });
+});
+  
+function ajaxCall(url) {
+  var screenshot = ["www.test1.com","www.test2.com"];
+  var jsonObj = {
+        "gameName": "Yoav",
+        "url" : "www.foo.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : "50",
+        "height" : "100",
+        "icon" : "www.google.com",
+        "screenshot" : JSON.stringify(screenshot),
+        "developerId" : "5910974510923776",
+        "accessSignature" : "2eb56f47783646f03d94ad4bcc97bdbd"
+    };
+  $.ajax({
+    url: url, 
+    type: "POST",
+    dataType: "json",
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+      //alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_get(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "GET",
+    dataType : "json",
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_delete(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    success: function(data, textStatus, jqXHR) {
+      //alert(data);
+      console.log(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_put(url) {
+  var screenshot = ["www.google.com"];
+  var jsonObj = {
+        "gameName": "hello~",
+        "url" : "www.foo2.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+         "screenshot" : JSON.stringify(screenshot),
+        "developerId" : "5910974510923776",
+        "accessSignature" : "2eb56f47783646f03d94ad4bcc97bdbd"
+    };
+  
+  $.ajax({
+    url: url, 
+    type: "PUT",
+    dataType : "json",
+    crossDomain: true,
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+      console.log(data);
+      //alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+</script>
+</body>
+</html>

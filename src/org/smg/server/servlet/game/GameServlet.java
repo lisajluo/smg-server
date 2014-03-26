@@ -10,8 +10,11 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +24,23 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.util.CORSUtil;
+import org.smg.server.util.JSONUtil;
 
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+	private Map<Object, Object> deleteInvalid(Map<Object, Object> params, String[] validParams) {
+	    Map<Object, Object> returnMap = new HashMap<Object, Object>();
+	    for (Map.Entry<Object, Object> entry : params.entrySet()) {
+	      if (Arrays.asList(validParams).contains(entry.getKey())) {
+	        if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+	          returnMap.put(entry.getKey(), entry.getValue());
+	        }
+	      }
+	    }
+	    
+	    return returnMap;
+	  }
 	private void put (JSONObject jObj,String key,String value,HttpServletResponse resp)
 	{
 		try
@@ -75,9 +91,26 @@ public class GameServlet extends HttpServlet{
 			return false;
 		}
 	}
-	private boolean gameNameDuplicate(long gameId, HttpServletRequest req)
+	private boolean gameNameDuplicate(long gameId, Map<Object,Object> parameterMap)
 	{
-		 return DatabaseDriver.checkGameNameDuplicate(gameId,req);
+		 return DatabaseDriver.checkGameNameDuplicate(gameId,parameterMap);
+		
+	}
+	private boolean signatureRight(Map<Object,Object> parameterMap)
+	{
+		try
+		{
+		  long developerId = Long.parseLong((String)parameterMap.get("developerId"));
+		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		  if (parameterMap.get("accessSignature").equals(developer.get("accessSignature")))
+			  return true;
+		  else
+			return false;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 		
 	}
 	private boolean signatureRight(HttpServletRequest req)
@@ -98,49 +131,60 @@ public class GameServlet extends HttpServlet{
 		
 	}
 	
-	private boolean requiredFieldForUpdate(HttpServletRequest req)
+	private boolean requiredFieldForUpdate(Map<Object,Object> parameterMap)
 	{
-		if (req.getParameter("developerId")==null)
+		if (parameterMap.get("developerId")==null)
 			return false;
 		return true;
 	}
-	private boolean requiredFieldsComplete(HttpServletRequest req)
+	private boolean requiredFieldsComplete(Map<Object,Object> parameterMap)
 	{
-		if (req.getParameter("developerId")==null)
+		if (parameterMap.get("developerId")==null)
 		{
+			
 			return false;
 		}
-		if (req.getParameter("gameName")==null)
+		if (parameterMap.get("gameName")==null)
 		{
+		
 			//System.out.println("gameName");
 			return false;
 		}
-		if (req.getParameter("description")==null)
+		if (parameterMap.get("description")==null)
 		{
+			
 			//System.out.println("description");
 			return false;
 		}
-		if (req.getParameter("url")==null)
+		if (parameterMap.get("url")==null)
 		{
+			
 			//System.out.println("url");
 			return false;
 		}
-		if (req.getParameter("width")==null)
+		if (parameterMap.get("width")==null)
+		{
+			
 				//System.out.println("width");
 				return false;
-		if (req.getParameter("height")==null)
+		}
+		if (parameterMap.get("height")==null)
+		{
 			
 				return false;
-			
-		if (req.getParameter("accessSignature")==null)
+		}
+		if (parameterMap.get("accessSignature")==null)
+		{
+		
 				return false;
+		}
 		return true;
 		
 		
 	}
-	private boolean gameNameDuplicate(HttpServletRequest req)
+	private boolean gameNameDuplicate(Map<Object,Object> parameterMap)
 	{
-		return DatabaseDriver.checkGameNameDuplicate(req);
+		return DatabaseDriver.checkGameNameDuplicate(parameterMap);
 	}
 	
 	private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
@@ -161,11 +205,14 @@ public class GameServlet extends HttpServlet{
 		metainfo.put("url", targetEntity.getProperty("url"));
 		metainfo.put("description", targetEntity.getProperty("description"));
 		metainfo.put("width", targetEntity.getProperty("width"));
-		metainfo.put("height", targetEntity.getProperty("height"));		
-		JSONObject jobj=new JSONObject();
+		metainfo.put("height", targetEntity.getProperty("height"));	
+		metainfo.put("postDate", targetEntity.getProperty("postDate"));
+		/*JSONObject jobj=new JSONObject();
 		jobj.put("icon",targetEntity.getProperty("icon"));
-		jobj.put("screenshots", targetEntity.getProperty("screenshots"));
-		metainfo.put("pic", jobj);
+		jobj.put("screenshot", targetEntity.getProperty("screenshots"));
+		metainfo.put("pic", jobj);*/
+		metainfo.put("icon", targetEntity.getProperty("icon"));
+		metainfo.put("screenshot", targetEntity.getProperty("screenshot"));
 		metainfo.put("developerId", targetEntity.getProperty("developerId"));
 		metainfo.write(resp.getWriter());
 		
@@ -177,6 +224,22 @@ public class GameServlet extends HttpServlet{
 		String pathInfo=req.getPathInfo();
 		CORSUtil.addCORSHeader(resp);
 		JSONObject jObj = new JSONObject();
+		StringBuffer buffer = new StringBuffer();
+		String line = null;
+		
+		String[] validParams = {"screenshot","icon","developerId", "gameName","description","url","width","height","accessSignature"};
+		try
+		{
+	      BufferedReader reader = req.getReader();
+		  while ((line = reader.readLine()) != null) {
+		       buffer.append(line);
+		      }
+	    Map<Object, Object> parameterMap = deleteInvalid(
+		          (Map) JSONUtil.parse(buffer.toString()), validParams);
+	    if (parameterMap.get("screenshot")==null)
+	    	System.out.println("screenshot is null");
+	    else
+	    	System.out.println(parameterMap.get("screenshot"));
 		if (parsePathForPost(pathInfo)==false)
 		{
 			
@@ -186,26 +249,26 @@ public class GameServlet extends HttpServlet{
         	return;
 		}
 		
-		if (requiredFieldsComplete(req)==false)
+		if (requiredFieldsComplete(parameterMap)==false)
         {
 			put(jObj,"error","MISSING_INFO",resp);
         //	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
         	return;
         }
-        if (developerIdExists(req.getParameter("developerId"))==false)
+        if (developerIdExists((String)parameterMap.get("developerId"))==false)
         {
-        	System.out.println(req.getParameter("developerId"));
+        	
         	put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
         	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
-        if (signatureRight(req)==false)
+        if (signatureRight(parameterMap)==false)
         {
         	put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
         	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
         	return;	
         }
-        if (gameNameDuplicate(req)==true)
+        if (gameNameDuplicate(parameterMap)==true)
         {
         	put(jObj,new String("error"),new String("GAME_EXISTS"),resp);
         	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
@@ -214,24 +277,24 @@ public class GameServlet extends HttpServlet{
         else
         {
         	
-        	try
-        	{
-        	   long gameId=DatabaseDriver.saveGameMetaInfo(req);
+        	   long gameId=DatabaseDriver.saveGameMetaInfo(parameterMap);
                CORSUtil.addCORSHeader(resp);
                resp.setContentType("text/plain");
               
         	    jObj.put("gameId",gameId);
         	    jObj.write(resp.getWriter());
-        	}
-        	catch (Exception e)
-        	{
-        		put(jObj,"error","INVALID_JSON_FORMAT",resp);
-            	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
-            	return;	
-        	}
+        
         	
            // resp.getWriter().println("{\"success\" : \"GAME_SUBMISSION_SUCCESS\"}");   
         }
+		}
+		catch (Exception e)
+		{
+
+    		put(jObj,"error","INVALID_JSON_FORMAT",resp);
+        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
+        	return;	
+		}
     }
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
@@ -335,6 +398,9 @@ public class GameServlet extends HttpServlet{
 		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
 		String gameId=null;
+		StringBuffer buffer = new StringBuffer();
+		String line = null;
+		String[] validParams = {"screenshot","icon","developerId", "gameName","description","url","width","height","accessSignature"};
 		try
 		{
 			gameId = req.getPathInfo().substring(1);
@@ -346,19 +412,27 @@ public class GameServlet extends HttpServlet{
 			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
 			return;
 		}
-		if (requiredFieldForUpdate(req)==false)
+		try
+		{
+		BufferedReader reader = req.getReader();
+		  while ((line = reader.readLine()) != null) {
+		       buffer.append(line);
+		      }
+	    Map<Object, Object> parameterMap = deleteInvalid(
+		          (Map) JSONUtil.parse(buffer.toString()), validParams);
+		if (requiredFieldForUpdate(parameterMap)==false)
 		{
 			put(jObj,"error","MISSING_INFO",resp);
 			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
 			return;		
 		}
-		if (developerIdExists(req.getParameter("developerId"))==false)
+		if (developerIdExists((String)parameterMap.get("developerId"))==false)
         {
 			put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
         	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
         	return;	
         }
-		if (signatureRight(req)==false)
+		if (signatureRight(parameterMap)==false)
 		{
 			put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
 			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
@@ -371,7 +445,7 @@ public class GameServlet extends HttpServlet{
 			return;			
 		}
 		
-	    if (gameNameDuplicate(Long.parseLong(gameId),req)==true)
+	    if (gameNameDuplicate(Long.parseLong(gameId),parameterMap)==true)
 	    {
 	    	    put(jObj,"error","GAME_EXISTS",resp);
 	        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
@@ -380,16 +454,14 @@ public class GameServlet extends HttpServlet{
 		String version = "versionOne";
 		Entity targetEntity=DatabaseDriver.getEntity(gameId, version);
 		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
-		if (developerList.contains(req.getParameter("developerId"))==false)
+		if (developerList.contains(parameterMap.get("developerId"))==false)
 		{
 			put(jObj,"error","WRONG_DEVELOPER_ID",resp);
 			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
 			return;
 		}
-		try
-		{
 		 
-		  DatabaseDriver.update(gameId,req);		  
+		  DatabaseDriver.update(gameId,parameterMap);		  
 		  
 		  put(jObj,"success","GAME_UPDATED",resp);  
 		}
