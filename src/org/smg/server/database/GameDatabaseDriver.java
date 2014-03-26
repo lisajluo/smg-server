@@ -12,23 +12,37 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 public class GameDatabaseDriver /*implements EndGameInterface*/ {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   
+  // Huan
   Entity getGame(long gameId) throws EntityNotFoundException {
     // TODO implement this method
     return null;
   }
   
+  // Huan
   List<Long> getAllPlayableGameIds(long playerId) {
     // TODO implement this method
     return null;
   }
   
-  Entity getStats(long gameId) {
+  // lisa
+  Map<String, Object> getStats(long gameId) {
     // TODO write this method
+    // highScore: Map<String, Object> playerId, score
+    // rating: Map<int totalRatings, double averageRating>
+    // matches: List of Map<String, Object>:
+    /*
+     * “firstName”: “Bob”,
+           “nickName”: “Ninja”,
+           “winner”: true, // boolean
+           “score”: 43543, //int
+           “tokens:” 2394384 // (for games that have tokens)
+     */
     return null;
   }
   
   //@Override
   // TODO override when Container is finished
+  // lisa
   void updateStats(Map<String, Object> winInfo) {
     // (iin the beginning there are no stats for a game)
     /*
@@ -39,5 +53,12 @@ public class GameDatabaseDriver /*implements EndGameInterface*/ {
       WinnerIds: [ ]
       Tokens: Optional.of(Map<long playerId, int tokenNumber>)
      */
+    //
+  }
+  
+  // lisa
+  double updateRatings(long gameId, double newRating) {
+    // TODO implement this (updates table) return newAverage
+    return 0.00;
   }
 }
