@@ -1,9 +1,15 @@
 package org.smg.server.servlet.container;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.smg.server.database.DatabaseDriver;
+
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class ContainerVerification {
   
@@ -95,5 +101,21 @@ public class ContainerVerification {
       return false;
     }
     return true;
+  }
+  
+  /**
+   * send error message to the client
+   * @param resp
+   * @param returnValue
+   * @param errorMSG
+   */
+  public static void sendErrorMessage (HttpServletResponse resp, 
+      JSONObject returnValue, String errorMSG) {
+    try {
+      returnValue.put(ContainerConstants.ERROR, errorMSG);
+      returnValue.write(resp.getWriter());
+    } catch (JSONException | IOException e) {
+      e.printStackTrace();
+    }  
   }
 }

@@ -37,6 +37,13 @@ public class JSONUtil {
 		}
 		return player;
 	}
+	
+	/**
+	 * Convert JSONString to a Map
+	 * @param json
+	 * @return
+	 * @throws IOException
+	 */
   public static Map<String, Object> parse(String json) throws IOException {
     ObjectMapper mapper = new ObjectMapper();    
     // read JSON from a file
@@ -54,11 +61,15 @@ public class JSONUtil {
      return map;
   }
   
+  /**
+   * parse Match history property to a List
+   * @param json
+   * @return
+   * @throws IOException
+   */
   public static List<HashMap<String, Object>> parseHistory(String json) throws IOException {
     ObjectMapper mapper = new ObjectMapper();    
-    // read JSON from a file
-    List<HashMap<String, Object>> list = new LinkedList<HashMap<String,Object>>();
-    
+    List<HashMap<String, Object>> list = new LinkedList<HashMap<String,Object>>();    
       try {
         list = mapper.readValue(
           json,
@@ -71,6 +82,12 @@ public class JSONUtil {
      return list;
   }
   
+  /**
+   * Convert a map to a JSONString
+   * @param map
+   * @return
+   * @throws IOException
+   */
   public static String mapToString(Map<String,Object> map) throws IOException {
     ObjectMapper mapper = new ObjectMapper();   
     String json = mapper.writeValueAsString(map);
