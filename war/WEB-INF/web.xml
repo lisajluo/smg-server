@@ -44,6 +44,25 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>players</servlet-name>
     <url-pattern>/players/*</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>queue</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.QueueServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>queue</servlet-name>
+    <url-pattern>/queue</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>channel</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.ChannelConnectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>channel</servlet-name>
+    <url-pattern>/_ah/channel/*</url-pattern>
+  </servlet-mapping>
+  
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

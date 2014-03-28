@@ -21,6 +21,7 @@ public class MatchInfo {
   private Map<String, Long> gameOverScores;
   private String gameOverReason;
   private List<GameStateHistoryItem> history;
+  private Map<Long, Long> playerIdToNumberOfTokensInPot;
 
   public static MatchInfo getMatchInfoFromEntity(Entity e) throws JSONException,
       JsonParseException, JsonMappingException, IOException {
@@ -104,5 +105,13 @@ public class MatchInfo {
 
   public final void setHistory(List<GameStateHistoryItem> history) {
     this.history = history;
+  }
+
+  public final Map<Long, Long> getPlayerIdToNumberOfTokensInPot() {
+    return playerIdToNumberOfTokensInPot;
+  }
+
+  public final void setPlayerIdToNumberOfTokensInPot(Map<Long, Long> playerIdToNumberOfTokensInPot) {
+    this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
   }
 }

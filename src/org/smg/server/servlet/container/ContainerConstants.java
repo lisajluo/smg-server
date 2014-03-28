@@ -1,3 +1,4 @@
+
 package org.smg.server.servlet.container;
 
 public final class ContainerConstants {
@@ -55,5 +56,4 @@ public final class ContainerConstants {
  // Success message
  public static final String SUCCESS = "success";
  public static final String BUILD_CHANNEL_SUCCESS = "BUILD_CHANNEL_SUCCESS";
- 
 }
