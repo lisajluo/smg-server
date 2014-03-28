@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriver;
+import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
 import org.smg.server.servlet.container.GameApi.Operation;
+import org.smg.server.servlet.container.GameApi.SetTurn;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
@@ -28,11 +30,11 @@ public class MatchOperationServlet extends HttpServlet {
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
   }
-  
+
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    
+
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     long matchId = 0;
@@ -42,7 +44,8 @@ public class MatchOperationServlet extends HttpServlet {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
         returnValue.write(resp.getWriter());
-      } catch (JSONException e1) { }
+      } catch (JSONException e1) {
+      }
       return;
     }
     if (!ContainerVerification.matchIdVerify(matchId)) {
@@ -53,7 +56,7 @@ public class MatchOperationServlet extends HttpServlet {
       }
       return;
     }
-    
+
     long playerId = 0;
     try {
       playerId = Long.parseLong(req.getParameter(ContainerConstants.PLAYER_ID));
@@ -61,7 +64,8 @@ public class MatchOperationServlet extends HttpServlet {
       try {
         returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
         returnValue.write(resp.getWriter());
-      } catch (JSONException e1) { }
+      } catch (JSONException e1) {
+      }
       return;
     }
     if (!ContainerVerification.playerIdVerify(playerId)) {
@@ -110,7 +114,7 @@ public class MatchOperationServlet extends HttpServlet {
     // get json string the parse to map
     String json = Utils.getBody(req);
     JSONObject returnValue = new JSONObject();
-    if (json != null) {
+    if (json != null && !json.isEmpty()) {
       Map<String, Object> jsonMap = null;
       try {
         jsonMap = JSONUtil.parse(json);
@@ -128,7 +132,8 @@ public class MatchOperationServlet extends HttpServlet {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
           returnValue.write(resp.getWriter());
-        } catch (JSONException e) {  }
+        } catch (JSONException e) {
+        }
         return;
       }
       String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
@@ -147,7 +152,8 @@ public class MatchOperationServlet extends HttpServlet {
         try {
           returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_MATCH_ID);
           returnValue.write(resp.getWriter());
-        } catch (JSONException e1) { }
+        } catch (JSONException e1) {
+        }
         return;
       }
       if (!ContainerVerification.matchIdVerify(matchId)) {
@@ -163,8 +169,23 @@ public class MatchOperationServlet extends HttpServlet {
 
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
 
+      boolean isGameEnd = false;
+      // If the game is "turn" based, nextMovePlayerId will never be -1.
+      long nextMovePlayerId = -1;
+      for (Object op : operations) {
+        if (op instanceof EndGame) {
+          isGameEnd = true;
+        } else if (op instanceof SetTurn) {
+          nextMovePlayerId = Long.parseLong((String) ((SetTurn) op).getPlayerId());
+        }
+      }
+
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
+
+        // TODO This needs to be modified at first place?
+        mi.setPlayerThatHasTurn(nextMovePlayerId);
+
         GameState newState = updateMatchInfoByOperations(mi, operations);
 
         // Write the object back to JSON formation.
@@ -172,8 +193,16 @@ public class MatchOperationServlet extends HttpServlet {
         DatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response
-        String rtnStr = new ObjectMapper().writeValueAsString(newState);
+        String rtnStr = new ObjectMapper().writeValueAsString(newState
+            .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
         returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
+
+        // TODO If game is ended. Do update things.
+        if (isGameEnd) {
+          mi.setGameOverReason(ContainerConstants.OVER);
+
+        }
+
       } catch (JSONException e) {
         // This will be reached if there is something wrong with the formation
         // in Entity.
