@@ -89,8 +89,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean gameIdVerify(long gameId) {
-    //Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
-    Entity entity = DatabaseDriver.getEntity(String.valueOf(gameId), "versionOne");
+    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    //Entity entity = DatabaseDriver.getEntity(String.valueOf(gameId), "versionOne");
     if (entity == null) {
       return false;
     }

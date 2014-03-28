@@ -1,4 +1,7 @@
 package org.smg.server.servlet.game;
+
+import static org.smg.server.servlet.game.GameConstants.*;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.DatabaseDriver;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
@@ -29,11 +33,18 @@ import org.smg.server.util.JSONUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet{
+
+	private static final String[] validParams =  { HAS_TOKENS,SCREENSHOT, ICON, DEVELOPER_ID, GAME_NAME,
+		DESCRIPTION, URL, WIDTH, HEIGHT, ACCESS_SIGNATURE };
+
 	private Map<Object, Object> deleteInvalid(Map<Object, Object> params, String[] validParams) {
 	    Map<Object, Object> returnMap = new HashMap<Object, Object>();
 	    for (Map.Entry<Object, Object> entry : params.entrySet()) {
 	      if (Arrays.asList(validParams).contains(entry.getKey())) {
-	        if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+
+	      //  if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+	    	  if (entry.getKey() instanceof String){
+
 	          returnMap.put(entry.getKey(), entry.getValue());
 	        }
 	      }
@@ -80,7 +91,7 @@ public class GameServlet extends HttpServlet{
 		try 
 		{
 		long developerId = Long.parseLong(idAsStr);
-		Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
+		Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
 		if (developer==null)
 			return false;
 		else
@@ -92,6 +103,7 @@ public class GameServlet extends HttpServlet{
 		}
 	}
 	private boolean gameNameDuplicate(long gameId, Map<Object,Object> parameterMap)
+
 	{
 		 return DatabaseDriver.checkGameNameDuplicate(gameId,parameterMap);
 		
@@ -100,9 +112,10 @@ public class GameServlet extends HttpServlet{
 	{
 		try
 		{
-		  long developerId = Long.parseLong((String)parameterMap.get("developerId"));
-		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		  if (parameterMap.get("accessSignature").equals(developer.get("accessSignature")))
+		  long developerId = Long.parseLong((String)parameterMap.get(DEVELOPER_ID));
+		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+		  if (parameterMap.get(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
+
 			  return true;
 		  else
 			return false;
@@ -117,9 +130,9 @@ public class GameServlet extends HttpServlet{
 	{
 		try
 		{
-		  long developerId = Long.parseLong(req.getParameter("developerId"));
-		  Map developer = DatabaseDriver.getDeveloperMapByKey(developerId);
-		  if (req.getParameter("accessSignature").equals(developer.get("accessSignature")))
+		  long developerId = Long.parseLong(req.getParameter(DEVELOPER_ID));
+		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
+		  if (req.getParameter(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
 			  return true;
 		  else
 			return false;
@@ -133,49 +146,70 @@ public class GameServlet extends HttpServlet{
 	
 	private boolean requiredFieldForUpdate(Map<Object,Object> parameterMap)
 	{
-		if (parameterMap.get("developerId")==null)
+
+		if (parameterMap.get(DEVELOPER_ID)==null)
+
 			return false;
 		return true;
 	}
 	private boolean requiredFieldsComplete(Map<Object,Object> parameterMap)
 	{
-		if (parameterMap.get("developerId")==null)
+
+		if (parameterMap.get(DEVELOPER_ID)==null)
+
 		{
 			
 			return false;
 		}
-		if (parameterMap.get("gameName")==null)
+
+		if (parameterMap.get(GAME_NAME)==null)
+
 		{
 		
 			//System.out.println("gameName");
 			return false;
 		}
-		if (parameterMap.get("description")==null)
+
+		if (parameterMap.get(DESCRIPTION)==null)
+
 		{
 			
 			//System.out.println("description");
 			return false;
 		}
-		if (parameterMap.get("url")==null)
+
+		if (parameterMap.get(URL)==null)
+
 		{
 			
 			//System.out.println("url");
 			return false;
 		}
-		if (parameterMap.get("width")==null)
+
+		if (parameterMap.get(WIDTH)==null)
+
 		{
 			
 				//System.out.println("width");
 				return false;
 		}
-		if (parameterMap.get("height")==null)
+
+		if (parameterMap.get(HEIGHT)==null)
+
 		{
 			
 				return false;
 		}
-		if (parameterMap.get("accessSignature")==null)
+
+		if (parameterMap.get(ACCESS_SIGNATURE)==null)
 		{
 		
+				return false;
+		}
+		if (parameterMap.get(HAS_TOKENS)==null)
+		{
+		        
+
 				return false;
 		}
 		return true;
@@ -187,290 +221,239 @@ public class GameServlet extends HttpServlet{
 		return DatabaseDriver.checkGameNameDuplicate(parameterMap);
 	}
 	
-	private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
+	/*private boolean gameNameDuplicate(String gameName,HttpServletRequest req)
 	{
 		return DatabaseDriver.checkGameNameDuplicate(gameName,req);
-	}
+	}*/
 	private boolean gameIdExist(String GameId)
 	{
 		return DatabaseDriver.checkIdExists(GameId);
 	}
-	private void returnMetaInfo(String gameName,String versionNum,HttpServletResponse resp) throws IOException, JSONException
+	private void returnMetaInfo(String gameName,HttpServletResponse resp) throws IOException, JSONException
 	{
 		JSONObject metainfo=new JSONObject();
-		resp.setContentType("text/plain");
-		Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
-		metainfo.put("version", targetEntity.getProperty("version"));
-		metainfo.put("gameName", targetEntity.getProperty("gameName"));
-		metainfo.put("url", targetEntity.getProperty("url"));
-		metainfo.put("description", targetEntity.getProperty("description"));
-		metainfo.put("width", targetEntity.getProperty("width"));
-		metainfo.put("height", targetEntity.getProperty("height"));	
-		metainfo.put("postDate", targetEntity.getProperty("postDate"));
+
+		//Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
+		Entity targetEntity=DatabaseDriver.getEntity(gameName);
+		//metainfo.put("version", targetEntity.getProperty("version"));
+		metainfo.put(GAME_NAME, targetEntity.getProperty(GAME_NAME));
+		metainfo.put(HAS_TOKENS, targetEntity.getProperty(HAS_TOKENS));
+		metainfo.put(URL, targetEntity.getProperty(URL));
+		metainfo.put(DESCRIPTION, targetEntity.getProperty(DESCRIPTION));
+		metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
+		metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));	
+		metainfo.put(POST_DATE, targetEntity.getProperty(POST_DATE));
+
 		/*JSONObject jobj=new JSONObject();
 		jobj.put("icon",targetEntity.getProperty("icon"));
 		jobj.put("screenshot", targetEntity.getProperty("screenshots"));
 		metainfo.put("pic", jobj);*/
-		metainfo.put("icon", targetEntity.getProperty("icon"));
-		metainfo.put("screenshot", targetEntity.getProperty("screenshot"));
-		metainfo.put("developerId", targetEntity.getProperty("developerId"));
+
+		metainfo.put(ICON, targetEntity.getProperty(ICON));
+		metainfo.put(SCREENSHOT, targetEntity.getProperty(SCREENSHOT));
+		metainfo.put(DEVELOPER_ID, targetEntity.getProperty(DEVELOPER_ID));
+
 		metainfo.write(resp.getWriter());
 		
 		
 	}
 	
 	@Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp)  throws IOException{
-		String pathInfo=req.getPathInfo();
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		String pathInfo = req.getPathInfo();
 		CORSUtil.addCORSHeader(resp);
 		JSONObject jObj = new JSONObject();
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
-		
-		String[] validParams = {"screenshot","icon","developerId", "gameName","description","url","width","height","accessSignature"};
-		try
-		{
-	      BufferedReader reader = req.getReader();
-		  while ((line = reader.readLine()) != null) {
-		       buffer.append(line);
-		      }
-	    Map<Object, Object> parameterMap = deleteInvalid(
-		          (Map) JSONUtil.parse(buffer.toString()), validParams);
-	    if (parameterMap.get("screenshot")==null)
-	    	System.out.println("screenshot is null");
-	    else
-	    	System.out.println(parameterMap.get("screenshot"));
-		if (parsePathForPost(pathInfo)==false)
-		{
-			
-			put(jObj,"error","URL_PATH_ERROR",resp);
-			
-        //	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
-        	return;
-		}
-		
-		if (requiredFieldsComplete(parameterMap)==false)
-        {
-			put(jObj,"error","MISSING_INFO",resp);
-        //	resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
-        	return;
-        }
-        if (developerIdExists((String)parameterMap.get("developerId"))==false)
-        {
-        	
-        	put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
-        	return;	
-        }
-        if (signatureRight(parameterMap)==false)
-        {
-        	put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
-        	return;	
-        }
-        if (gameNameDuplicate(parameterMap)==true)
-        {
-        	put(jObj,new String("error"),new String("GAME_EXISTS"),resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
-        	return;
-        }
-        else
-        {
-        	
-        	   long gameId=DatabaseDriver.saveGameMetaInfo(parameterMap);
-               CORSUtil.addCORSHeader(resp);
-               resp.setContentType("text/plain");
-              
-        	    jObj.put("gameId",gameId);
-        	    jObj.write(resp.getWriter());
-        
-        	
-           // resp.getWriter().println("{\"success\" : \"GAME_SUBMISSION_SUCCESS\"}");   
-        }
-		}
-		catch (Exception e)
-		{
 
-    		put(jObj,"error","INVALID_JSON_FORMAT",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
-        	return;	
-		}
-    }
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
-		String targetId=null;
-		JSONObject jObj = new JSONObject();
-		CORSUtil.addCORSHeader(resp);
-		try
-		{
-			 targetId=req.getPathInfo().substring(1);
-			Long.parseLong(targetId);
-		}
-		catch (Exception e)
-		{
-			put(jObj,"error","URL_PATH_ERROR",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
-			return;
-		}
-		//S (ystem.out.println(targetId);
-		if (gameIdExist(targetId)==false)
-		{
-			put(jObj,"error","WRONG_GAME_ID",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
-			return;
-			
-		}
-		else
-		{
-			
-			try {
-				returnMetaInfo(targetId,"versionOne",resp);
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				put(jObj,"error","PARSE_ERROR",resp);
-				//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"PARSE_ERROR\"}");
+
+		try {
+			BufferedReader reader = req.getReader();
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
 			}
+			Map<Object, Object> parameterMap = deleteInvalid(
+					(Map) JSONUtil.parse(buffer.toString()), validParams);
+            System.out.println((Map)(JSONUtil.parse(buffer.toString())));
+            System.out.println(parameterMap);
+			if (parsePathForPost(pathInfo) == false) {
+
+				put(jObj, ERROR, URL_ERROR, resp);
+				return;
+			}
+
+			if (requiredFieldsComplete(parameterMap) == false) {
+				put(jObj, ERROR, MISSING_INFO, resp);
+				return;
+			}
+			if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
+
+				put(jObj, ERROR, "WRONG_DEVELOPER_ID", resp);
+				return;
+			}
+			if (signatureRight(parameterMap) == false) {
+				put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
+				return;
+			}
+			if (gameNameDuplicate(parameterMap) == true) {
+				put(jObj, ERROR, GAME_EXISTS, resp);
+				return;
+			} else {
+
+				long gameId = DatabaseDriver.saveGameMetaInfo(parameterMap);
+				jObj.put(GAME_ID, gameId);
+				jObj.write(resp.getWriter());
+
+			}
+		} catch (Exception e) {
+
+			put(jObj, ERROR, INVALID_JSON, resp);
+			return;
 		}
-		
+	}
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		String targetIdStr = null;
+		JSONObject jObj = new JSONObject();
+		long targetId = 0;
+		CORSUtil.addCORSHeader(resp);
+		try {
+			targetIdStr = req.getPathInfo().substring(1);
+			targetId = Long.parseLong(targetIdStr);
+			if (gameIdExist(targetIdStr) == false) {
+				put(jObj, ERROR, WRONG_GAME_ID, resp);
+				return;
+
+			} else {
+
+				try {
+					returnMetaInfo(targetIdStr, resp);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					put(jObj, ERROR, INVALID_JSON, resp);
+				}
+			}
+		} catch (Exception e) {
+			put(jObj, ERROR, URL_ERROR, resp);
+			return;
+		}
+
 	}
 	@Override
 	public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException
 	{
 		CORSUtil.addCORSHeader(resp);
 	}
+
 	@Override
-	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
-		String targetId=null;
+	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		String targetId = null;
 		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
-		try
-		{
-			targetId=req.getPathInfo().substring(1);
+		try {
+			targetId = req.getPathInfo().substring(1);
 			Long.parseLong(targetId);
-		}
-		catch (Exception e)
-		{
-			put(jObj,"error","URL_PATH_ERROR",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
-			return;
-		}
-		
-		String gameId= req.getPathInfo().substring(1);
-		String developerId= req.getParameter("developerId");
-		if (developerIdExists(developerId)==false)
-        {
-			put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
-        	return;	
-        }
-		if (signatureRight(req)==false)
-		{
+			String developerId = req.getParameter(DEVELOPER_ID);
+			if (developerIdExists(developerId) == false) {
+				put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+				return;
+			}
+			if (signatureRight(req) == false) {
 
-			put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
-        	return;	
-		}
-		if (gameIdExist(gameId)==false)
-		{
-			put(jObj,"error","WRONG_GAME_ID",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
+				put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
+				return;
+			}
+			if (gameIdExist(targetId) == false) {
+				put(jObj, ERROR, WRONG_GAME_ID, resp);
+				return;
+			}
+			Entity targetEntity = DatabaseDriver.getEntity(targetId);
+			List<String> developerList = (List<String>) targetEntity
+					.getProperty(DEVELOPER_ID);
+			if (developerList.contains(developerId) == false) {
+				put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+				return;
+			}
+
+			DatabaseDriver.delete(targetId);
+			put(jObj, SUCCESS, DELETED_GAME, resp);
+		} catch (Exception e) {
+			put(jObj, ERROR, URL_ERROR, resp);
+
 			return;
 		}
-		Entity targetEntity=DatabaseDriver.getEntity(gameId, "versionOne");
-		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
-		if (developerList.contains(developerId)==false)
-		{
-			put(jObj,"error","WRONG_DEVELOPER_ID",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
-			return;
-		}
-		
-		DatabaseDriver.delete(gameId,"versionOne");
-		
-		resp.setContentType("text/plain");
-        resp.getWriter().println("{\"success\" : \"DELETED_GAME\"}");  
+
 	}
 	
-	@Override 
-	public void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException
-	{
+	@Override
+	public void doPut(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		JSONObject jObj = new JSONObject();
 		CORSUtil.addCORSHeader(resp);
-		String gameId=null;
+
+		String gameId = null;
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
-		String[] validParams = {"screenshot","icon","developerId", "gameName","description","url","width","height","accessSignature"};
-		try
-		{
+		try {
 			gameId = req.getPathInfo().substring(1);
-			Long.parseLong(gameId);
-		}
-		catch (Exception e)
-		{
-			put(jObj,"error","URL_PATH_ERROR",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"URL_PATH_ERROR\"}");
+			System.out.println(gameId);
+			try {
+				BufferedReader reader = req.getReader();
+				while ((line = reader.readLine()) != null) {
+					buffer.append(line);
+				}
+				Map<Object, Object> parameterMap = deleteInvalid(
+						(Map) JSONUtil.parse(buffer.toString()), validParams);
+				if (requiredFieldForUpdate(parameterMap) == false) {
+					put(jObj, ERROR, MISSING_INFO, resp);
+					return;
+				}
+				if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
+					put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+
+					return;
+				}
+				if (signatureRight(parameterMap) == false) {
+					put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
+					return;
+				}
+				if (gameIdExist(gameId) == false) {
+					put(jObj, ERROR, WRONG_GAME_ID, resp);
+					return;
+				}
+
+				if (gameNameDuplicate(Long.parseLong(gameId), parameterMap) == true) {
+					put(jObj, ERROR, GAME_EXISTS, resp);
+					return;
+				}
+			//	String version = VERSION_ONE;
+			//	Entity targetEntity = DatabaseDriver.getEntity(gameId, version);
+				Entity targetEntity = DatabaseDriver.getEntity(gameId);
+				List<String> developerList = (List<String>) targetEntity
+						.getProperty(DEVELOPER_ID);
+				if (developerList.contains(parameterMap.get(DEVELOPER_ID)) == false) {
+					put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+					return;
+				}
+
+				DatabaseDriver.update(gameId, parameterMap);
+
+				put(jObj, SUCCESS, UPDATED_GAME, resp);
+			} catch (Exception e) {
+				put(jObj, ERROR, INVALID_JSON, resp);
+
+				return;
+			}
+		} catch (Exception e) {
+			put(jObj, ERROR, URL_ERROR, resp);
 			return;
 		}
-		try
-		{
-		BufferedReader reader = req.getReader();
-		  while ((line = reader.readLine()) != null) {
-		       buffer.append(line);
-		      }
-	    Map<Object, Object> parameterMap = deleteInvalid(
-		          (Map) JSONUtil.parse(buffer.toString()), validParams);
-		if (requiredFieldForUpdate(parameterMap)==false)
-		{
-			put(jObj,"error","MISSING_INFO",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"MISSING_INFO\"}");
-			return;		
-		}
-		if (developerIdExists((String)parameterMap.get("developerId"))==false)
-        {
-			put(jObj,"error","DEVELOPERID_DOES_NOT_EXISTS",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"DEVELOPERID_DOES_NOT_EXISTS\"}");
-        	return;	
-        }
-		if (signatureRight(parameterMap)==false)
-		{
-			put(jObj,"error","WRONG_ACCESS_SIGNATURE",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_ACCESS_SIGNATURE\"}");
-			return;		
-		}
-		if (gameIdExist(gameId)==false)
-		{
-			put(jObj,"error","WRONG_GAME_ID",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_GAME_ID\"}");
-			return;			
-		}
-		
-	    if (gameNameDuplicate(Long.parseLong(gameId),parameterMap)==true)
-	    {
-	    	    put(jObj,"error","GAME_EXISTS",resp);
-	        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"GAME_EXISTS\"}");
-	        	return;
-	    }
-		String version = "versionOne";
-		Entity targetEntity=DatabaseDriver.getEntity(gameId, version);
-		List<String> developerList=(List<String>) targetEntity.getProperty("developerId");
-		if (developerList.contains(parameterMap.get("developerId"))==false)
-		{
-			put(jObj,"error","WRONG_DEVELOPER_ID",resp);
-			//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"WRONG_DEVELOPER_ID\"}");
-			return;
-		}
-		 
-		  DatabaseDriver.update(gameId,parameterMap);		  
-		  
-		  put(jObj,"success","GAME_UPDATED",resp);  
-		}
-		catch (Exception e)
-		{
-			put(jObj,"error","INVALID_JSON_FORMAT",resp);
-        	//resp.sendError(resp.SC_BAD_REQUEST, "{\"error\" : \"INVALID_JSON_FORMAT\"}");
-        	return;	
-		}
+
+
 	}
 
 }
