@@ -7,8 +7,6 @@ public final class ContainerConstants {
  //entity Name
  public static final String MATCH = "Match";
  public static final String QUEUE = "Queue";
- public static final String PLAYER = "PLAYER";
- public static final String GAME = "gameMetaInfo";
 
  // Various properties in the Match
  public static final String MATCH_ID = "matchId";
@@ -38,9 +36,8 @@ public final class ContainerConstants {
  public static final String STATE = "state";
  public static final String VISIBLE_TO = "visibleTo";
  
- // Various properties in the Player
+ // json key for Player
  public static final String ACCESS_SIGNATURE = "accessSignature";
- public static final String DS_ACCESS_SIGNATURE = "ACCESSSIGNATURE";
  
  // Error messages
  public static final String ERROR = "error";
