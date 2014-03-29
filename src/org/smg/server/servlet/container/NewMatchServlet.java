@@ -64,6 +64,14 @@ public class NewMatchServlet extends HttpServlet {
            resp, returnValue, ContainerConstants.JSON_PARSE_ERROR);
         return;
       }
+      // check if missing info
+      if ( !jsonMap.containsKey(ContainerConstants.PLAYER_IDS) 
+          || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
+          || !jsonMap.containsKey(ContainerConstants.GAME_ID)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.MISSING_INFO);
+        return;
+      }
       // verify playerIds      
       ArrayList<String> ids = 
           (ArrayList<String>) jsonMap.get(ContainerConstants.PLAYER_IDS);

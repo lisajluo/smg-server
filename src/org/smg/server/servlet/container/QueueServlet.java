@@ -50,8 +50,15 @@ public class QueueServlet extends HttpServlet {
            resp, returnValue, ContainerConstants.JSON_PARSE_ERROR);
         return;
       }
-
-   // verify playerId
+      // check if missing info
+      if ( !jsonMap.containsKey(ContainerConstants.PLAYER_ID) 
+          || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
+          || !jsonMap.containsKey(ContainerConstants.GAME_ID)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.MISSING_INFO);
+        return;
+      }
+      // verify playerId
       String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
       long playerId = 0;
       try {

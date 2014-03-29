@@ -45,6 +45,7 @@ public final class ContainerConstants {
  // Error messages
  public static final String ERROR = "error";
  public static final String NO_DATA_RECEIVED = "NO_DATA_RECEIVED";
+ public static final String MISSING_INFO = "MISSING_INFO";
  public static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
  public static final String WRONG_GAME_ID = "WRONG_GAME_ID";
  public static final String WRONG_MATCH_ID = "WROING_MATCH_ID";
