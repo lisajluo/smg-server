@@ -1,5 +1,6 @@
 package org.smg.server.database;
 
+
 import static org.smg.server.servlet.game.GameConstants.*;
 
 import java.util.List;
@@ -7,20 +8,27 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.util.List;
+import java.util.Map;
+
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+
 // TODO should implement that interface when Container team is done
 public class GameDatabaseDriver /*implements EndGameInterface*/ {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   
+
   private static List<JSONObject> getDeveloperListInfo (List<String> developerIdList)
   {
 	  List<JSONObject> result =  new ArrayList<JSONObject> ();
@@ -41,31 +49,20 @@ public class GameDatabaseDriver /*implements EndGameInterface*/ {
 	  }
 	  return result;
   }
-    public static List<JSONObject> getGameInfoByDeveloper(long developerId)
-    {
-    	String developerIdStr = String.valueOf(developerId);
-    	try
-    	{
-    		Query gameQuery = new Query(GAME_META_INFO);
-			PreparedQuery pq = datastore.prepare(gameQuery);
-			
-    	}
-    	catch (Exception e)
-    	{
-    	return null;
-    	}
-    }
-	public static List<JSONObject> getAllGameInfo(long developerId) {
+    
+	public static List<JSONObject> getGameInfo(boolean developerQuery , long developerId) {
 		try {
 			String developerIdStr = null;
-			if (developerId>=0)
+			if (developerQuery==true)
+				developerIdStr = String.valueOf(developerId);
 			Query gameQuery = new Query(GAME_META_INFO);
 			PreparedQuery pq = datastore.prepare(gameQuery);
 			List<JSONObject> queryResult = new ArrayList<JSONObject>();
 			for (Entity result : pq.asIterable()) {
 				JSONObject currentQueryResult = new JSONObject();
-				List<String> developerIdList = (List<String>) (result
-						.getProperty(DEVELOPER_ID));
+				List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
+				if (developerQuery==true&&developerIdList.contains(developerIdStr)==false)
+					continue;
 				List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
 				currentQueryResult.put(DEVELOPER, developerListInfo);
 				Map<String, Object> gameInfo = new HashMap<String, Object>(
@@ -91,11 +88,14 @@ public class GameDatabaseDriver /*implements EndGameInterface*/ {
 	{
 		throw new EntityNotFoundException(gameKey);
 	}
+
   }
   
   // Huan
   List<Long> getAllPlayableGameIds(long playerId) {
+
     // TODO implement this method How does each playerId store all the game he played??
+
     return null;
   }
   

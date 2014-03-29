@@ -1,7 +1,9 @@
 package org.smg.server.servlet.game;
 
 import static org.smg.server.servlet.game.GameConstants.*;
+
 import static org.smg.server.servlet.game.GameUtil.*;
+
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -53,7 +55,21 @@ public class GameServlet extends HttpServlet{
 	    
 	    return returnMap;
 	  }
-	
+
+	private void put (JSONObject jObj,String key,String value,HttpServletResponse resp)
+	{
+		try
+		{
+              jObj.put(key, value);
+              resp.setContentType("text/plain");
+              jObj.write(resp.getWriter());
+		}
+		catch (Exception e)
+		{
+			return;
+		}
+	}
+
 	private boolean parsePathForPost(String pathInfo)
 	{
 		if (pathInfo==null)
@@ -193,6 +209,7 @@ public class GameServlet extends HttpServlet{
 		if (parameterMap.get(ACCESS_SIGNATURE)==null)
 		{
 		
+
 				return false;
 		}
 		return true;
@@ -272,7 +289,9 @@ public class GameServlet extends HttpServlet{
 			}
 			if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
 
+
 				put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+
 				return;
 			}
 			if (signatureRight(parameterMap) == false) {

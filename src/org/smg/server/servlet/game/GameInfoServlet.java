@@ -1,16 +1,21 @@
 package org.smg.server.servlet.game;
 
+
 import static org.smg.server.servlet.game.GameConstants.*;
 import static org.smg.server.servlet.game.GameUtil.*;
 
 import java.io.IOException;
 import java.util.List;
 
+import java.io.IOException;
+
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.util.CORSUtil;
+
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
 
@@ -23,21 +28,16 @@ public class GameInfoServlet extends HttpServlet {
   private List<JSONObject>  returnAllGameInfo()
   {
 	  //TODO:return all the game info
-	  return GameDatabaseDriver.getAllGameInfo();
+	  return GameDatabaseDriver.getGameInfo(false,-1);
   }
   private List<JSONObject> returnGameInfoByDeveloper(long developerId)
   {
 	  //TODO : return gameinfo by developerId
 	  
-	  return GameDatabaseDriver.getGameInfoByDeveloper(developerId);
+	  return GameDatabaseDriver.getGameInfo(true,developerId);
   }
   
-  @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-	  
-   
-  }
+  
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -71,8 +71,12 @@ public class GameInfoServlet extends HttpServlet {
 		  {
 			  put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
 		  }
-	  }
 	  
-   
+	  }
   }
 }
+	  
+   
+
+
+
