@@ -3,7 +3,7 @@ package org.smg.server.servlet.game;
 public final class GameConstants {
 	  private GameConstants() { }  // Prevent instantiation/subclassing
 	
-	  // Developer entity
+	  // Game entity
 	  public static final String DEVELOPER = "Developer";
 	  public static final String SCREENSHOT = "screenshot";
 	  public static final String ICON = "icon";
@@ -14,7 +14,10 @@ public final class GameConstants {
 	  public static final String WIDTH = "width";
 	  public static final String HEIGHT = "height";
 	  public static final String GAME_ID = "gamdId" ;
-	  static final String ACCESS_SIGNATURE = "accessSignature";
+	  public static final String ACCESS_SIGNATURE = "accessSignature";
+	  public static final String HAS_TOKENS = "hasTokens";
+	  public static final String POST_DATE = "postDate";
+	  
 	  
 	  // Error messages
 	  static final String ERROR = "error";
@@ -28,6 +31,7 @@ public final class GameConstants {
 	  static final String URL_ERROR = "INVALID_URL_PATH_ERROR";
 	  
 	  // Success messages
+	  
 	  static final String SUCCESS = "success";
 	  static final String DELETED_DEVELOPER = "DELETED_DEVELOPER";
 	  static final String DELETED_GAME = "DELETED_GAME";
@@ -36,5 +40,7 @@ public final class GameConstants {
 	  // Invalid indicator
 	  static final int INVALID = -1;
 	  
-	  static final String VERSION_ONE = "versionOne" ; 
+	  
+	  public static final String GAME_META_INFO = "gameMetaInfo";
+	  public static final String VERSION_ONE = "versionOne" ; 
 	}

@@ -44,6 +44,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>players</servlet-name>
     <url-pattern>/players/*</url-pattern>
   </servlet-mapping>
+<<<<<<< HEAD
   <servlet>
     <servlet-name>gameinfo</servlet-name>
     <servlet-class>org.smg.server.servlet.game.GameInfoServlet</servlet-class>
@@ -60,6 +61,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>developerinfo</servlet-name>
     <url-pattern>/developerinfo/*</url-pattern>
   </servlet-mapping>
+=======
+>>>>>>> origin/developer-huan-2
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
