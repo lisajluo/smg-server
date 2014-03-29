@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -140,8 +141,8 @@ public class ContainerDatabaseDriver {
         match.getJSONObject(ContainerConstants.GAME_OVER_SCORES).toString());
     entity.setProperty(ContainerConstants.GAME_OVER_REASON, 
         match.getString(ContainerConstants.GAME_OVER_REASON));
-    entity.setUnindexedProperty(ContainerConstants.HISTORY, 
-        match.getJSONArray(ContainerConstants.HISTORY).toString());
+    Text history = new Text(match.getJSONArray(ContainerConstants.HISTORY).toString());
+    entity.setUnindexedProperty(ContainerConstants.HISTORY, history);
     datastore.put(entity);
     txn.commit();
     return entity.getKey().getId();
@@ -185,9 +186,9 @@ public class ContainerDatabaseDriver {
           jsonObj.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
       @SuppressWarnings("unchecked")
       ArrayList<Object> list = (ArrayList<Object>)jsonObj.get(ContainerConstants.HISTORY);
-      JSONArray jsonArray = new JSONArray(list.toArray());      
-      entity.setUnindexedProperty(ContainerConstants.HISTORY, 
-          jsonArray.toString());
+      JSONArray jsonArray = new JSONArray(list.toArray()); 
+      Text history = new Text(jsonArray.toString());
+      entity.setUnindexedProperty(ContainerConstants.HISTORY, history);
     } catch (JSONException e) {
       return false;
     }

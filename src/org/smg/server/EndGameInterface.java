@@ -3,8 +3,7 @@ package org.smg.server;
 import java.util.Map;
 
 /**
- * When a match ended, update stats.
- * @author piper
+ * When a match ended, update winInfo.
  *
  */
 public interface EndGameInterface {

@@ -31,6 +31,9 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
 public class MatchOperationServlet extends HttpServlet {
+  
+  public EndGameInterface endGameInterface;
+  
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
@@ -216,7 +219,7 @@ public class MatchOperationServlet extends HttpServlet {
           if (!tokenPot.isEmpty()) {
             winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, tokenPot);
           }
-          //EndGameInterface.updateStats(endGameStats);
+          endGameInterface.updateStats(winInfo);
           
           
         }
