@@ -1,5 +1,7 @@
 package org.smg.server.database;
 
+
+import static org.smg.server.servlet.game.GameConstants.*;
 import org.smg.server.servlet.developer.DeveloperConstants;
 import org.smg.server.servlet.container.ContainerConstants;
 import org.smg.server.util.JSONUtil;
@@ -238,34 +240,19 @@ public class DatabaseDriver {
    }
  }
   
-  
   /**
    * Returns the entity of kind (ex. DEVELOPER) keyed from keyString.
    */
   public static Entity getEntityByKey(String kind, long keyId) {
-    Key key = KeyFactory.createKey(kind, keyId);
     Entity entity = null;
     
     try {
+      Key key = KeyFactory.createKey(kind, keyId);
       entity = datastore.get(key);
     }
-    catch (EntityNotFoundException e) {
+    catch (Exception e) {
     }
     return entity;
-  }
-  
-  /**
-   * Returns developer map keyed from developerId, in the form of a (copied) Map.
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static Map getDeveloperMapByKey(long keyId) {
-    Entity entity = getEntityByKey(DeveloperConstants.DEVELOPER, keyId);
-    if (entity == null) {
-      return null;
-    }
-    else {
-      return new HashMap(entity.getProperties());
-    }
   }
 
   /**
@@ -282,63 +269,23 @@ public class DatabaseDriver {
     return result;
   }
 
-  /**
-   * Inserts a developer, keyed by developerId, and adding a property for every <String, Object> 
-   * property in the Map properties. The same transaction also overwrites any entity that has 
-   * the same key. Flat (non-nested) maps only.
-   */
-  public static long insertDeveloper(Map<Object, Object> properties) {
-    long key;
-    Transaction txn = datastore.beginTransaction();
-
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER);
-    
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
-    }
-    
-    if (queryByProperty(DeveloperConstants.DEVELOPER, DeveloperConstants.EMAIL, 
-        (String) properties.get(DeveloperConstants.EMAIL)).isEmpty()) {
-      key = datastore.put(entity).getId();
-    }
-    else {
-      key = -1;
-    }
-    
-    txn.commit();    
-    return key;
-  }
   
-  /**
-   * Inserts an entity with specified keyId (used in the future for AI, etc.).
-   */
-  public static void insertDeveloper(long keyId, Map<Object, Object> properties) {
-    Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER, keyId);
-    
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
-    }
-    
-    datastore.put(entity);
-    txn.commit();    
-  }
-  
-  /**
-   * Updates a (non-nested) developer entity with specified keyId.
-   */
-  public static void updateDeveloper(long keyId, Map<Object, Object> properties) {
-    insertDeveloper(keyId, properties);    
-  }
   
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
-  public static void deleteEntity(String kind, long keyId) {
+  public static boolean deleteEntity(String kind, long keyId) {
     Transaction txn = datastore.beginTransaction();
-    Key key = KeyFactory.createKey(kind, keyId);
-    datastore.delete(key);
-    txn.commit();
+    try {
+      Key key = KeyFactory.createKey(kind, keyId);
+      datastore.delete(key);
+      txn.commit();
+      return true;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
   }
 
   /**
@@ -405,48 +352,41 @@ public class DatabaseDriver {
     return true;
   }
   
-  static public long  saveGameMetaInfo(HttpServletRequest req) throws IOException
+  static public long  saveGameMetaInfo(Map<Object,Object> parameterMap) throws IOException
   {
     
-      Key versionKey=KeyFactory.createKey("Version", "versionOne");
       Date date=new Date();
-      Entity game=new Entity("gameMetaInfo",versionKey);
-      game.setProperty("version","versionOne");
-      game.setProperty("postDate", date);
-      game.setProperty("gameName", req.getParameter("gameName"));
-      game.setProperty("description", req.getParameter("description"));
-      game.setProperty("url", req.getParameter("url"));
-      game.setProperty("width", req.getParameter("width"));
-      game.setProperty("height", req.getParameter("height"));
-      String picInfo=req.getParameter("pic");
-      if (picInfo!=null)
+
+      Entity game=new Entity(GAME_META_INFO);
+      game.setProperty(POST_DATE, date);
+      for (Object key : parameterMap.keySet())
       {
-      Map<String, Object> jObj = JSONUtil.parse(picInfo);
-        game.setProperty("icon",jObj.get("icon"));
-        ArrayList<String> screenshot=(ArrayList<String>) (jObj.get("screenshots"));
-      
-        game.setProperty("screenshots", screenshot);
+    	  String keyStr=(String) key;
+    	  if (keyStr.equals(ACCESS_SIGNATURE)==false)
+    	  game.setProperty((String)key, parameterMap.get(key));
       }
+      
 
       List<String> developerList=new ArrayList<String> ();
-      developerList.add(req.getParameter("developerId"));
-      game.setProperty("developerId", developerList);
-    //  game.setProperty("gameId", gameId);
+      developerList.add((String)parameterMap.get(DEVELOPER_ID));
+      game.setProperty(DEVELOPER_ID, developerList);
+
       datastore.put(game);
       long gameId = game.getKey().getId();
-      Key queryKey = KeyFactory.createKey(versionKey,"gameMetaInfo",gameId);
+      //Key queryKey = KeyFactory.createKey(versionKey,"gameMetaInfo",gameId);
       
       return gameId;
     
     
   }
-  static public Entity getEntity(String gameId,String versionNum)
+  static public Entity getEntity(String gameId)
   {
     try 
     {
-      Key versionKey=KeyFactory.createKey("Version", versionNum);
+    //  Key versionKey=KeyFactory.createKey("Version", versionNum);
       long ID = Long.parseLong(gameId);
-      Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+     // Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+      Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
       return datastore.get(gameKey);
     }
     catch (Exception e)
@@ -454,14 +394,15 @@ public class DatabaseDriver {
       return null;
     }
   }
-  static public boolean checkGameNameDuplicate(HttpServletRequest req)
+  static public boolean checkGameNameDuplicate(Map<Object,Object> parameterMap)
   {
     try
     {
-      String versionNum="versionOne";
-      Key versionKey=KeyFactory.createKey("Version", versionNum);
-      Filter nameFilter =new FilterPredicate("gameName",FilterOperator.EQUAL,req.getParameter("gameName"));
-      Query q = new Query("gameMetaInfo").setFilter(nameFilter);
+
+      //String versionNum="versionOne";
+      //Key versionKey=KeyFactory.createKey("Version", versionNum);
+      Filter nameFilter =new FilterPredicate(GAME_NAME,FilterOperator.EQUAL,parameterMap.get(GAME_NAME));
+      Query q = new Query(GAME_META_INFO).setFilter(nameFilter);
       PreparedQuery pq = datastore.prepare(q);
       if (pq.countEntities()>0)
         return true;
@@ -474,28 +415,29 @@ public class DatabaseDriver {
     }
       
   }
-  static public boolean checkGameNameDuplicate(long gameId,HttpServletRequest req)
+  static public boolean checkGameNameDuplicate(long gameId,Map<Object,Object> parameterMap)
   {
-    Key versionKey=KeyFactory.createKey("Version", "versionOne");
-    Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", gameId);
+    Key gameKey=KeyFactory.createKey( GAME_META_INFO, gameId);
     try
     {
        Entity game = datastore.get(gameKey);
-       if (game.getProperty("gameName").equals(req.getParameter("gameName")))
+
+       if (game.getProperty(GAME_NAME).equals(parameterMap.get(GAME_NAME)))
+
          return false;
        else
-         return checkGameNameDuplicate(req);
+         return checkGameNameDuplicate(parameterMap);
     }
     catch (Exception e)
     {
       return false;
     }
   }
-  static public boolean checkGameNameDuplicate(String gameName,HttpServletRequest req)
+ /*static public boolean checkGameNameDuplicate(String gameName,HttpServletRequest req)
   {
     try
     {
-      String versionNum="versionOne";
+      String versionNum=VERSION_ONE;
       Key versionKey=KeyFactory.createKey("Version", versionNum);
       Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo",gameName);
       try
@@ -513,16 +455,16 @@ public class DatabaseDriver {
       return false;
     }
       
-  }
+  }*/
   static public boolean checkIdExists(String gameId)
   {
     try
     {
-      String versionNum="versionOne";
-      Key versionKey=KeyFactory.createKey("Version", versionNum);
+    //  String versionNum="versionOne";
+   //   Key versionKey=KeyFactory.createKey("Version");
       long ID = Long.parseLong(gameId);
       //System.out.println(ID);
-      Key idKey= KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+      Key idKey= KeyFactory.createKey(GAME_META_INFO, ID);
       try 
       {
         datastore.get(idKey);
@@ -539,20 +481,30 @@ public class DatabaseDriver {
     }
   }
   
-  static public void delete(String gameId,String versionNum)
+  static public void delete(String gameId)
   {
-    Key versionKey=KeyFactory.createKey("Version", versionNum);
+   // Key versionKey=KeyFactory.createKey("Version", versionNum);
     long ID = Long.parseLong(gameId);
-    Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+   // Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+    Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
     datastore.delete(gameKey);
   }
-  static public void update(String gameId,HttpServletRequest req) throws EntityNotFoundException, IOException
+  static public void update(String gameId,Map<Object,Object> parameterMap) throws EntityNotFoundException, IOException
   {
-    Key versionKey=KeyFactory.createKey("Version", "versionOne");
+   // Key versionKey=KeyFactory.createKey("Version", "versionOne");
     long ID = Long.parseLong(gameId);
-    Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+ //   Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
+    Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
     Entity target = datastore.get(gameKey);
-    
+    for (Object key : parameterMap.keySet())
+    {
+      String keyStr = (String) key;
+
+      if (keyStr.equals(ACCESS_SIGNATURE)==false&&keyStr.equals(DEVELOPER_ID)==false&&keyStr.equals(GAME_ID)==false)
+
+  	  target.setProperty((String)key, parameterMap.get(key));
+    }
+    /*
     if (req.getParameter("gameName")!=null)
       target.setProperty("gameName", req.getParameter("gameName"));
     if (req.getParameter("description")!=null)
@@ -575,7 +527,7 @@ public class DatabaseDriver {
           
       }
         
-    }
+    }*/
       
     datastore.put(target);
     
