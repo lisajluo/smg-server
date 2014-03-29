@@ -28,6 +28,7 @@ public final class DeveloperConstants {
   // Success messages
   static final String SUCCESS = "success";
   static final String DELETED_DEVELOPER = "DELETED_DEVELOPER";
+  static final String UPDATED_DEVELOPER = "UPDATED_DEVELOPER";
   
   // Invalid indicator
   static final int INVALID = -1;

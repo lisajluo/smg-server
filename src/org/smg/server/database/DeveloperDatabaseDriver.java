@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.smg.server.servlet.developer.DeveloperConstants;
+import static org.smg.server.servlet.developer.DeveloperConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -28,7 +28,7 @@ public class DeveloperDatabaseDriver {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Map getDeveloperMap(long keyId) throws EntityNotFoundException {
     try {
-      Key key = KeyFactory.createKey(DeveloperConstants.DEVELOPER, keyId);
+      Key key = KeyFactory.createKey(DEVELOPER, keyId);
       Entity entity = datastore.get(key);
       return new HashMap(entity.getProperties());
     }
@@ -42,10 +42,10 @@ public class DeveloperDatabaseDriver {
    * Returns a list of entities given a query by kind (ex: DEVELOPER), property (ex: EMAIL),
    * and the query (ex: "foo@bar.com").
    */
-  public static List<Entity> queryByProperty(String kind, String property,
+  public static List<Entity> queryDeveloperByProperty(String property,
       Object query) {
     Filter filter = new FilterPredicate(property, FilterOperator.EQUAL, query);
-    Query q = new Query(kind).setFilter(filter);
+    Query q = new Query(DEVELOPER).setFilter(filter);
     List<Entity> result = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
 
@@ -60,45 +60,54 @@ public class DeveloperDatabaseDriver {
   public static long insertDeveloper(Map<Object, Object> properties) {
     long key;
     Transaction txn = datastore.beginTransaction();
-
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER);
+    Entity entity = new Entity(DEVELOPER);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
+      entity.setProperty((String) entry.getKey(), entry.getValue());
     }
     
-    if (queryByProperty(DeveloperConstants.DEVELOPER, DeveloperConstants.EMAIL, 
-        (String) properties.get(DeveloperConstants.EMAIL)).isEmpty()) {
+    if (queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL)).isEmpty()) {
       key = datastore.put(entity).getId();
+      txn.commit(); 
     }
     else {
       key = -1;
+      txn.rollback();
     }
-    
-    txn.commit();    
+       
     return key;
   }
   
   /**
    * Inserts an entity with specified keyId (used in the future for AI, etc.).
    */
-  public static void insertDeveloper(long keyId, Map<Object, Object> properties) {
+  public static boolean insertDeveloper(long keyId, Map<Object, Object> properties) {
     Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(DeveloperConstants.DEVELOPER, keyId);
+    Entity entity = new Entity(DEVELOPER, keyId);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String)entry.getKey(), entry.getValue());
+      entity.setProperty((String) entry.getKey(), entry.getValue());
     }
     
-    datastore.put(entity);
-    txn.commit();    
+    List<Entity> sameEmailList = queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL));
+    
+    // Either there is nobody else with the email, or the one with the same email is me
+    if (sameEmailList.isEmpty() || sameEmailList.get(0).getKey().getId() == keyId) {
+      datastore.put(entity);
+      txn.commit();
+      return true;
+    }
+    else {
+      txn.rollback();
+      return false;
+    }  
   }
   
   /**
    * Updates a (non-nested) developer entity with specified keyId.
    */
-  public static void updateDeveloper(long keyId, Map<Object, Object> properties) {
-    insertDeveloper(keyId, properties);    
+  public static boolean updateDeveloper(long keyId, Map<Object, Object> properties) {
+    return insertDeveloper(keyId, properties);    
   }
   
   /**

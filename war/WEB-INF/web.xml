@@ -54,7 +54,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   </servlet-mapping>
   <servlet>
     <servlet-name>developerinfo</servlet-name>
-    <servlet-class>org.smg.server.servlet.game.DeveloperInfoServlet</servlet-class>
+    <servlet-class>org.smg.server.servlet.developer.DeveloperInfoServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>developerinfo</servlet-name>

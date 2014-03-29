@@ -53,14 +53,14 @@ public class DeveloperServlet extends HttpServlet {
       
       if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
         DatabaseDriver.deleteEntity(DEVELOPER, developerId);
-        jsonPut(json, writer, SUCCESS, DELETED_DEVELOPER);
+        DeveloperUtil.jsonPut(json, SUCCESS, DELETED_DEVELOPER);
       }
       else {
-        jsonPut(json, writer, ERROR, WRONG_ACCESS_SIGNATURE);
+        DeveloperUtil.jsonPut(json, ERROR, WRONG_ACCESS_SIGNATURE);
       }
     }
     catch (Exception e) {
-      jsonPut(json, writer, ERROR, WRONG_DEVELOPER_ID);
+      DeveloperUtil.jsonPut(json, ERROR, WRONG_DEVELOPER_ID);
     }
     
     try {
@@ -81,27 +81,24 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    String devIdStr = "";
     String password = req.getParameter(PASSWORD);
     
     try {
-      if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
-        devIdStr = req.getPathInfo().substring(1);
-      }
-      long developerId = Long.parseLong(devIdStr);
+      long developerId = Long.parseLong(req.getPathInfo().substring(1));
       Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
       
       if (developer.get(PASSWORD).equals(password)) {
         developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
         DeveloperDatabaseDriver.updateDeveloper(developerId, developer);
         json = new JSONObject(developer);
+        json.remove(PASSWORD);
       }
       else {
-        jsonPut(json, writer, ERROR, WRONG_PASSWORD);
+        DeveloperUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
       }
     }
     catch (Exception e) {
-      jsonPut(json, writer, ERROR, WRONG_DEVELOPER_ID);
+      DeveloperUtil.jsonPut(json, ERROR, WRONG_DEVELOPER_ID);
     }
 
     try {
@@ -113,7 +110,7 @@ public class DeveloperServlet extends HttpServlet {
   }
   
   /**
-   * Inserts a new developer.
+   * Inserts a new developer (/developers/).
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
@@ -132,65 +129,38 @@ public class DeveloperServlet extends HttpServlet {
         buffer.append(line);
       }
    
-      Map<Object, Object> parameterMap = deleteInvalid(
+      Map<Object, Object> parameterMap = DeveloperUtil.deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
       
       if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
-        jsonPut(json, writer, ERROR, MISSING_INFO);
+        DeveloperUtil.jsonPut(json, ERROR, MISSING_INFO);
       }
       else {
         // Add to database
         long developerId = DeveloperDatabaseDriver.insertDeveloper(parameterMap);
         
         if (developerId == INVALID) {
-          jsonPut(json, writer, ERROR, EMAIL_EXISTS);
+          DeveloperUtil.jsonPut(json, ERROR, EMAIL_EXISTS);
         }
         else {
           String accessSignature = AccessSignatureUtil.generate(developerId);
           parameterMap.put(ACCESS_SIGNATURE, accessSignature);
           // Update database with access signature
           DeveloperDatabaseDriver.updateDeveloper(developerId, parameterMap);
-    
+          
           // Return response  
-          jsonPut(json, writer, DEVELOPER_ID, developerId);
-          jsonPut(json, writer, ACCESS_SIGNATURE, accessSignature);
+          DeveloperUtil.jsonPut(json, DEVELOPER_ID, Long.toString(developerId));
+          DeveloperUtil.jsonPut(json, ACCESS_SIGNATURE, accessSignature);
         }
       }
     }
     catch (Exception e) { 
       e.printStackTrace();
-      jsonPut(json, writer, ERROR, INVALID_JSON);
+      DeveloperUtil.jsonPut(json, ERROR, INVALID_JSON);
     }
 
     try {
       json.write(writer);
-    } 
-    catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-  }
-  
-  /**
-   * Deletes keys that are illegal and also massages map into form <String, String> (nested objects
-   * are also illegal for the developer login).
-   */
-  private Map<Object, Object> deleteInvalid(Map<Object, Object> params, String[] validParams) {
-    Map<Object, Object> returnMap = new HashMap<Object, Object>();
-    for (Map.Entry<Object, Object> entry : params.entrySet()) {
-      if (Arrays.asList(validParams).contains(entry.getKey())) {
-        if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
-          returnMap.put(entry.getKey(), entry.getValue());
-        }
-      }
-    }
-    
-    return returnMap;
-  }
-  
-  private void jsonPut(JSONObject json, PrintWriter writer, String obj1, Object obj2) {
-    try {
-      json.put(obj1, obj2);
     } 
     catch (JSONException e) {
       e.printStackTrace();

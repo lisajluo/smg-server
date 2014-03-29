@@ -29,8 +29,8 @@ function jsonify(array) {
 
 $(document).ready(function() {
 
-  var domain = "1-dot-smg-server.appspot.com";
-  //var domain = "localhost:8888";
+ // var domain = "1-dot-smg-server.appspot.com";
+  var domain = "localhost:8888";
   
   $("#get1").submit(function(e) {
     // Prevent all default form submission
@@ -95,8 +95,59 @@ $(document).ready(function() {
     
 
   });
+  
+  $("#getinfo").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    console.log(formValues);
+    $.ajax({
+      url: "http://" + domain + "/developerinfo/" + formValues.developerId + "?accessSignature=" + formValues.accessSignature,
+      dataType: "json",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#update").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    var jsonObj = { 
+      "accessSignature": formValues.accessSignature,
+      "email": formValues.email, 
+      "password": formValues.password,
+      "firstName": formValues.firstName,
+      "middleName": formValues.middleName,
+      "nickname": formValues.nickname,
+      "lastName": formValues.lastName
+    };
+
+    $.ajax({
+      url: "http://" + domain + "/developerinfo/" + formValues.developerId, 
+      dataType: "json",
+      type: "PUT",
+      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
 });
 </script>
+<table width="100%" cellspacing="0" cellpadding="0"><tr valign="top"><td width="20%">
 <h4>Insert Developer</h4>
 <form id="post1"></form>
 <table>
@@ -126,8 +177,35 @@ $(document).ready(function() {
 <tr><td>&nbsp;</td><td><input type="submit" value="Delete" form="delete1"></td></tr>
 </table>
 
+<h4>Get Developer Info</h4>
+<form id="getinfo"></form>
+<table>
+<tr>
+<tr><td>Developer ID:<td><input type="text" name="developerId" form="getinfo">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="getinfo"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Get info" form="getinfo"></td></tr>
+</table>
+
+
+</td><td>
+
+<h4>Update Developer</h4>
+<form id="update"></form>
+<table>
+<tr>
+<tr><td>Developer ID:<td><input type="text" name="developerId" form="update">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="update"></td></tr>
+<tr><td>E-mail:<td><input type="text" name="email" form="update" value="foobar@1337.com">
+<tr><td>Password:</td><td><input type="text" name="password" form="update" value="mysuperawesomepassword"></td></tr>
+<tr><td>First Name:</td><td><input type="text" name="firstName" form="update" value="Ninja"></td></tr>
+<tr><td>Middle Name:</td><td><input type="text" name="middleName" form="update" value="M"></td></tr>
+<tr><td>Last Name:</td><td><input type="text" name="lastName" form="update" value="Turtle"></td></tr>
+<tr><td>Nickname:</td><td><input type="text" name="nickname" form="update" value="Leonardo"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Update developer" form="update"></td></tr>
+</table>
+
 <h4>Response</h4>
 <div id="response"></div>
-
+</td></tr></table>
 </body>
 </html>
