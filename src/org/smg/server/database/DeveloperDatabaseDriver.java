@@ -111,10 +111,10 @@ public class DeveloperDatabaseDriver {
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
-  public static boolean deleteEntity(String kind, long developerId) {
+  public static boolean deleteDeveloper(long developerId) {
     Transaction txn = datastore.beginTransaction();
     try {
-      Key key = KeyFactory.createKey(kind, developerId);
+      Key key = KeyFactory.createKey(DEVELOPER, developerId);
       datastore.delete(key);
       txn.commit();
       return true;

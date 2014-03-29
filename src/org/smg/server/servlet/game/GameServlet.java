@@ -8,22 +8,15 @@ import static org.smg.server.servlet.developer.DeveloperConstants.MISSING_INFO;
 import static org.smg.server.servlet.developer.DeveloperConstants.WRONG_ACCESS_SIGNATURE;
 import static org.smg.server.servlet.game.GameUtil.*;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DeveloperDatabaseDriver;
-import org.smg.server.database.DatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;

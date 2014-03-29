@@ -1,6 +1,8 @@
 package org.smg.server.servlet.game;
 
 import static org.smg.server.servlet.game.GameConstants.*;
+import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
+import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.models.Player;
 
@@ -54,7 +56,7 @@ public class GameUtil {
 		try {
 			long playerId = Long.parseLong((String) parameterMap
 					.get(PLAYER_ID));
-			Player player = DatabaseDriver.getPlayerById(playerId);
+			Player player = DatabaseDriverPlayer.getPlayerById(playerId);
 			if (parameterMap.get(ACCESS_SIGNATURE).equals(
 					player.getProperty(Player.PlayerProperty.ACCESSSIGNATURE)))
 

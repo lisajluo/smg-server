@@ -8,7 +8,6 @@ import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
 
-import org.smg.server.database.models.Player;
 import org.smg.server.servlet.developer.DeveloperUtil;
 
 import java.io.IOException;
@@ -36,10 +35,8 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import org.smg.server.util.JSONUtil;
 
-// TODO should implement that interface when Container team is done
-public class GameDatabaseDriver /* implements EndGameInterface */{
+public class GameDatabaseDriver implements EndGameInterface {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
   
   //Huan
   public static Entity getGame(long gameId) throws EntityNotFoundException {
@@ -254,11 +251,10 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
     }
   }
 
-  // @Override
-  // TODO override when Container is finished
   // lisa
+  @Override
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static void updateStats(Map<String, Object> winInfo) {
+  public void updateStats(Map<String, Object> winInfo) {
     long gameId = (long) winInfo.get(GAME_ID);
     int highScore;
     JSONObject highScoreJSON = new JSONObject();
@@ -316,8 +312,7 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
       }
 
       try {
-        Map playerNames = new HashMap();
-        // Map playerNames = Player.getPlayerNames(Long.parseLong((String)
+        Map playerNames = DatabaseDriverPlayer.getPlayerNames(playerId);
         // entry.getKey()));
         firstName = (String) playerNames.get(FIRST_NAME);
         nickname = (String) playerNames.get(NICKNAME);
@@ -362,8 +357,7 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
           .get(AVERAGE_RATING));
       int ratingCount = Integer.parseInt((String) ratingMap.get(RATING_COUNT));
 
-      averageRating = ((averageRating * ratingCount) + newRating)
-          / (ratingCount + 1);
+      averageRating = ((averageRating * ratingCount) + newRating) / (ratingCount + 1);
       ratingCount++;
 
       ratingMap.put(AVERAGE_RATING, averageRating);
@@ -371,7 +365,8 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
 
       statistics.setProperty(RATING, ratingMap.toString());
       return averageRating;
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       e.printStackTrace();
       throw new EntityNotFoundException(null);
     }

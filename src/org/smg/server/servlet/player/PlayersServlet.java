@@ -3,7 +3,6 @@ package org.smg.server.servlet.player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.util.CORSUtil;
@@ -113,7 +112,7 @@ public class PlayersServlet extends HttpServlet {
 		}
 		String originalPassword = req.getParameter("password");
 		try {
-      String[] result = DatabaseDriver.loginPlayer(playerIdLong, originalPassword);
+      String[] result = DatabaseDriverPlayer.loginPlayer(playerIdLong, originalPassword);
       if (result[0].equals("WRONG_PASSWORD")){
         try {
           returnValue.put("error", "WRONG_PASSWORD");
@@ -169,8 +168,8 @@ public class PlayersServlet extends HttpServlet {
 			return;
 		}
 		Player player = JSONUtil.jSON2Player(json);
-		String saveResult = DatabaseDriver.savePlayer(player);
-		if (saveResult.equals("EMAIL_EXITSTS")) {
+		String saveResult = DatabaseDriverPlayer.savePlayer(player);
+		if (saveResult.equals("EMAIL_EXISTS")) {
 		  try {
 				returnValue.put("error", "EMAIL_EXISTS");
 				returnValue.write(resp.getWriter());
@@ -227,6 +226,7 @@ public class PlayersServlet extends HttpServlet {
       }
       return;
     }
+    @SuppressWarnings("unchecked")
     Map<String, Object> map = req.getParameterMap();
     if (!map.containsKey("accessSignature")){
       try {
@@ -239,7 +239,7 @@ public class PlayersServlet extends HttpServlet {
     }
     String accessSignature = req.getParameter("accessSignature");
     try {
-      String result = DatabaseDriver.deletePlayer(playerIdLong, accessSignature);
+      String result = DatabaseDriverPlayer.deletePlayer(playerIdLong, accessSignature);
       if (result.equals("WRONG_ACCESS_SIGNATURE")){
         try {
           returnValue.put("error", "WRONG_ACCESS_SIGNATURE");
@@ -280,7 +280,6 @@ public class PlayersServlet extends HttpServlet {
     while ((line = br.readLine()) != null)
       buffer.append(line);
     json = buffer.toString();
-    Map<String, Object> map = JSONUtil.parse(json);
     JSONObject returnValue = new JSONObject();
     Player player = JSONUtil.jSON2Player(json);
     String playerId = null;
@@ -298,7 +297,7 @@ public class PlayersServlet extends HttpServlet {
       return;
     }
     player.setProperty(PlayerProperty.PLAYERID, playerId);
-    String saveResult = DatabaseDriver.savePlayer(player);
+    String saveResult = DatabaseDriverPlayer.savePlayer(player);
     if (saveResult.equals("UPDATED_PLAYER")) {
       try {
         returnValue.put("success", "UPDATED_PLAYER");

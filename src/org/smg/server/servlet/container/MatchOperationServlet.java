@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
+import org.smg.server.database.EndGameInterface;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
@@ -21,7 +22,6 @@ import org.smg.server.servlet.container.GameApi.SetTurn;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
-import org.smg.server.EndGameInterface;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;

@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.smg.server.database.DatabaseDriver;
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
@@ -45,7 +44,7 @@ public class DeveloperServlet extends HttpServlet {
       Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
       
       if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-        DatabaseDriver.deleteEntity(DEVELOPER, developerId);
+        DeveloperDatabaseDriver.deleteDeveloper(developerId);
         DeveloperUtil.jsonPut(json, SUCCESS, DELETED_DEVELOPER);
       }
       else {

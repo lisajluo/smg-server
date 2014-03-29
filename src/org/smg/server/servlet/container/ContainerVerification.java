@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
-import org.smg.server.database.DatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
 
 import com.google.appengine.api.datastore.Entity;

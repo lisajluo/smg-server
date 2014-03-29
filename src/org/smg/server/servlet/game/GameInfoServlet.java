@@ -20,14 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
-import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.ContainerDatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
@@ -149,8 +147,7 @@ public class GameInfoServlet extends HttpServlet {
 			}
 
 			try {
-				DatabaseDriver.getPlayerById(Long
-						.parseLong((String) parameterMap.get(PLAYER_ID)));
+			  DatabaseDriverPlayer.getPlayerById(Long.parseLong((String) parameterMap.get(PLAYER_ID)));
 			} catch (Exception e) {
 				put(jObj, ERROR, WRONG_PLAYER_ID, resp);
 			}

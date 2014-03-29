@@ -93,7 +93,7 @@ public class DummyDataGen {
     match.put(ContainerConstants.HISTORY, history);
 
     long matchId = 5559130790035456L;
-    if (DatabaseDriver.updateMatchEntity(matchId, match)) {
+    if (ContainerDatabaseDriver.updateMatchEntity(matchId, match)) {
       System.out.println("SUCCESS");
     }
   }
