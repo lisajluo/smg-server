@@ -124,7 +124,7 @@ public class MatchOperationServlet extends HttpServlet {
       // check if missing info
       if ( !jsonMap.containsKey(ContainerConstants.PLAYER_IDS) 
           || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
-          || !jsonMap.containsKey(ContainerConstants.HISTORY)) {
+          || !jsonMap.containsKey(ContainerConstants.OPERATIONS)) {
         ContainerVerification.sendErrorMessage(
             resp, returnValue, ContainerConstants.MISSING_INFO);
         return;
