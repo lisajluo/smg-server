@@ -1,6 +1,5 @@
 package org.smg.server.servlet.developer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +25,12 @@ public class DeveloperUtil {
     return returnMap;
   }
   
-  static void jsonPut(JSONObject json, String obj1, Object obj2) {
+  /**
+   * Wrapper for putting object to JSON (catches exception silently).
+   */
+  public static void jsonPut(JSONObject json, String key, Object obj) {
     try {
-      json.put(obj1, obj2);
+      json.put(key, obj);
     } 
     catch (JSONException e) {
       e.printStackTrace();

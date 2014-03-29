@@ -43,4 +43,19 @@ public final class GameConstants {
 	  
 	  public static final String GAME_META_INFO = "gameMetaInfo";
 	  public static final String VERSION_ONE = "versionOne" ; 
+	  
+	  // Statistics table
+	  public static final String STATISTICS = "STATISTICS";
+	  // Statistics properties
+	  public static final String HIGH_SCORE = "highScore";
+	  public static final String SCORE = "score";
+	  public static final String RATING = "rating";
+	  public static final String RATING_COUNT = "ratingCount";
+	  public static final String AVERAGE_RATING = "averageRating";
+	  public static final String ZERO_STRING = "0";
+	  public static final String FINISHED_GAMES = "finishedGames";
+	  public static final String PLAYERS = "players";
+	  public static final String FIRST_NAME = "firstname";
+	  public static final String NICKNAME = "nickname";
+	  public static final String TOKENS = "tokens";
 	}

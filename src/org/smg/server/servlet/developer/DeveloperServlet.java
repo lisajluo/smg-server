@@ -5,8 +5,6 @@ import static org.smg.server.servlet.developer.DeveloperConstants.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
@@ -40,15 +38,10 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    String devIdStr = "";
-    
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
     
     try {
-      if (req.getPathInfo() != null && req.getPathInfo().length() > 0) {
-        devIdStr = req.getPathInfo().substring(1);
-      }
-      long developerId = Long.parseLong(devIdStr);
+      long developerId = Long.parseLong(req.getPathInfo().substring(1));
       Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
       
       if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
@@ -70,7 +63,6 @@ public class DeveloperServlet extends HttpServlet {
       e.printStackTrace();
     }
   }
-  
   
   /**
    * Login a developer with developerId and password (/developers/{developerId}?password=...).

@@ -23,12 +23,12 @@ public class DeveloperDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   
   /**
-   * Returns Map of Developer properties or null
+   * Returns Map of Developer properties or throws exception if not found.
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static Map getDeveloperMap(long keyId) throws EntityNotFoundException {
+  public static Map getDeveloperMap(long developerId) throws EntityNotFoundException {
     try {
-      Key key = KeyFactory.createKey(DEVELOPER, keyId);
+      Key key = KeyFactory.createKey(DEVELOPER, developerId);
       Entity entity = datastore.get(key);
       return new HashMap(entity.getProperties());
     }
@@ -42,12 +42,10 @@ public class DeveloperDatabaseDriver {
    * Returns a list of entities given a query by kind (ex: DEVELOPER), property (ex: EMAIL),
    * and the query (ex: "foo@bar.com").
    */
-  public static List<Entity> queryDeveloperByProperty(String property,
-      Object query) {
+  public static List<Entity> queryDeveloperByProperty(String property, Object query) {
     Filter filter = new FilterPredicate(property, FilterOperator.EQUAL, query);
     Query q = new Query(DEVELOPER).setFilter(filter);
-    List<Entity> result = datastore.prepare(q).asList(
-        FetchOptions.Builder.withDefaults());
+    List<Entity> result = datastore.prepare(q).asList(FetchOptions.Builder.withDefaults());
 
     return result;
   }
@@ -81,9 +79,9 @@ public class DeveloperDatabaseDriver {
   /**
    * Inserts an entity with specified keyId (used in the future for AI, etc.).
    */
-  public static boolean insertDeveloper(long keyId, Map<Object, Object> properties) {
+  public static boolean insertDeveloper(long developerId, Map<Object, Object> properties) {
     Transaction txn = datastore.beginTransaction();
-    Entity entity = new Entity(DEVELOPER, keyId);
+    Entity entity = new Entity(DEVELOPER, developerId);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       entity.setProperty((String) entry.getKey(), entry.getValue());
@@ -92,7 +90,7 @@ public class DeveloperDatabaseDriver {
     List<Entity> sameEmailList = queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL));
     
     // Either there is nobody else with the email, or the one with the same email is me
-    if (sameEmailList.isEmpty() || sameEmailList.get(0).getKey().getId() == keyId) {
+    if (sameEmailList.isEmpty() || sameEmailList.get(0).getKey().getId() == developerId) {
       datastore.put(entity);
       txn.commit();
       return true;
@@ -106,17 +104,17 @@ public class DeveloperDatabaseDriver {
   /**
    * Updates a (non-nested) developer entity with specified keyId.
    */
-  public static boolean updateDeveloper(long keyId, Map<Object, Object> properties) {
-    return insertDeveloper(keyId, properties);    
+  public static boolean updateDeveloper(long developerId, Map<Object, Object> properties) {
+    return insertDeveloper(developerId, properties);    
   }
   
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
-  public static boolean deleteEntity(String kind, long keyId) {
+  public static boolean deleteEntity(String kind, long developerId) {
     Transaction txn = datastore.beginTransaction();
     try {
-      Key key = KeyFactory.createKey(kind, keyId);
+      Key key = KeyFactory.createKey(kind, developerId);
       datastore.delete(key);
       txn.commit();
       return true;
@@ -127,12 +125,20 @@ public class DeveloperDatabaseDriver {
     }
   }
   
-
-  public static boolean verifyDeveloperAccess (long developerId, String accessSignature) 
-
+  @SuppressWarnings("rawtypes")
+  public static boolean verifyDeveloperAccess(long developerId, String accessSignature) 
       throws EntityNotFoundException {
-    // TODO implement this!
-    return true;
+    
+    try {
+      Map developerMap = getDeveloperMap(developerId);
+      if (developerMap.get(ACCESS_SIGNATURE).equals(accessSignature)) {
+        return true;
+      }
+      return false;
+    }
+    catch (EntityNotFoundException e) {
+      throw e;
+    }
   }
   
 }
