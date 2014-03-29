@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriver;
 
 import com.google.appengine.api.datastore.Entity;
@@ -20,7 +21,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean accessSignatureVerify(String accessSignature, long playerId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
     if (entity.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
       return true;
     }
@@ -69,7 +70,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean playerIdVerify(long playerId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
     if (entity == null) {
       return false;
     }
@@ -82,7 +83,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean matchIdVerify(long matchId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
     if (entity == null) {
       return false;
     }
@@ -95,7 +96,8 @@ public class ContainerVerification {
    * @return
    */
   public static boolean gameIdVerify(long gameId) {
-    //Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    //Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    //TODO get rid of Version info
     Entity entity = DatabaseDriver.getEntity(String.valueOf(gameId), "versionOne");
     if (entity == null) {
       return false;

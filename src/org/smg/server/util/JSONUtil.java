@@ -93,4 +93,25 @@ public class JSONUtil {
     String json = mapper.writeValueAsString(map);
     return json;
   }
+  
+  /**
+   * Parse a playerIds string to a list<String>
+   * @param json
+   * @return
+   * @throws IOException
+   */
+  public static List<String> parsePlayerIds(String json) throws IOException {
+    ObjectMapper mapper = new ObjectMapper();    
+    List<String> list = new LinkedList<String>();    
+      try {
+        list = mapper.readValue(
+          json,
+          new TypeReference<List<String>>() {
+        });
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        throw new IOException("JSON_PARSE_ERROR");
+      }    
+     return list;
+  }
 }

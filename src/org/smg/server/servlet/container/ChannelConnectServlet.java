@@ -8,10 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.util.CORSUtil;
+
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 
+@SuppressWarnings("serial")
 public class ChannelConnectServlet extends HttpServlet {
+
+  @Override
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    CORSUtil.addCORSHeader(resp);
+  }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,

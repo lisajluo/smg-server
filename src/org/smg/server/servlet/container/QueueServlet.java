@@ -1,7 +1,9 @@
 
 package org.smg.server.servlet.container;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.util.CORSUtil;
+import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.channel.ChannelService;
@@ -17,66 +20,71 @@ import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@SuppressWarnings("serial")
 public class QueueServlet extends HttpServlet {
-
+  @Override
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    CORSUtil.addCORSHeader(resp);
+  }
+  
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
+    
     CORSUtil.addCORSHeader(resp);
-    String json = Utils.getBody(req);
-
+    BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+    String json = "";
+    if (br != null) {
+      json = br.readLine();
+    }
     JSONObject returnValue = new JSONObject();
-
-    if (json != null && !json.isEmpty()) {
+    if (json != null ) {
+      //parse json message to jsonMap
       Map<String, Object> jsonMap = null;
       try {
         jsonMap = JSONUtil.parse(json);
       } catch (IOException e) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, e.getMessage());
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e2) {
-        }
+        ContainerVerification.sendErrorMessage(
+           resp, returnValue, ContainerConstants.JSON_PARSE_ERROR);
         return;
       }
 
-      long playerId = Long.parseLong((String) jsonMap.get(ContainerConstants.PLAYER_ID));
+   // verify playerId
+      String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
+      long playerId = 0;
+      try {
+        playerId = IDUtil.stringToLong(pId);
+      } catch (Exception e) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+        return;
+      }
       if (!ContainerVerification.playerIdVerify(playerId)) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_PLAYER_ID);
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e) {
-        }
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
         return;
       }
-      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
+      // verify accessSignature
+      String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
       if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_ACCESS_SIGNATURE);
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e) {
-        }
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
         return;
       }
+      // parse gameID and verify gameId existed
+      String gId = String.valueOf(jsonMap.get(ContainerConstants.GAME_ID));
       long gameId = 0;
       try {
-        gameId = Long.parseLong((String) (jsonMap.get(ContainerConstants.GAME_ID)));
+        gameId = IDUtil.stringToLong(gId);
       } catch (Exception e) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_GAME_ID);
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e1) {
-        }
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
         return;
       }
       if (!ContainerVerification.gameIdVerify(gameId)) {
-        try {
-          returnValue.put(ContainerConstants.ERROR, ContainerConstants.WRONG_GAME_ID);
-          returnValue.write(resp.getWriter());
-          return;
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+        return;
       }
 
       // Token Generating.

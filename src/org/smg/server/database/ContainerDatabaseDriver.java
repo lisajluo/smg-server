@@ -3,6 +3,7 @@ package org.smg.server.database;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -225,6 +226,56 @@ public class ContainerDatabaseDriver {
     datastore.put(entity);
     txn.commit();
     return true;
+  }
+  
+  /**
+   * Get all unfinished match entity list by gameId
+   * If gameId <= 0 or not found, return empty list
+   * @param gameId
+   * @return
+   */
+  public static List<Entity> getAllUnfinishedMatchesByGameID (long gameId) {
+    if (gameId <= 0) {
+      return new ArrayList<Entity>();
+    }
+    Filter filter = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
+    Filter filter2 = new FilterPredicate(
+        ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
+    Query q = new Query(ContainerConstants.MATCH).setFilter(filter).setFilter(filter2);
+    List<Entity> result = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    return result;
+  }
+  
+  /**
+   * Get all match entity by playerId, return empty list if not found or invalid id.
+   * @param playerId
+   * @return
+   */
+  public static List<Entity> getAllMatchesByPlayerId(long playerId) {
+    List<Entity> result = new ArrayList<Entity>();
+    if (playerId <= 0) {
+      return result;
+    }
+    Query q = new Query(ContainerConstants.MATCH);
+    List<Entity> raw = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    for (Entity entity: raw) {
+      List<String> playerIds = new LinkedList<String>();
+      try {
+        playerIds = JSONUtil.parsePlayerIds(
+            (String)entity.getProperty(ContainerConstants.PLAYER_IDS));
+      } catch (Exception e) {
+        return result;
+      }
+      for (String id : playerIds) {
+        if (id.equals(String.valueOf(playerId))) {
+          result.add(entity);
+          break;
+        }
+      }
+    }
+    return result;
   }
   
   /**

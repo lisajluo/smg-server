@@ -3,6 +3,7 @@ package org.smg.server.servlet.container;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import org.smg.server.servlet.container.GameApi.SetTurn;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
+import org.smg.server.EndGameInterface;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
@@ -188,7 +190,14 @@ public class MatchOperationServlet extends HttpServlet {
         // TODO If game is ended. Do update things.
         if (isGameEnd) {
           mi.setGameOverReason(ContainerConstants.OVER);
-
+          
+          //update stats to player and game
+          Map<String,Object> endGameStats = new HashMap<String,Object>();
+          endGameStats.put(ContainerConstants.PLAYER_IDS, playerIds);
+          long gameId = (Long)entity.getProperty(ContainerConstants.GAME_ID);
+          endGameStats.put(ContainerConstants.GAME_ID, gameId);
+          
+          //EndGameInterface.updateStats(endGameStats);
         }
 
       } catch (JSONException e) {
