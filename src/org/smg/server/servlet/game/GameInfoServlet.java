@@ -4,6 +4,7 @@ import static org.smg.server.servlet.game.GameConstants.*;
 import static org.smg.server.servlet.game.GameUtil.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,17 +20,16 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class GameInfoServlet extends HttpServlet {
-  private JSONObject  returnAllGameInfo()
+  private List<JSONObject>  returnAllGameInfo()
   {
 	  //TODO:return all the game info
-	  
 	  return GameDatabaseDriver.getAllGameInfo();
   }
-  private JSONObject returnGameInfoByDeveloper(long developerId)
+  private List<JSONObject> returnGameInfoByDeveloper(long developerId)
   {
 	  //TODO : return gameinfo by developerId
 	  
-	  return null;
+	  return GameDatabaseDriver.getGameInfoByDeveloper(developerId);
   }
   
   @Override
@@ -46,8 +46,9 @@ public class GameInfoServlet extends HttpServlet {
 	  JSONObject jObj = new JSONObject();
 	  if (developerIdStr==null)
 	  {
-		  JSONObject queryResult= returnAllGameInfo();
-		  put(queryResult,resp);
+		  List<JSONObject> queryResult= returnAllGameInfo();
+		  JSONObject ResultAsJSON = new JSONObject(queryResult);
+		  put(ResultAsJSON,resp);
 		  return;
 	  }
 	  else
@@ -62,8 +63,9 @@ public class GameInfoServlet extends HttpServlet {
 				  put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
 				  return;
 			  }
-			  JSONObject queryResult = returnGameInfoByDeveloper(developerId);
-			  put (queryResult,resp);
+			  List<JSONObject> queryResult = returnGameInfoByDeveloper(developerId);
+			  JSONObject ResultAsJSON = new JSONObject(queryResult);
+			  put(ResultAsJSON,resp);
 		  }
 		  catch (Exception e)
 		  {
