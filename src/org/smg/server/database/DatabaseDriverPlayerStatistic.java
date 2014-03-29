@@ -68,8 +68,8 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.LOST.toString(), "0");
         psDB.setProperty(StatisticProperty.DRAW.toString(), "0");
         psDB.setProperty(ph.getMatchResult().toString(), "1");
-        psDB.setProperty(StatisticProperty.SCORE.toString(), ph.getScoreChange());
-        psDB.setProperty(StatisticProperty.TOKEN.toString(), ph.getTokenChange());
+        psDB.setProperty(StatisticProperty.SCORE.toString(), String.valueOf(ph.getScoreChange()));
+        psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(ph.getTokenChange()));
         datastore.put(psDB);
       }
       txn.commit();

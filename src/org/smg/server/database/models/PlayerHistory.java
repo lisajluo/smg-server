@@ -23,7 +23,7 @@ public class PlayerHistory {
   private List<Long> opponentIds = new ArrayList<Long>();
   private MatchResult matchResult;
 
-  PlayerHistory(long playerId, long gameId, long matchId){
+  public PlayerHistory(long playerId, long gameId, long matchId){
     date = new Date();
     this.playerId = playerId;
     this.gameId = gameId;
