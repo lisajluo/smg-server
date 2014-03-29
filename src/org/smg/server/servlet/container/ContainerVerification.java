@@ -1,9 +1,18 @@
 package org.smg.server.servlet.container;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriver;
+import org.smg.server.database.GameDatabaseDriver;
+
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class ContainerVerification {
   
@@ -14,7 +23,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean accessSignatureVerify(String accessSignature, long playerId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
     if (entity.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
       return true;
     }
@@ -63,7 +72,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean playerIdVerify(long playerId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
     if (entity == null) {
       return false;
     }
@@ -76,7 +85,7 @@ public class ContainerVerification {
    * @return
    */
   public static boolean matchIdVerify(long matchId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
     if (entity == null) {
       return false;
     }
@@ -89,11 +98,30 @@ public class ContainerVerification {
    * @return
    */
   public static boolean gameIdVerify(long gameId) {
-    Entity entity = DatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
-    //Entity entity = DatabaseDriver.getEntity(String.valueOf(gameId), "versionOne");
-    if (entity == null) {
+    //Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
+    //TODO get rid of Version info
+    Entity entity;
+    try {
+      entity = GameDatabaseDriver.getGame(gameId);
+      return true;
+    } catch (EntityNotFoundException e) {
       return false;
     }
-    return true;
+  }
+  
+  /**
+   * send error message to the client
+   * @param resp
+   * @param returnValue
+   * @param errorMSG
+   */
+  public static void sendErrorMessage (HttpServletResponse resp, 
+      JSONObject returnValue, String errorMSG) {
+    try {
+      returnValue.put(ContainerConstants.ERROR, errorMSG);
+      returnValue.write(resp.getWriter());
+    } catch (JSONException | IOException e) {
+      e.printStackTrace();
+    }  
   }
 }

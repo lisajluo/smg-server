@@ -108,4 +108,11 @@ public class Utils {
       return json;
     }
   }
+
+  /*
+   * TODO make sure how to convert playerId to ClientId.
+   */
+  public static String getClientId(String playerId) {
+    return playerId;
+  }
 }

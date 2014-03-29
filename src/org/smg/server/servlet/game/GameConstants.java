@@ -18,13 +18,16 @@ public final class GameConstants {
 	  public static final String GAME_META_INFO = "gameMetaInfo";
 	  
 	  // Error messages
+	  static final String ERROR = "error";
 	  static final String GAME_EXISTS = "GAME_EXISTS";
 	  static final String WRONG_GAME_ID = "WRONG_GAME_ID";
 	  static final String URL_ERROR = "INVALID_URL_PATH_ERROR";
 	  static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
 	  static final String WRONG_RATING = "WRONG_RATING";
+	  static final String INVALID_JSON = "INVALID_JSON";
 	  
 	  // Success messages
+	  static final String SUCCESS = "success";
 	  static final String DELETED_GAME = "DELETED_GAME";
 	  static final String UPDATED_GAME = "UPDATED_GAME";
 	  

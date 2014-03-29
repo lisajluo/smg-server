@@ -1,16 +1,11 @@
 package org.smg.server.database;
 
-
-import static org.smg.server.servlet.game.GameConstants.*;
-import org.smg.server.servlet.developer.DeveloperConstants;
 import org.smg.server.servlet.container.ContainerConstants;
 import org.smg.server.util.JSONUtil;
 import org.smg.server.util.AccessSignatureUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -34,14 +29,8 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-
-
-
 
 
 public class DatabaseDriver {
@@ -269,8 +258,6 @@ public class DatabaseDriver {
     return result;
   }
 
-  
-  
   /**
    * Deletes an entity (ie., a developer of kind DEVELOPER).
    */
@@ -352,184 +339,5 @@ public class DatabaseDriver {
     return true;
   }
   
-  static public long  saveGameMetaInfo(Map<Object,Object> parameterMap) throws IOException
-  {
-    
-      Date date=new Date();
-
-      Entity game=new Entity(GAME_META_INFO);
-      game.setProperty(POST_DATE, date);
-      for (Object key : parameterMap.keySet())
-      {
-    	  String keyStr=(String) key;
-    	  if (keyStr.equals(ACCESS_SIGNATURE)==false)
-    	  game.setProperty((String)key, parameterMap.get(key));
-      }
-      
-
-      List<String> developerList=new ArrayList<String> ();
-      developerList.add((String)parameterMap.get(DEVELOPER_ID));
-      game.setProperty(DEVELOPER_ID, developerList);
-
-      datastore.put(game);
-      long gameId = game.getKey().getId();
-      //Key queryKey = KeyFactory.createKey(versionKey,"gameMetaInfo",gameId);
-      
-      return gameId;
-    
-    
-  }
-  static public Entity getEntity(String gameId)
-  {
-    try 
-    {
-    //  Key versionKey=KeyFactory.createKey("Version", versionNum);
-      long ID = Long.parseLong(gameId);
-     // Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-      Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
-      return datastore.get(gameKey);
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
-  }
-  static public boolean checkGameNameDuplicate(Map<Object,Object> parameterMap)
-  {
-    try
-    {
-
-      //String versionNum="versionOne";
-      //Key versionKey=KeyFactory.createKey("Version", versionNum);
-      Filter nameFilter =new FilterPredicate(GAME_NAME,FilterOperator.EQUAL,parameterMap.get(GAME_NAME));
-      Query q = new Query(GAME_META_INFO).setFilter(nameFilter);
-      PreparedQuery pq = datastore.prepare(q);
-      if (pq.countEntities()>0)
-        return true;
-      else
-        return false;
-    }
-    catch (Exception e)
-    {
-      return false;
-    }
-      
-  }
-  static public boolean checkGameNameDuplicate(long gameId,Map<Object,Object> parameterMap)
-  {
-    Key gameKey=KeyFactory.createKey( GAME_META_INFO, gameId);
-    try
-    {
-       Entity game = datastore.get(gameKey);
-
-       if (game.getProperty(GAME_NAME).equals(parameterMap.get(GAME_NAME)))
-
-         return false;
-       else
-         return checkGameNameDuplicate(parameterMap);
-    }
-    catch (Exception e)
-    {
-      return false;
-    }
-  }
- /*static public boolean checkGameNameDuplicate(String gameName,HttpServletRequest req)
-  {
-    try
-    {
-      String versionNum=VERSION_ONE;
-      Key versionKey=KeyFactory.createKey("Version", versionNum);
-      Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo",gameName);
-      try
-      {
-        datastore.get(gameKey);
-        return true;
-      }
-      catch (Exception e)
-      {
-        return false;
-      }
-    }
-    catch (Exception e)
-    {
-      return false;
-    }
-      
-  }*/
-  static public boolean checkIdExists(String gameId) throws EntityNotFoundException
-  {
-    try
-    {
-    //  String versionNum="versionOne";
-   //   Key versionKey=KeyFactory.createKey("Version");
-      long ID = Long.parseLong(gameId);
-      //System.out.println(ID);
-      Key idKey= KeyFactory.createKey(GAME_META_INFO, ID);
-      try 
-      {
-        datastore.get(idKey);
-        return true;
-      }
-      catch (Exception e)
-      {
-        throw new EntityNotFoundException(idKey);
-      }
-    }
-    catch (Exception e)
-    {
-      return false;
-    }
-  }
   
-  static public void delete(String gameId)
-  {
-   // Key versionKey=KeyFactory.createKey("Version", versionNum);
-    long ID = Long.parseLong(gameId);
-   // Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-    Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
-    datastore.delete(gameKey);
-  }
-  static public void update(String gameId,Map<Object,Object> parameterMap) throws EntityNotFoundException, IOException
-  {
-   // Key versionKey=KeyFactory.createKey("Version", "versionOne");
-    long ID = Long.parseLong(gameId);
- //   Key gameKey=KeyFactory.createKey(versionKey, "gameMetaInfo", ID);
-    Key gameKey=KeyFactory.createKey( GAME_META_INFO, ID);
-    Entity target = datastore.get(gameKey);
-    for (Object key : parameterMap.keySet())
-    {
-      String keyStr = (String) key;
-
-      if (keyStr.equals(ACCESS_SIGNATURE)==false&&keyStr.equals(DEVELOPER_ID)==false&&keyStr.equals(GAME_ID)==false)
-
-  	  target.setProperty((String)key, parameterMap.get(key));
-    }
-    /*
-    if (req.getParameter("gameName")!=null)
-      target.setProperty("gameName", req.getParameter("gameName"));
-    if (req.getParameter("description")!=null)
-      target.setProperty("description", req.getParameter("description"));
-    if (req.getParameter("url")!=null)
-      target.setProperty("url", req.getParameter("url"));
-    if (req.getParameter("width")!=null)
-      target.setProperty("width", req.getParameter("width"));
-    if (req.getParameter("height")!=null)
-      target.setProperty("height", req.getParameter("height"));
-    if (req.getParameter("pic")!=null)
-    {
-      Map<String, Object> jObj=JSONUtil.parse(req.getParameter("pic"));
-      if (jObj.get("icon")!=null)
-          target.setProperty("icon",jObj.get("icon"));
-      if (jObj.get("screenshots")!=null)
-      {
-        ArrayList<String> screenshot =(ArrayList<String>) (jObj.get("screenshots"));
-          target.setProperty("screenshots",screenshot);
-          
-      }
-        
-    }*/
-      
-    datastore.put(target);
-    
-  }
 }

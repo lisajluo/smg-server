@@ -1,7 +1,10 @@
 package org.smg.server.servlet.game;
 
 import static org.smg.server.servlet.game.GameConstants.*;
-import static org.smg.server.servlet.developer.DeveloperConstants.*;
+import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
+import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
+import static org.smg.server.servlet.developer.DeveloperConstants.WRONG_DEVELOPER_ID;
+import static org.smg.server.servlet.developer.DeveloperConstants.WRONG_ACCESS_SIGNATURE;
 import static org.smg.server.servlet.game.GameUtil.*;
 
 import java.io.BufferedReader;
@@ -10,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -140,7 +142,7 @@ public class GameInfoServlet extends HttpServlet {
 			}
 			parameterMap = (Map) JSONUtil.parse(buffer.toString());
 			String gameIdStr = req.getParameter(GAME_ID);
-			if (DatabaseDriver.checkIdExists(gameIdStr) == false) {
+			if (GameDatabaseDriver.checkGameIdExists(Long.parseLong(gameIdStr)) == false) {
 				put(jObj, ERROR, WRONG_GAME_ID, resp);
 				return;
 
