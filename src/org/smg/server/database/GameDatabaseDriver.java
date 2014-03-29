@@ -6,16 +6,18 @@ import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID;
 import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
+import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 
 import org.smg.server.database.models.Player;
 import org.smg.server.servlet.developer.DeveloperUtil;
+import static org.smg.server.servlet.game.GameUtil.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.smg.server.util.JSONUtil;
+import java.util.Set;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -28,59 +30,64 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import org.smg.server.util.JSONUtil;
 
 // TODO should implement that interface when Container team is done
 public class GameDatabaseDriver /* implements EndGameInterface */{
-  static final DatastoreService datastore = DatastoreServiceFactory
-      .getDatastoreService();
+  static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  private static List<JSONObject> getDeveloperListInfo(List<String> developerIdList) {
-    List<JSONObject> result = new ArrayList<JSONObject>();
-    for (int i = 0; i < developerIdList.size(); i++) {
-      JSONObject currentDeveloper = null;
-      try {
-        Map developerInfo = DeveloperDatabaseDriver.getDeveloperMap(
-            Long.parseLong(developerIdList.get(i)));
-        currentDeveloper = new JSONObject(developerInfo);
-        result.add(currentDeveloper);
-      } catch (Exception e) {
-        return null;
-      }
+	private static List<JSONObject> getDeveloperListInfo(List<String> developerIdList) {
+		List<JSONObject> result = new ArrayList<JSONObject>();
+		try {
+			for (int i = 0; i < developerIdList.size(); i++) {
+				JSONObject currentDeveloper = new JSONObject();
+				currentDeveloper.put(DEVELOPER_ID, developerIdList.get(i));
+                result.add(currentDeveloper);
+                //TODO: ADD THE MAP INFORMATION FOR DEVELOPER!
+				/*
+				 * try { Map developerInfo =
+				 * DeveloperDatabaseDriver.getDeveloperMap
+				 * (Long.parseLong(developerIdList.get(i))); currentDeveloper =
+				 * new JSONObject(developerInfo); result.add(currentDeveloper);
+				 * } catch (Exception e) { return null; }
+				 */
 
-    }
-    return result;
-  }
+			}
+			return result;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-  public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
-    try {
-      String developerIdStr = null;
-      if (developerQuery == true)
-        developerIdStr = String.valueOf(developerId);
-      Query gameQuery = new Query(GAME_META_INFO);
-      PreparedQuery pq = datastore.prepare(gameQuery);
-      List<JSONObject> queryResult = new ArrayList<JSONObject>();
-      for (Entity result : pq.asIterable()) {
-        JSONObject currentQueryResult = new JSONObject();
-        List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
-        if (developerQuery == true
-            && developerIdList.contains(developerIdStr) == false)
-          continue;
-        List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
-        currentQueryResult.put(DEVELOPER, developerListInfo);
-        Map<String, Object> gameInfo = new HashMap<String, Object>(
-            result.getProperties());
-        for (String key : gameInfo.keySet())
-          currentQueryResult.put(key, gameInfo.get(key));
-        queryResult.add(currentQueryResult);
-      }
-      return queryResult;
-    } catch (Exception e) {
-      return null;
-    }
-  }
+	public static List<JSONObject> getGameInfo(boolean developerQuery , long developerId) {
+		try {
+			String developerIdStr = null;
+			if (developerQuery==true)
+				developerIdStr = String.valueOf(developerId);
+			Query gameQuery = new Query(GAME_META_INFO);
+			PreparedQuery pq = datastore.prepare(gameQuery);
+			List<JSONObject> queryResult = new ArrayList<JSONObject>();
+			for (Entity result : pq.asIterable()) {
+				JSONObject currentQueryResult = new JSONObject();
+				List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
+				if (developerQuery==true&&developerIdList.contains(developerIdStr)==false)
+					continue;
+				List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
+				currentQueryResult.put(DEVELOPER, developerListInfo);
+				Map<String, Object> gameInfo = new HashMap<String, Object>(
+						result.getProperties());
+				for (String key : gameInfo.keySet())
+					currentQueryResult.put(key, gameInfo.get(key));
+				queryResult.add(currentQueryResult);
+			}
+			return queryResult;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
   // Huan
-  public Entity getGame(long gameId) throws EntityNotFoundException {
+  public static Entity getGame(long gameId) throws EntityNotFoundException {
     // TODO implement this method
     Key gameKey = KeyFactory.createKey(GAME_META_INFO, gameId);
     try {
@@ -88,27 +95,37 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
     } catch (Exception e) {
       throw new EntityNotFoundException(gameKey);
     }
-
   }
 
   // Huan
-  public List<Long> getAllPlayableGameIds(long playerId) {
-
-    // TODO implement this method How does each playerId store all the game he
-    // played??
-
-    return null;
+  public static List<Long> getAllPlayableGameIds(long playerId) {
+    // TODO implement this method How does each playerId store all the game he played??
+	List<Entity> matches = ContainerDatabaseDriver.getAllMatchesByPlayerId(playerId);
+	Set<Long> gameIdCollection = new HashSet<Long> ();
+	List<Long> result = new ArrayList<Long> ();
+	for(Entity entity : matches)
+	{
+		long currentGameId = Long.parseLong((String)entity.getProperty(GAME_ID));
+		if (gameIdCollection.contains(currentGameId)==false)
+		{
+			gameIdCollection.add(currentGameId);
+		}
+	}
+	for (Long gameId : gameIdCollection)
+		result.add(gameId);
+    return result;
   }
 
   // lisa
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public Map<String, Object> getStats(long gameId) {
+  public static Map<String, Object> getStats(long gameId) {
     try {
       Key key = KeyFactory.createKey(STATISTICS, gameId);
       Entity statistics = datastore.get(key);
       
       Map highScore = JSONUtil.parse((String) statistics.getProperty(HIGH_SCORE));
-      String rating = (String) ((Map) JSONUtil.parse((String) statistics.getProperty(RATING))).get(AVERAGE_RATING);
+      String rating = (String) ((Map) JSONUtil.parse(
+          (String) statistics.getProperty(RATING))).get(AVERAGE_RATING);
       Map finishedGames = JSONUtil.parse((String) statistics.getProperty(FINISHED_GAMES));
       
       Map returnMap = new HashMap();
@@ -138,12 +155,12 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
       throw new EntityNotFoundException(null);
     }
   }
-  
+
   // @Override
   // TODO override when Container is finished
   // lisa
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void updateStats(Map<String, Object> winInfo) {
+  public static void updateStats(Map<String, Object> winInfo) {
     long gameId = (long) winInfo.get(GAME_ID);
     int highScore;
     JSONObject highScoreJSON = new JSONObject();
@@ -234,7 +251,7 @@ public class GameDatabaseDriver /* implements EndGameInterface */{
 
   // lisa
   @SuppressWarnings("unchecked")
-  double updateRatings(long gameId, double newRating) throws EntityNotFoundException {
+  public static double updateRatings(long gameId, double newRating) throws EntityNotFoundException {
     try {
       Key key = KeyFactory.createKey(STATISTICS, gameId);
       Entity statistics = datastore.get(key);

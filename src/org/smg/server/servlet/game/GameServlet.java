@@ -1,13 +1,12 @@
 package org.smg.server.servlet.game;
 
 import static org.smg.server.servlet.game.GameConstants.*;
-
 import static org.smg.server.servlet.game.GameUtil.*;
-
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
@@ -113,41 +112,9 @@ public class GameServlet extends HttpServlet{
 		 return DatabaseDriver.checkGameNameDuplicate(gameId,parameterMap);
 		
 	}
-	private boolean signatureRight(Map<Object,Object> parameterMap)
-	{
-		try
-		{
-		  long developerId = Long.parseLong((String)parameterMap.get(DEVELOPER_ID));
-		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
-		  if (parameterMap.get(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
 
-			  return true;
-		  else
-			return false;
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-		
-	}
-	private boolean signatureRight(HttpServletRequest req)
-	{
-		try
-		{
-		  long developerId = Long.parseLong(req.getParameter(DEVELOPER_ID));
-		  Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
-		  if (req.getParameter(ACCESS_SIGNATURE).equals(developer.get(ACCESS_SIGNATURE)))
-			  return true;
-		  else
-			return false;
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-		
-	}
+	
+	
 	
 	private boolean requiredFieldForUpdate(Map<Object,Object> parameterMap)
 	{
@@ -227,7 +194,13 @@ public class GameServlet extends HttpServlet{
 	}*/
 	private boolean gameIdExist(String GameId)
 	{
-		return DatabaseDriver.checkIdExists(GameId);
+		try {
+			return DatabaseDriver.checkIdExists(GameId);
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	private void returnMetaInfo(String gameName,HttpServletResponse resp) throws IOException, JSONException
 	{
@@ -267,7 +240,6 @@ public class GameServlet extends HttpServlet{
 		StringBuffer buffer = new StringBuffer();
 		String line = null;
 
-
 		try {
 			BufferedReader reader = req.getReader();
 			while ((line = reader.readLine()) != null) {
@@ -275,8 +247,6 @@ public class GameServlet extends HttpServlet{
 			}
 			Map<Object, Object> parameterMap = deleteInvalid(
 					(Map) JSONUtil.parse(buffer.toString()), validParams);
-            System.out.println((Map)(JSONUtil.parse(buffer.toString())));
-            System.out.println(parameterMap);
 			if (parsePathForPost(pathInfo) == false) {
 
 				put(jObj, ERROR, URL_ERROR, resp);
@@ -288,7 +258,6 @@ public class GameServlet extends HttpServlet{
 				return;
 			}
 			if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
-
 
 				put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
 
@@ -402,7 +371,6 @@ public class GameServlet extends HttpServlet{
 		String line = null;
 		try {
 			gameId = req.getPathInfo().substring(1);
-			System.out.println(gameId);
 			try {
 				BufferedReader reader = req.getReader();
 				while ((line = reader.readLine()) != null) {
