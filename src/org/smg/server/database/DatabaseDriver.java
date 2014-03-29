@@ -456,7 +456,7 @@ public class DatabaseDriver {
     }
       
   }*/
-  static public boolean checkIdExists(String gameId)
+  static public boolean checkIdExists(String gameId) throws EntityNotFoundException
   {
     try
     {
@@ -472,7 +472,7 @@ public class DatabaseDriver {
       }
       catch (Exception e)
       {
-        return false;
+        throw new EntityNotFoundException(idKey);
       }
     }
     catch (Exception e)

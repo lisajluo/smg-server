@@ -17,7 +17,7 @@ public final class GameConstants {
 	  public static final String ACCESS_SIGNATURE = "accessSignature";
 	  public static final String HAS_TOKENS = "hasTokens";
 	  public static final String POST_DATE = "postDate";
-	  
+	  public static final String PLAYER_ID = "playerId";
 	  
 	  // Error messages
 	  static final String ERROR = "error";
@@ -29,13 +29,18 @@ public final class GameConstants {
 	  static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
 	  static final String INVALID_JSON = "INVALID_JSON";
 	  static final String URL_ERROR = "INVALID_URL_PATH_ERROR";
-	  
+	  static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
+	  static final String WRONG_RATING = "WRONG_RATING";
 	  // Success messages
 	  
 	  static final String SUCCESS = "success";
 	  static final String DELETED_DEVELOPER = "DELETED_DEVELOPER";
 	  static final String DELETED_GAME = "DELETED_GAME";
 	  static final String UPDATED_GAME = "UPDATED_GAME";
+	  static final String ALL="all";
+	  static final String STATS = "stats";
+	  static final String CURRENT_GAMES = "CURRENT_GAMES";
+	  static final String RATING = "ratings";
 	  
 	  // Invalid indicator
 	  static final int INVALID = -1;

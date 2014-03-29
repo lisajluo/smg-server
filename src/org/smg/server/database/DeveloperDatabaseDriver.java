@@ -120,7 +120,7 @@ public class DeveloperDatabaseDriver {
   
 
   public static boolean verifyDeveloperAccess (long developerId, String accessSignature) 
-
+     
       throws EntityNotFoundException {
     // TODO implement this!
     return true;
