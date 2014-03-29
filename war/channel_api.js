@@ -105,19 +105,23 @@ asyncTest("Add Game", function() {
 });
 
 
-function ajaxCallEnqueue() {
+function ajaxCallEnqueue(url) {
+	var as = accessSignatures[0];
+	var pid = playerIds[0];
+	var gid = gameId;
+	var jsonObj = {
+        "accessSignature": as.toString(),
+        "playerId" : pid.toString(),
+        "gameId": gid.toString()
+    };
   $.ajax({
-    url: domainUrl + "/queue", 
+    url: url + "/queue", 
     type: "POST",
     dataType: 'json',
-    data: JSON.stringify({
-        "accessSignature": accessSignatures[0].toString(),
-        "playerId" : playerIds[0].toString(),
-        "gameId": gameId.toString()
-    }),
+    data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) {
         console.log(data);
-				if(data["error"] == undefined) {
+		if(data["error"] == undefined) {
             channel_token = (data)["channelToken"];
         }
         ok(true);
@@ -131,7 +135,7 @@ function ajaxCallEnqueue() {
 }
 
 asyncTest("Enqueue", function() {
-    ajaxCallEnqueue();
+    ajaxCallEnqueue(domainUrl);
 });
 
 function ajaxCallDelPlayer(url) {

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
+import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
 import org.smg.server.servlet.container.GameApi.Operation;
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
 public class MatchOperationServlet extends HttpServlet {
@@ -116,8 +118,8 @@ public class MatchOperationServlet extends HttpServlet {
         return;
       }
 
-      // verify playerIds      
-      ArrayList<String> ids = 
+      // verify playerIds
+      ArrayList<String> ids =
           (ArrayList<String>) jsonMap.get(ContainerConstants.PLAYER_IDS);
       List<Long> playerIds = new ArrayList<Long>();
       try {
@@ -159,22 +161,34 @@ public class MatchOperationServlet extends HttpServlet {
 
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
 
-      boolean isGameEnd = false;
+      EndGame endGame = null;
+      AttemptChangeTokens attemptChangeTokens = null;
       // If the game is "turn" based, nextMovePlayerId will never be -1.
       long nextMovePlayerId = -1;
       for (Object op : operations) {
         if (op instanceof EndGame) {
-          isGameEnd = true;
+          endGame = (EndGame) op;
         } else if (op instanceof SetTurn) {
           nextMovePlayerId = Long.parseLong((String) ((SetTurn) op).getPlayerId());
+        } else if (op instanceof AttemptChangeTokens) {
+          attemptChangeTokens = (AttemptChangeTokens) op;
         }
       }
 
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
 
-        // TODO This needs to be modified at first place?
+        // TODO These need to be modified at first place?
         mi.setPlayerThatHasTurn(nextMovePlayerId);
+        if (attemptChangeTokens != null) {
+          Map<Long, Long> newTokensInPot = Maps.newHashMap();
+          Map<String, Integer> oldTokensInPot = attemptChangeTokens
+              .getPlayerIdToNumberOfTokensInPot();
+          for (String key : oldTokensInPot.keySet()) {
+            newTokensInPot.put(Long.parseLong(key), (long) (oldTokensInPot.get(key)));
+          }
+          mi.setPlayerIdToNumberOfTokensInPot(newTokensInPot);
+        }
 
         GameState newState = updateMatchInfoByOperations(mi, operations);
 
@@ -188,16 +202,18 @@ public class MatchOperationServlet extends HttpServlet {
         returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
 
         // TODO If game is ended. Do update things.
-        if (isGameEnd) {
+        if (endGame != null) {
           mi.setGameOverReason(ContainerConstants.OVER);
-          
+         
           //update stats to player and game
           Map<String,Object> endGameStats = new HashMap<String,Object>();
           endGameStats.put(ContainerConstants.PLAYER_IDS, playerIds);
           long gameId = (Long)entity.getProperty(ContainerConstants.GAME_ID);
           endGameStats.put(ContainerConstants.GAME_ID, gameId);
-          
+          Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
+          Map<Long, Long> tokenPot = mi.getPlayerIdToNumberOfTokensInPot();
           //EndGameInterface.updateStats(endGameStats);
+          
         }
 
       } catch (JSONException e) {

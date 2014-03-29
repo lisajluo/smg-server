@@ -18,7 +18,7 @@ public class MatchInfo {
   private long gameId;
   private List<Long> playerIds;
   private long playerThatHasTurn;
-  private Map<String, Long> gameOverScores;
+  private Map<String, Integer> gameOverScores;
   private String gameOverReason;
   private List<GameStateHistoryItem> history;
   private Map<Long, Long> playerIdToNumberOfTokensInPot;
@@ -83,11 +83,11 @@ public class MatchInfo {
     this.playerThatHasTurn = playerThatHasTurn;
   }
 
-  public final Map<String, Long> getGameOverScores() {
+  public final Map<String, Integer> getGameOverScores() {
     return gameOverScores;
   }
 
-  public final void setGameOverScores(Map<String, Long> gameOverScores) {
+  public final void setGameOverScores(Map<String, Integer> gameOverScores) {
     this.gameOverScores = gameOverScores;
   }
 

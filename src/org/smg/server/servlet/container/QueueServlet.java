@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
@@ -19,6 +20,7 @@ import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.common.collect.ImmutableMap;
 
 @SuppressWarnings("serial")
 public class QueueServlet extends HttpServlet {
@@ -90,11 +92,19 @@ public class QueueServlet extends HttpServlet {
       // Token Generating.
       String userId = String.valueOf(playerId);
       ChannelService channelService = ChannelServiceFactory.getChannelService();
-      String token = channelService.createChannel(Utils.getClientId(userId));
+      String channelToken = Utils.getClientId(userId);
+      String clientToken = channelService.createChannel(channelToken);
+
+      Map<String, Object> entityMap = ImmutableMap.<String, Object> of(
+          ContainerConstants.GAME_ID, gameId,
+          ContainerConstants.PLAYER_ID, playerId,
+          ContainerConstants.CHANNEL_TOKEN, channelToken);
+
+      ContainerDatabaseDriver.insertQueueEntity(entityMap);
 
       // Send token back to client.
       try {
-        returnValue.put(ContainerConstants.CHANNEL_TOKEN, token);
+        returnValue.put(ContainerConstants.CHANNEL_TOKEN, clientToken);
       } catch (JSONException e) {
       }
 
