@@ -1,23 +1,28 @@
 package org.smg.server.database;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.database.models.PlayerStatistic;
 import org.smg.server.util.AccessSignatureUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class DatabaseDriverTest {
   private final LocalServiceTestHelper helper =
@@ -47,41 +52,61 @@ public class DatabaseDriverTest {
   }
   @Test
   public void test() throws NumberFormatException, EntityNotFoundException {
-    String resp = DatabaseDriver.savePlayer(legalPlayer);
-    Player p = DatabaseDriver.getPlayerById(Long.parseLong(resp.split(":")[1]));
+    String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
+    Player p = DatabaseDriverPlayer.getPlayerById(Long.parseLong(resp.split(":")[1]));
     assertTrue(p.isContain(legalPlayer));
   }
   
   @Test
   public void testUpdatePlayer() throws NumberFormatException, EntityNotFoundException {
-    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
-    Player p = DatabaseDriver.getPlayerById(playerId);
+    Player p = DatabaseDriverPlayer.getPlayerById(playerId);
     System.out.println(p.getProperty(PlayerProperty.ACCESSSIGNATURE));
     p.setProperty(PlayerProperty.NICKNAME, "Jinxuan");
-    String resp2 = DatabaseDriver.savePlayer(p);
+    String resp2 = DatabaseDriverPlayer.savePlayer(p);
     assertEquals(resp2,"UPDATED_PLAYER");
   }
 
   @Test
   public void testDeletePlayer() throws EntityNotFoundException {
-    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
-    Player p = DatabaseDriver.getPlayerById(playerId);
+    Player p = DatabaseDriverPlayer.getPlayerById(playerId);
     String accessSignature = p.getProperty(PlayerProperty.ACCESSSIGNATURE);
-    String resp2 = DatabaseDriver.deletePlayer(playerId, accessSignature);
+    String resp2 = DatabaseDriverPlayer.deletePlayer(playerId, accessSignature);
     assertEquals(resp2,"DELETED_PLAYER");
   }
   
   @Test
   public void testLogin() throws EntityNotFoundException {
-    String resp = DatabaseDriver.savePlayer(legalPlayer);
+    String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
-    String resp2 = DatabaseDriver.loginPlayer(playerId, "foobar")[0];
+    String resp2 = DatabaseDriverPlayer.loginPlayer(playerId, "foobar")[0];
     if (resp2 == "WRONG_PASSWORD") {
       fail("wrong password");
     } else {
       assertEquals(resp2,legalPlayer.getProperty(PlayerProperty.EMAIL));
     }
+  }
+  
+  @Test
+  public void testDatabaseStringKey() throws EntityNotFoundException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
+    Entity employee = new Entity("Employee", "123"+"456");
+
+    employee.setProperty("firstName", "Antonio");
+    employee.setProperty("lastName", "Salieri");
+    List<PlayerStatistic> strings = new ArrayList<PlayerStatistic>();
+    //strings.setProperty(StatisticProperty.PLAYERID, "1234");
+    strings.add(new PlayerStatistic());
+    employee.setProperty("listString",strings);
+    datastore.put(employee);
+    Key k = KeyFactory.createKey("Employee", "123"+"456");
+    Entity e2 = datastore.get(k);
+    assertEquals(employee,e2);
+    assertEquals(strings,e2.getProperty("listString"));
   }
 }
