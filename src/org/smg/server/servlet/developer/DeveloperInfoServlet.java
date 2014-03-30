@@ -62,7 +62,7 @@ public class DeveloperInfoServlet extends HttpServlet {
     } 
     catch (JSONException e) {
       e.printStackTrace();
-    }
+    } 
   }
   
   /**

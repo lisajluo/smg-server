@@ -67,7 +67,7 @@ public class JSONUtil {
    * @return
    * @throws IOException
    */
-  public static List<HashMap<String, Object>> parseHistory(String json) throws IOException {
+  public static List<HashMap<String, Object>> parseList(String json) throws IOException {
     ObjectMapper mapper = new ObjectMapper();    
     List<HashMap<String, Object>> list = new LinkedList<HashMap<String,Object>>();    
       try {

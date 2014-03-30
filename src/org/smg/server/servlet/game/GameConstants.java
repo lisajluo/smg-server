@@ -37,7 +37,7 @@ public final class GameConstants {
 	  static final String CURRENT_GAMES = "CURRENT_GAMES";
 	  
 	  // Statistics table
-	  public static final String STATISTICS = "STATISTICS";
+	  public static final String GAME_STATISTICS = "GAME_STATISTICS";
 	  // Statistics properties
 	  public static final String HIGH_SCORE = "highScore";
 	  public static final String SCORE = "score";
