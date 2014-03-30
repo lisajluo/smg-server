@@ -212,11 +212,6 @@ public class MatchOperationServlet extends HttpServlet {
           // Only update GameOverReason here.
           mi.setGameOverReason(ContainerConstants.OVER);
 
-          Map<String, Object> endGameStats = new HashMap<String, Object>();
-          endGameStats.put(ContainerConstants.PLAYER_IDS, playerIds);
-          long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
-          endGameStats.put(ContainerConstants.GAME_ID, gameId);
-
           // Update gameOverScores.
           Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
           Map<Long, Integer> newPlayerIdToScoreMap = Maps.newHashMap();
@@ -224,6 +219,17 @@ public class MatchOperationServlet extends HttpServlet {
             newPlayerIdToScoreMap.put(Long.parseLong(key), playerIdToScoreMap.get(key));
           }
           mi.setGameOverScores(newPlayerIdToScoreMap);
+          
+          //Update winInfo         
+          Map<String, Object> winInfo = new HashMap<String, Object>();
+          winInfo.put(ContainerConstants.PLAYER_IDS, playerIds);
+          long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
+          winInfo.put(ContainerConstants.GAME_ID, gameId);
+          winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
+          winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, 
+              mi.getPlayerIdToNumberOfTokensInPot());
+          endGameInterface.updateStats(winInfo);
+          
         }
 
         // Write the object back to JSON formation.
