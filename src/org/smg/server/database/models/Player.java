@@ -45,7 +45,7 @@ public class Player {
   }
   
   /**
-   * get a property of a player
+   * get a property of a player, if property not found, return empty string
    * property must be one of the {@code PlayerProperty} and cannot be null
    * @return
    */

@@ -46,12 +46,25 @@
     <input id = "lastNameInput">
     </input>
   </div>
+  <div class = "inputEntity">
+    <span>Target Player Id:</span>
+    <input id = "targetIdInput">
+    </input>
+  </div>
+  <div class = "inputEntity">
+    <span>Game Id:</span>
+    <input id = "gameIdInput">
+    </input>
+  </div>
 </div>
 
 <p><a href = "#" id = "INSERT-A-PLAYER">INSERT A PLAYER</a></p>
 <p><a href = "#" id = "LOGIN-A-PLAYER">LOGIN A PLAYER</a></p>
 <p><a href = "#" id = "UPDATE-A-PLAYER">UPDATE A PLAYER</a></p>
 <p><a href = "#" id = "DELETE-A-PLAYER">DELETE A PLAYER</a></p>
+<p><a href = "#" id = "GET-A-PLAYER">GET A PLAYER INFO</a></p>
+<p><a href = "#" id = "GET-A-PLAYER-STAT">GET A PLAYER GAME STATISTIC</a></p>
+<p><a href = "#" id = "GET-A-PLAYER-HIS">GET A PLAYER GAME HISTORY</a></p>
 
 <div id = "responseArea">
   <div>
@@ -61,8 +74,8 @@
 
 
 <script type="text/javascript">
-var url = "http://1-dot-smg-server.appspot.com";
-//var url = "http://localhost:8888";
+//var url = "http://1-dot-smg-server.appspot.com";
+var url = "http://localhost:8888";
 $(document).ready(function() {
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -76,6 +89,15 @@ $(document).ready(function() {
   });
   $("#DELETE-A-PLAYER").on("click", function(event){
     ajaxCallDelete(url+"/players/");
+  });
+  $("#GET-A-PLAYER").on("click", function(event){
+    ajaxCallGet(url+"/playerInfo");
+  });
+  $("#GET-A-PLAYER-STAT").on("click", function(event){
+    ajaxCallGetStat(url+"/playerGame");
+  });
+  $("#GET-A-PLAYER-HIS").on("click", function(event){
+    ajaxCallGetStat(url+"/history");
   });
 });
 
@@ -119,6 +141,54 @@ function ajaxCallLogin(url){
         if (data["accessSignature"] != undefined) {
           $("#accessSignatureInput").val(data["accessSignature"]);
         }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallGet(url){
+    url = url + "?playerId="+$("#playerIdInput").val()+ "&targetId="+$("#targetIdInput").val();
+    url = url + "&accessSignature="+$("#accessSignatureInput").val();;
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse").append("<p>Get Info:"+JSON.stringify(data)+"</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallGetStat(url){
+    url = url + "?playerId="+$("#playerIdInput").val()+ "&targetId="+$("#targetIdInput").val();
+    url = url + "&gameId="+$("#gameIdInput").val() + "&accessSignature="+$("#accessSignatureInput").val();
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse").append("<p>Get Info:"+JSON.stringify(data)+"</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallGetHistory(url){
+    url = url + "?playerId="+$("#playerIdInput").val()+ "&targetId="+$("#targetIdInput").val();
+    url = url + "&gameId="+$("#gameIdInput").val() + "&accessSignature="+$("#accessSignatureInput").val();
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse").append("<p>Get Info:"+JSON.stringify(data)+"</p>");
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);

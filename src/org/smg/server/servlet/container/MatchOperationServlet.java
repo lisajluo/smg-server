@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriverPlayer;
-import org.smg.server.database.EndGameInterface;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.database.EndGameDatabaseDriver;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
@@ -38,8 +38,6 @@ import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
 public class MatchOperationServlet extends HttpServlet {
-
-  public EndGameInterface endGameInterface;
 
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -249,7 +247,8 @@ public class MatchOperationServlet extends HttpServlet {
           winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
           winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
               mi.getPlayerIdToNumberOfTokensInPot());
-          endGameInterface.updateStats(winInfo);
+
+          EndGameDatabaseDriver.updateStats(winInfo);
 
         }
 
