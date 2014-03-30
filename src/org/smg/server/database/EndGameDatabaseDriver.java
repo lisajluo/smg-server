@@ -15,10 +15,13 @@ import static org.smg.server.servlet.game.GameConstants.SCORE;
 import static org.smg.server.servlet.game.GameConstants.TOKENS;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.smg.server.database.models.PlayerHistory;
+import org.smg.server.database.models.PlayerHistory.MatchResult;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -132,7 +135,33 @@ public class EndGameDatabaseDriver {
   }
 
   private static void updatePlayerStats(Map<String, Object> winInfo) {
-    // TODO 
+    List<PlayerHistory> lph = winInfoToHistories(winInfo);
+    for (PlayerHistory ph: lph) {
+      DatabaseDriverPlayerHistory.savePlayerHistory(ph);
+      DatabaseDriverPlayerStatistic.savePlayerStatisticFromHistory(ph);
+    }
+  }
+  
+  private static List<PlayerHistory> winInfoToHistories(Map<String, Object>winInfo) {
+    long gameId = (Long)winInfo.get("gameId");
+    long matchId = (Long)winInfo.get("matchId");
+    List<Long> playerIds = (List<Long>)winInfo.get("playerIds");
+    List<PlayerHistory> result = new ArrayList<PlayerHistory>();
+    Map<Long, Long> tokens = (Map<Long, Long>) winInfo.get("playerIdToNumberOfTokensInPot");
+    Map<Long, Integer> scoreMap = (Map<Long,Integer>) winInfo.get(GAME_OVER_SCORES);
+    Date date = new Date();
+    for (Long id: playerIds) {
+      PlayerHistory temp = new PlayerHistory(id,gameId,matchId);
+      temp.addOpponentIds(playerIds);
+      temp.removeOpponentIds(id);
+      temp.setDate(date);
+      temp.setScore(scoreMap.get(id));
+      temp.setTokenChange(tokens.get(id));
+      //TODO determine winner
+      temp.setMatchResult(MatchResult.WIN);
+      result.add(temp);
+    }
+    return result;
   }
   
   /**

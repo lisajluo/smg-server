@@ -56,7 +56,6 @@ public final class GameConstants {
 	  public static final String RESULT = "result";
 	  public static final String DATE = "date";
 	  public static final String TOKENCHANGE = "tokenChange";
-	  public static final String SCORECHANGE = "scoreChange";
 	  public static final String OPPONENTIDS = "opponentIds";
 	  public static final String WIN = "win";
 	  public static final String LOST = "lost";

@@ -14,7 +14,7 @@
 </head>
 <body>
 
-
+<div style="width:600px; height:auto; float:left; display:inline">
 <div id = "inputField">
   <div class = "inputEntity">
     <span>Email:</span>
@@ -71,6 +71,22 @@
   <p id = 'rawResponse'></p>
   </div>
 </div>
+</div>
+
+<div style="width:300px; height:auto; float:left; display:inline">
+<div id = "inputField">
+  
+</div>
+
+<p><a href = "#" id = "INSERT-A-HIS">INSERT A GAME HISTORY</a></p>
+
+
+<div id = "responseArea2">
+  <div>
+  <p id = 'rawResponse2'></p>
+  </div>
+</div>
+</div>
 
 
 <script type="text/javascript">
@@ -99,6 +115,9 @@ $(document).ready(function() {
   $("#GET-A-PLAYER-HIS").on("click", function(event){
     ajaxCallGetStat(url+"/history");
   });
+  $("#INSERT-A-HIS").on("click", function(event){
+    ajaxCallInsertHistory(url+"/developHistory");
+  });
 });
 
 function ajaxCallInsert(url){
@@ -123,6 +142,50 @@ function ajaxCallInsert(url){
         if (data["playerId"] != undefined) {
           $("#playerIdInput").val(data["playerId"]);
         }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+var matchId = 100;
+var matchResult = new Array();
+matchResult[0] = {
+  "result":"WIN",
+  "opponentIds": ["123"],
+  "tokenChange": "3",
+};
+matchResult[1] = {
+  "result":"DRAW",
+  "opponentIds": ["123"],
+  "tokenChange": "1",
+};
+
+matchResult[2] = {
+  "result":"LOST",
+  "opponentIds": ["123"],
+  "tokenChange": "0",
+};
+
+function ajaxCallInsertHistory(url){
+    var jsonObj;
+    var r = Math.floor((Math.random()*3));
+    jsonObj = matchResult[r];
+    jsonObj["playerId"] =$("#playerIdInput").val();
+    jsonObj["gameId"] = $("#gameIdInput").val();
+    jsonObj["matchId"] = matchId.toString();
+    var i = (Math.floor((Math.random()*100))+1);
+    jsonObj["score"] = i.toString();
+    matchId ++;
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      data: jsonString,
+      type: "POST",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Insert New GameHistory:"+jsonString+"</p>");
+        $("#rawResponse2").append("<p>Result:"+JSON.stringify(data)+"</p>");
       },
       error: function(jqXHR, textStatus, errorThrown){
         alert("ERROR: " + textStatus + " " + errorThrown);
