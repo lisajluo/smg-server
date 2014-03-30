@@ -4,6 +4,7 @@ package org.smg.server.servlet.container;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -18,9 +19,11 @@ import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 @SuppressWarnings("serial")
 public class QueueServlet extends HttpServlet {
@@ -28,11 +31,11 @@ public class QueueServlet extends HttpServlet {
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
   }
-  
+
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
-    
+
     CORSUtil.addCORSHeader(resp);
     BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
     String json = "";
@@ -40,18 +43,18 @@ public class QueueServlet extends HttpServlet {
       json = br.readLine();
     }
     JSONObject returnValue = new JSONObject();
-    if (json != null ) {
-      //parse json message to jsonMap
+    if (json != null) {
+      // parse json message to jsonMap
       Map<String, Object> jsonMap = null;
       try {
         jsonMap = JSONUtil.parse(json);
       } catch (IOException e) {
         ContainerVerification.sendErrorMessage(
-           resp, returnValue, ContainerConstants.JSON_PARSE_ERROR);
+            resp, returnValue, ContainerConstants.JSON_PARSE_ERROR);
         return;
       }
       // check if missing info
-      if ( !jsonMap.containsKey(ContainerConstants.PLAYER_ID) 
+      if (!jsonMap.containsKey(ContainerConstants.PLAYER_ID)
           || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
           || !jsonMap.containsKey(ContainerConstants.GAME_ID)) {
         ContainerVerification.sendErrorMessage(
@@ -107,7 +110,34 @@ public class QueueServlet extends HttpServlet {
           ContainerConstants.PLAYER_ID, playerId,
           ContainerConstants.CHANNEL_TOKEN, channelToken);
 
-      ContainerDatabaseDriver.insertQueueEntity(entityMap);
+      /*
+       * Try making a match.
+       */
+      int playerCount = ContainerDatabaseDriver.getPlayerNumberInQueue(gameId);
+      List<String> playerIdsToBeSent = Lists.newArrayList();
+
+      // Currently we will start a match for exact 2 players.
+      if (playerCount >= 1) {
+        List<Entity> playerIdsEntity = ContainerDatabaseDriver.getPlayersInQueue(gameId, 1);
+        for (Entity playerEntity : playerIdsEntity) {
+          Map<String, Object> props = playerEntity.getProperties();
+          String pid = (String) props.get(ContainerConstants.CHANNEL_TOKEN);
+          playerIdsToBeSent.add(pid);
+        }
+
+        // Delete the players who has been selected in a Match.
+        for (String id : playerIdsToBeSent) {
+          ContainerDatabaseDriver.deleteQueueEntity(Long.parseLong(id));
+        }
+
+        playerIdsToBeSent.add(String.valueOf(playerId));
+        try {
+          returnValue.put(ContainerConstants.PLAYER_IDS, playerIdsToBeSent);
+        } catch (JSONException e) {
+        }
+      } else {
+        ContainerDatabaseDriver.insertQueueEntity(entityMap);
+      }
 
       // Send token back to client.
       try {

@@ -24,6 +24,10 @@ import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.appengine.api.channel.ChannelMessage;
+import com.google.appengine.api.channel.ChannelPresence;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -232,7 +236,22 @@ public class MatchOperationServlet extends HttpServlet {
         String rtnStr = new ObjectMapper().writeValueAsString(newState
             .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
         returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
-
+        
+        // Response through channel.
+        for(long pid : playerIds) {
+          if (pid  == nextMovePlayerId) {
+            continue;
+          }
+          ChannelService channelService = ChannelServiceFactory.getChannelService();
+          String clientId = String.valueOf(pid);
+          JSONObject returnValueChannel = new JSONObject();
+          try {
+            returnValueChannel.put(ContainerConstants.GAME_STATE, newState
+                .getStateForPlayerId(String.valueOf(pid)));
+          } catch (JSONException e1) {
+          }
+          channelService.sendMessage(new ChannelMessage(clientId, returnValueChannel.toString()));
+        }
       } catch (JSONException e) {
         // This will be reached if there is something wrong with the formation
         // in Entity.
