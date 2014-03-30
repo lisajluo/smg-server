@@ -27,7 +27,6 @@ import org.smg.server.database.GameDatabaseDriver;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-import com.google.appengine.labs.repackaged.org.json.JSONArray;
 
 @SuppressWarnings("serial")
 public class GameInfoServlet extends HttpServlet {

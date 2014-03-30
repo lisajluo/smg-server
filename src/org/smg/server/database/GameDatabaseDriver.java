@@ -8,8 +8,6 @@ import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
 
-import org.smg.server.servlet.developer.DeveloperUtil;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;

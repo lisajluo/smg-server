@@ -5,9 +5,6 @@ import static org.smg.server.servlet.developer.DeveloperConstants.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
@@ -15,14 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DeveloperDatabaseDriver;
-import org.smg.server.database.GameDatabaseDriver;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-import com.google.appengine.labs.repackaged.org.json.JSONArray;
 
 @SuppressWarnings("serial")
 public class DeveloperInfoServlet extends HttpServlet {
