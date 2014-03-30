@@ -28,7 +28,6 @@ import org.smg.server.util.JSONUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;

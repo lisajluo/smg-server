@@ -98,6 +98,12 @@ public class QueueServlet extends HttpServlet {
             resp, returnValue, ContainerConstants.WRONG_GAME_ID);
         return;
       }
+      // verify if player already in queue
+      if (ContainerVerification.playerAlreadyInQueue(playerId)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.ENQUEUE_FAILED);
+        return;
+      }
 
       // Token Generating.
       String userId = String.valueOf(playerId);
