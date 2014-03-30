@@ -247,6 +247,7 @@ public class MatchOperationServlet extends HttpServlet {
           winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
           winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
               mi.getPlayerIdToNumberOfTokensInPot());
+          winInfo.put(ContainerConstants.MATCH_ID, matchId);
 
           EndGameDatabaseDriver.updateStats(winInfo);
 
