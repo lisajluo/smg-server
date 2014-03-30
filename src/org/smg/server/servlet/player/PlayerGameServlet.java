@@ -104,7 +104,7 @@ public class PlayerGameServlet extends HttpServlet{
       PlayerStatistic ps = DatabaseDriverPlayerStatistic.getPlayerStatistic(targetIdLong, gameIdLong);
       try {
         returnValue.put(TOKEN, ps.getProperty(StatisticProperty.TOKEN));
-        returnValue.put(SCORE, ps.getProperty(StatisticProperty.SCORE));
+        returnValue.put(SCORE, ps.getProperty(StatisticProperty.HIGHSCORE));
         returnValue.put(WIN, ps.getProperty(StatisticProperty.WIN));
         returnValue.put(LOST, ps.getProperty(StatisticProperty.LOST));
         returnValue.put(DRAW, ps.getProperty(StatisticProperty.DRAW));

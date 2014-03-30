@@ -152,21 +152,18 @@ var matchId = 100;
 var matchResult = new Array();
 matchResult[0] = {
   "result":"WIN",
-  "oppenentIds": ["123"],
-  "scoreChange": "3",
-  "tokenChange": "2",
+  "opponentIds": ["123"],
+  "tokenChange": "3",
 };
 matchResult[1] = {
   "result":"DRAW",
-  "oppenentIds": ["123"],
-  "scoreChange": "1",
+  "opponentIds": ["123"],
   "tokenChange": "1",
 };
 
 matchResult[2] = {
   "result":"LOST",
-  "oppenentIds": ["123"],
-  "scoreChange": "0",
+  "opponentIds": ["123"],
   "tokenChange": "0",
 };
 
@@ -177,6 +174,8 @@ function ajaxCallInsertHistory(url){
     jsonObj["playerId"] =$("#playerIdInput").val();
     jsonObj["gameId"] = $("#gameIdInput").val();
     jsonObj["matchId"] = matchId.toString();
+    var i = (Math.floor((Math.random()*100))+1);
+    jsonObj["score"] = i.toString();
     matchId ++;
     var jsonString = JSON.stringify(jsonObj);
     $.ajax({
