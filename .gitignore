@@ -19,4 +19,3 @@ war/WEB-INF/deploy/
 war/WEB-INF/classes/
 /lib
 war/WEB-INF/lib
-.settings/com.google.appengine.eclipse.core.prefs

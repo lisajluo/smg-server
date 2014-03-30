@@ -217,11 +217,14 @@ public class ContainerDatabaseDriver {
     
     if (match.containsKey(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT)) {
       try {
-        @SuppressWarnings("unchecked")
-        Map<String,Object> map = (Map<String,Object>)jsonObj.get(
-            ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT);
-        JSONObject jsonToken = new JSONObject(map);
-        entity.setProperty(ContainerConstants.GAME_OVER_SCORES, jsonToken.toString());
+        if(match.get(
+            ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT) != null) {
+          @SuppressWarnings("unchecked")
+          Map<String,Object> map = (Map<String,Object>)jsonObj.get(
+              ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT);
+          JSONObject jsonToken = new JSONObject(map);
+          entity.setProperty(ContainerConstants.GAME_OVER_SCORES, jsonToken.toString());
+        }        
       } catch (JSONException e) {
         return false;
       }
