@@ -6,6 +6,9 @@ import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATU
 import static org.smg.server.servlet.developer.DeveloperConstants.WRONG_DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.WRONG_ACCESS_SIGNATURE;
 import static org.smg.server.servlet.game.GameUtil.*;
+import static org.smg.server.servlet.container.ContainerConstants.PLAYER_IDS;
+import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
+import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,36 +27,87 @@ import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
 public class GameInfoServlet extends HttpServlet {
-  private List<Map<String,Object>> parseUnfinished(List<Entity> unFinishedMatch)
+  private List<JSONObject> parseUnfinished(List<Entity> unFinishedMatch) throws Exception
   {
 	  //TODO: implement how to parse
-	  List<Map<String,Object>> parseResult = new ArrayList<Map<String,Object>> ();
+	  List<JSONObject> parseResult = new ArrayList<JSONObject> ();
 	  for (int i=0;i<unFinishedMatch.size();i++)
 	  {
 		  Map<String,Object> currentRecord = new HashMap<String,Object> ();
 		  Entity match = unFinishedMatch.get(i);
-		  Map<String,Object> matchProperties = match.getProperties();
-		  for (String key: matchProperties.keySet())
+		  //Map<String,Object> matchProperties = match.getProperties();
+		  /*for (String key: matchProperties.keySet())
 		  {
+			  if (key.equals(PLAYER_IDS))
 			  currentRecord.put(key, currentRecord.get(key));
+		  }*/
+		  String playerIdListStr = (String)match.getProperty(PLAYER_IDS);
+		  JSONArray playerIdJson = new JSONArray(playerIdListStr);
+		  List<JSONObject> parsedPlayerIdInfo = new ArrayList<JSONObject> ();
+		  for (int j = 0;j<playerIdJson.length();j++)
+		  {
+			  String currentId = (String)playerIdJson.get(j);
+			  Map<String,String> playerInfo = DatabaseDriverPlayer.getPlayerNames(Long.parseLong(currentId));
+			  JSONObject nameInfo = new JSONObject (playerInfo);
+			  parsedPlayerIdInfo.add(nameInfo);
 		  }
-		  parseResult.add(currentRecord);			  		  
+		  currentRecord.put(PLAYER_ID, parsedPlayerIdInfo);
+		  parseResult.add(new JSONObject(currentRecord));			  		  
 	  }
 	  return parseResult;
   }
-  private Map<String,Object> parseStats(Map<String,Object> statsInfo,List<Entity> unFinishedMatch)
+  private List<JSONObject> parsefinished(List<Entity> FinishedMatch) throws Exception
+  {
+	  //TODO: implement how to parse
+	  List<JSONObject> parseResult = new ArrayList<JSONObject> ();
+	  for (int i=0;i<FinishedMatch.size();i++)
+	  {
+		  Map<String,Object> currentRecord = new HashMap<String,Object> ();
+		  Entity match = FinishedMatch.get(i);
+		  //Map<String,Object> matchProperties = match.getProperties();
+		  /*for (String key: matchProperties.keySet())
+		  {
+			  if (key.equals(PLAYER_IDS))
+			  currentRecord.put(key, currentRecord.get(key));
+		  }*/
+		  String playerIdListStr = (String)match.getProperty(PLAYER_IDS);
+		  JSONArray playerIdJson = new JSONArray(playerIdListStr);
+		  List<JSONObject> parsedPlayerIdInfo = new ArrayList<JSONObject> ();
+		  for (int j = 0;j<playerIdJson.length();j++)
+		  {
+			  String currentId = (String)playerIdJson.get(j);
+			  Map<String,String> playerInfo = new HashMap<String,String>(DatabaseDriverPlayer.getPlayerNames(Long.parseLong(currentId)));
+			  JSONObject playerScores = new JSONObject((String)(match.getProperty(GAME_OVER_SCORES)));
+			  JSONObject playerTokens = new JSONObject((String)(match.getProperty(PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT)));
+			  playerInfo.put(SCORE, playerScores.getString(currentId));
+			  playerInfo.put(TOKENS, playerTokens.getString(currentId));
+			  JSONObject playerInfoJson = new JSONObject (playerInfo);
+			  parsedPlayerIdInfo.add(playerInfoJson);
+		  }
+		  currentRecord.put(PLAYERS, parsedPlayerIdInfo);
+		  parseResult.add(new JSONObject(currentRecord));			  		  
+	  }
+	  return parseResult;
+  }
+  private Map<String,Object> parseStats(Map<String,Object> statsInfo,List<Entity> unFinishedMatch,List finishedMatch)
+    throws Exception
   {
 	  Map<String,Object> parsedStats = new HashMap<String,Object> ();
-	  for (String key: statsInfo.keySet())
-		  parsedStats.put(key, statsInfo.get(key));
-	  List<Map<String,Object>> unfinished = parseUnfinished(unFinishedMatch);
+	  parsedStats.put(HIGH_SCORE, statsInfo.get(HIGH_SCORE));
+	  parsedStats.put(RATING, statsInfo.get(RATING));
+	  List<JSONObject> unfinished = parseUnfinished(unFinishedMatch);
 	  parsedStats.put(CURRENT_GAMES,unfinished);
+	  parsedStats.put(FINISHED_GAMES,finishedMatch);
+	  /*List<JSONObject> finished = parsefinished(finishedMatch);
+	  parsedStats.put(FINISHED_GAMES, finished);*/
 	  return parsedStats;
 		  
   }
@@ -108,8 +162,8 @@ public class GameInfoServlet extends HttpServlet {
 				throw new Exception();
 			 List <Entity> unFinishedMatch = 
 			     ContainerDatabaseDriver.getAllUnfinishedMatchesByGameID(Long.parseLong(gameIdStr));
-
-			Map<String,Object> parsedInfo = parseStats(statsInfo,unFinishedMatch);
+             List finishedMatch =  (List)statsInfo.get(FINISHED_GAMES);
+			Map<String,Object> parsedInfo = parseStats(statsInfo,unFinishedMatch,finishedMatch);
 			jObj = new JSONObject(parsedInfo);
 			put(jObj,resp);
 			return;
@@ -180,7 +234,7 @@ public class GameInfoServlet extends HttpServlet {
 	}
 
   @Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		JSONObject jObj = new JSONObject();

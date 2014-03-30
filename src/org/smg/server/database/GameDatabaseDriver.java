@@ -7,6 +7,8 @@ import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_N
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
+import static org.smg.server.servlet.developer.DeveloperConstants.FIRST_NAME;
+import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
 
 import java.io.IOException;
 import java.util.Date;
@@ -144,15 +146,25 @@ public class GameDatabaseDriver implements EndGameInterface {
     try {
       for (int i = 0; i < developerIdList.size(); i++) {
         JSONObject currentDeveloper = new JSONObject();
-        currentDeveloper.put(DEVELOPER_ID, developerIdList.get(i));
-        result.add(currentDeveloper);
+        //currentDeveloper.put(DEVELOPER_ID, developerIdList.get(i));
+        //result.add(currentDeveloper);
         // TODO: ADD THE MAP INFORMATION FOR DEVELOPER!
-        /*
-         * try { Map developerInfo = DeveloperDatabaseDriver.getDeveloperMap
-         * (Long.parseLong(developerIdList.get(i))); currentDeveloper = new
-         * JSONObject(developerInfo); result.add(currentDeveloper); } catch
-         * (Exception e) { return null; }
-         */
+
+				try {
+					Map developerInfo = DeveloperDatabaseDriver
+							.getDeveloperMap(Long.parseLong(developerIdList
+									.get(i)));
+					Map<String,String> filteredDeveloperInfo = new HashMap<String,String>();
+					if (developerInfo.get(FIRST_NAME)!=null)
+						filteredDeveloperInfo.put(FIRST_NAME, (String)developerInfo.get(FIRST_NAME));
+					if (developerInfo.get(NICKNAME)!=null)
+						filteredDeveloperInfo.put(NICKNAME, (String)developerInfo.get(NICKNAME));
+					currentDeveloper = new JSONObject(filteredDeveloperInfo);
+					System.out.println(currentDeveloper);
+					result.add(currentDeveloper);
+				} catch (Exception e) {
+					return null;
+				}
 
       }
       return result;
@@ -174,13 +186,18 @@ public class GameDatabaseDriver implements EndGameInterface {
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
         if (developerQuery == true
             && developerIdList.contains(developerIdStr) == false)
+        {
           continue;
+        }
         List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
         currentQueryResult.put(DEVELOPER, developerListInfo);
         Map<String, Object> gameInfo = new HashMap<String, Object>(
             result.getProperties());
-        for (String key : gameInfo.keySet())
-          currentQueryResult.put(key, gameInfo.get(key));
+				for (String key : gameInfo.keySet()) {
+					if (key.equals(DEVELOPER_ID) == false) {
+						currentQueryResult.put(key, gameInfo.get(key));
+					}
+				}
         queryResult.add(currentQueryResult);
       }
       return queryResult;
@@ -197,7 +214,7 @@ public class GameDatabaseDriver implements EndGameInterface {
     Set<Long> gameIdCollection = new HashSet<Long>();
     List<Long> result = new ArrayList<Long>();
     for (Entity entity : matches) {
-      long currentGameId = Long.parseLong((String) entity.getProperty(GAME_ID));
+      long currentGameId = (long) entity.getProperty(GAME_ID);
       if (gameIdCollection.contains(currentGameId) == false) {
         gameIdCollection.add(currentGameId);
       }
