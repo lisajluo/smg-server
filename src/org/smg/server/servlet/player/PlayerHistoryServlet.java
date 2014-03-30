@@ -4,7 +4,7 @@ import static org.smg.server.servlet.game.GameConstants.DATE;
 import static org.smg.server.servlet.game.GameConstants.OPPONENTIDS;
 import static org.smg.server.servlet.game.GameConstants.RESULT;
 import static org.smg.server.servlet.game.GameConstants.SCORE;
-import static org.smg.server.servlet.game.GameConstants.TOKENCHANGE;
+import static org.smg.server.servlet.game.GameConstants.TOKEN;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +40,7 @@ public class PlayerHistoryServlet extends HttpServlet {
    *    return: 
    *            ¡°history¡± : 
    *            [
-   *            {¡±date¡± : ¡­, ¡°isWInner¡± : ¡­, ¡°tokenChange¡± : ¡­., ¡°scoreChange¡± : ¡­.., ¡°opponentIds¡± : []}, 
+   *            {¡±date¡± : ¡­, ¡°isWInner¡± : ¡­, ¡°token¡± : ¡­., ¡°score¡± : ¡­.., ¡°opponentIds¡± : []}, 
    *            {"error": "WRONG_ACCESS_SIGNATURE"}
    *            {"error": "WRONG_PLAYER_ID"}
    *            {"error": "WRONG_TARGETID"}
@@ -111,7 +111,7 @@ public class PlayerHistoryServlet extends HttpServlet {
           //TODO TOSTRING?
           h.put(DATE, ph.getDate());
           h.put(RESULT, ph.getMatchResult().toString());
-          h.put(TOKENCHANGE, String.valueOf(ph.getTokenChange()));
+          h.put(TOKEN, String.valueOf(ph.getToken()));
           h.put(SCORE, String.valueOf(ph.getScore()));
           JSONArray oppoids = new JSONArray();
           for (long id: ph.getOpponentIds()) {

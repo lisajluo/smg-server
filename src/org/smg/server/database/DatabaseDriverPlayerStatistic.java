@@ -52,7 +52,7 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.HIGHSCORE.toString(), String.valueOf(newScore));
         long newToken = Long.parseLong(
             (String)(psDB.getProperty(StatisticProperty.TOKEN.toString())));
-        newToken += ph.getTokenChange();
+        newToken = ph.getToken();
         psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(newToken));
         long newResult = Long.parseLong(
             (String)(psDB.getProperty(ph.getMatchResult().toString()))) + 1;
@@ -69,7 +69,7 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.DRAW.toString(), "0");
         psDB.setProperty(ph.getMatchResult().toString(), "1");
         psDB.setProperty(StatisticProperty.HIGHSCORE.toString(), String.valueOf(ph.getScore()));
-        psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(ph.getTokenChange()));
+        psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(ph.getToken()));
         datastore.put(psDB);
       }
       txn.commit();

@@ -25,7 +25,7 @@ public class DatabaseDriverPlayerHistory {
   private static final String GAMEID = "GAMEID";
   private static final String MATCHID = "MATCHID";
   private static final String DATE = "DATE";
-  private static final String TOKENCHANGE = "TOKENCHANGE";
+  private static final String TOKEN = "TOKEN";
   private static final String SCORE = "SCORE";
   private static final String OPPONENTIDS = "OPPONENTIDS";
   private static final String MATCHRESULT = "MATCHRESULT";
@@ -52,7 +52,7 @@ public class DatabaseDriverPlayerHistory {
     psDB.setProperty(GAMEID, ph.getGameId());
     psDB.setProperty(MATCHID, ph.getMatchId());
     psDB.setProperty(DATE, ph.getDate());
-    psDB.setProperty(TOKENCHANGE, ph.getTokenChange());
+    psDB.setProperty(TOKEN, ph.getToken());
     psDB.setProperty(SCORE, ph.getScore());
     psDB.setProperty(OPPONENTIDS, ph.getOpponentIds());
     psDB.setProperty(MATCHRESULT, ph.getMatchResult().toString());
@@ -81,8 +81,8 @@ public class DatabaseDriverPlayerHistory {
     }
     Date date = e.getProperty(DATE) == null?null:(Date)(e.getProperty(DATE));
     ph.setDate(date);
-    long tokenChange = e.getProperty(TOKENCHANGE) == null? 0: (long)(e.getProperty(TOKENCHANGE));
-    ph.setTokenChange(tokenChange);
+    long token = e.getProperty(TOKEN) == null? 0: (long)(e.getProperty(TOKEN));
+    ph.setToken(token);
     long score = e.getProperty(SCORE) == null? 0: (long)(e.getProperty(SCORE));
     ph.setScore(score);
     MatchResult matchResult = e.getProperty(MATCHRESULT) == null? 
