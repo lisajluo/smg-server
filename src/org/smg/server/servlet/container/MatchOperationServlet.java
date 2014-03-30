@@ -28,7 +28,6 @@ import org.smg.server.util.JSONUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelPresence;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -197,12 +196,13 @@ public class MatchOperationServlet extends HttpServlet {
       }
 
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
+      List<Operation> operationsOps = GameStateManager.messageToOperationList(operations);
 
       EndGame endGame = null;
       AttemptChangeTokens attemptChangeTokens = null;
       // If the game is "turn" based, nextMovePlayerId will never be -1.
       long nextMovePlayerId = -1;
-      for (Object op : operations) {
+      for (Object op : operationsOps) {
         if (op instanceof EndGame) {
           endGame = (EndGame) op;
         } else if (op instanceof SetTurn) {
@@ -248,10 +248,11 @@ public class MatchOperationServlet extends HttpServlet {
           long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
           winInfo.put(ContainerConstants.GAME_ID, gameId);
           winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
-          winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
-              mi.getPlayerIdToNumberOfTokensInPot());
-          endGameInterface.updateStats(winInfo);
-
+          if (mi.getPlayerIdToNumberOfTokensInPot() != null) {
+            winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
+                mi.getPlayerIdToNumberOfTokensInPot());
+          }
+          //endGameInterface.updateStats(winInfo);
         }
 
         // Write the object back to JSON formation.
