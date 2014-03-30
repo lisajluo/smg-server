@@ -16,6 +16,9 @@ import org.smg.server.util.CORSUtil;
 import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
 
+import com.google.appengine.api.channel.ChannelMessage;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -134,6 +137,15 @@ public class NewMatchServlet extends HttpServlet {
       } catch (JSONException e) {
         e.printStackTrace();
       }
+      
+      // push matchId to opponents
+      ChannelService channelService = ChannelServiceFactory.getChannelService();
+      for (long playerId: playerIds) {
+        if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
+          String token = String.valueOf(playerId);
+          channelService.sendMessage(new ChannelMessage(token, returnValue.toString()));
+        }
+      }
     }else {
       ContainerVerification.sendErrorMessage(
           resp, returnValue, ContainerConstants.NO_DATA_RECEIVED);
@@ -141,7 +153,9 @@ public class NewMatchServlet extends HttpServlet {
     }
     
     try {
+      // return value to client
       returnValue.write(resp.getWriter());
+      
     } catch (JSONException e) {
       e.printStackTrace();
     }

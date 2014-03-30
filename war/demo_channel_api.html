@@ -6,6 +6,7 @@
   <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="../resources/json2.js"></script>
 	<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+  <script type="text/javascript" src="https://talkgadget.google.com/talkgadget/channel.js"></script>
 </head>
 <body>
 <h3> Demo Page - Container</h3>
@@ -13,11 +14,13 @@
 <br><a href = "#" id = "NewPlayers">Insert Two Players</a>
 <br><a href = "#" id = "NewDevloper">Insert New Developer</a>
 <br><a href = "#" id = "NewGame">Insert New Game</a>
-<br><a href = "#" id = "NewMatch">Insert New Match</a>
-<br><a href = "#" id = "Enqueue">Enqueue</a>
 <br>
+<br><a href = "#" id = "Enqueue">Enqueue: player1</a>
+<br>
+<br><a href = "#" id = "NewMatch">Insert New Match: player2</a>
 <br><a href = "#" id = "NewMatch_parse_error">Insert New Match_parse error</a>
 <br><a href = "#" id = "MakeMove">Make A Move</a>
+<br><a href = "#" id = "MakeMove2">Make A Move2</a>
 <br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
 <br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
 <h4>Response</h4>
@@ -77,22 +80,9 @@ $(document).ready(function() {
       playerIds.push(playerId);
       playerIds.push(playerId2);
       var jsonObj = {
-          "accessSignature": accessSignature,
-          'playerIds': playerIds,
-          "operations": [
-              {
-                  "value": "sd",
-                  "type": "Set",
-                  "visibleToPlayerIds": "ALL",
-                  "key": "k"
-              },
-              {
-                  "to": 54,
-                  "from": 23,
-                  "type": "SetRandomInteger",
-                  "key": "xcv"
-              }
-          ]
+          "accessSignature":accessSignature2, 
+          "playerIds":playerIds, 
+          "operations":[{"type":"SetTurn","playerId":playerId,"numberOfSecondsForTurn":0},{"type":"Set","key":"W","value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"B","value":[26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"M","value":[],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"C0","value":"2c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C1","value":"2d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C2","value":"2h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C3","value":"2s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C4","value":"3c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C5","value":"3d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C6","value":"3h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C7","value":"3s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C8","value":"4c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C9","value":"4d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C10","value":"4h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C11","value":"4s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C12","value":"5c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C13","value":"5d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C14","value":"5h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C15","value":"5s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C16","value":"6c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C17","value":"6d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C18","value":"6h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C19","value":"6s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C20","value":"7c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C21","value":"7d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C22","value":"7h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C23","value":"7s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C24","value":"8c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C25","value":"8d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C26","value":"8h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C27","value":"8s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C28","value":"9c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C29","value":"9d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C30","value":"9h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C31","value":"9s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C32","value":"10c","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C33","value":"10d","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C34","value":"10h","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C35","value":"10s","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C36","value":"Jc","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C37","value":"Jd","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C38","value":"Jh","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C39","value":"Js","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C40","value":"Qc","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C41","value":"Qd","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C42","value":"Qh","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C43","value":"Qs","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C44","value":"Kc","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C45","value":"Kd","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C46","value":"Kh","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C47","value":"Ks","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C48","value":"Ac","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C49","value":"Ad","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C50","value":"Ah","visibleToPlayerIds":"ALL"},{"type":"Set","key":"C51","value":"As","visibleToPlayerIds":"ALL"},{"type":"Shuffle","keys":["C0","C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12","C13","C14","C15","C16","C17","C18","C19","C20","C21","C22","C23","C24","C25","C26","C27","C28","C29","C30","C31","C32","C33","C34","C35","C36","C37","C38","C39","C40","C41","C42","C43","C44","C45","C46","C47","C48","C49","C50","C51"]},{"type":"SetVisibility","key":"C0","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C1","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C2","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C3","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C4","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C5","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C6","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C7","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C8","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C9","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C10","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C11","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C12","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C13","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C14","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C15","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C16","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C17","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C18","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C19","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C20","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C21","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C22","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C23","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C24","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C25","visibleToPlayerIds":[playerId]},{"type":"SetVisibility","key":"C26","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C27","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C28","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C29","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C30","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C31","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C32","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C33","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C34","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C35","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C36","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C37","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C38","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C39","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C40","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C41","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C42","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C43","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C44","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C45","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C46","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C47","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C48","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C49","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C50","visibleToPlayerIds":[playerId2]},{"type":"SetVisibility","key":"C51","visibleToPlayerIds":[playerId2]}]
       };
       $.ajax({
         url: domainUrl+"/matches/"+matchId, 
@@ -106,6 +96,29 @@ $(document).ready(function() {
           alert("ERROR: " + textStatus + " " + errorThrown);
         }});
   });
+
+  $("#MakeMove2").on("click", function(event) {
+      var playerIds = [];
+      playerIds.push(playerId);
+      playerIds.push(playerId2);
+      var jsonObj = {
+          "accessSignature":accessSignature, 
+          "playerIds":playerIds, 
+          "operations":[{"type":"SetTurn","playerId":playerId,"numberOfSecondsForTurn":0},{"type":"Set","key":"W","value":[1,2,3,4,5,6,7,8,9,10,11,13,14,16,17,18,19,20,21,23,24,25],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"M","value":[12,22,0,15],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"claim","value":["4cards","rank5"],"visibleToPlayerIds":"ALL"}]
+      };
+      $.ajax({
+        url: domainUrl+"/matches/"+matchId, 
+        type: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+          $("#response").append("<br>" + JSON.stringify(data));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+
   $("#GetMatchInfo").on("click", function(event) {
       $.ajax({
         url: domainUrl+"/matches/"+matchId+"?accessSignature="+accessSignature+"&playerId="+playerId, 
@@ -121,14 +134,11 @@ $(document).ready(function() {
 });
 
 function ajaxCallEnqueue(url) {
-  var as = accessSignature;
-	var pid = playerId;
-	var gid = gameId;
 	var jsonObj = {
-        "accessSignature": as.toString(),
-        "playerId" : pid.toString(),
-        "gameId": gid.toString()
-    };
+        "accessSignature": accessSignature,
+        "playerId" : playerId,
+        "gameId": gameId
+  };
   $.ajax({
     url: url,
     type: "POST",
@@ -174,7 +184,7 @@ function ajaxCallNewPlayer(url) {
     data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) {           
       if (data['error'] == undefined) {
-        playerId = parseInt(data['playerId']);
+        playerId = data['playerId'];
         accessSignature = data["accessSignature"];
       } 
       $("#response").append("<br>" + JSON.stringify(data));
@@ -199,7 +209,7 @@ function ajaxCallNewPlayer2(url) {
     data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) { 
       if (data['error'] == undefined) {
-        playerId2 = parseInt(data['playerId']);
+        playerId2 = data['playerId'];
         accessSignature2 = data["accessSignature"];
       } 
       $("#response").append("<br>" + JSON.stringify(data));    
@@ -251,7 +261,7 @@ function ajaxCallNewDeveloper(url) {
     data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) { 
       if (data['error'] == undefined) {
-        developerId = parseInt(data['developerId']);
+        developerId = data['developerId'];
         developerAS = data["accessSignature"];
       } 
       $("#response").append("<br>" + JSON.stringify(data));   
@@ -277,11 +287,7 @@ function ajaxCallDelDeveloper(url) {
 }
 
 function ajaxCallNewGame(url) {
-  var jsonObj = { "key": "value2" };
-  $.ajax({
-    url: url, 
-    type: "POST",
-    data: {
+  var jsonObj = {
         "gameName": "TEST GAME for container",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
@@ -290,13 +296,18 @@ function ajaxCallNewGame(url) {
         "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
         "developerId" : developerId,
         "accessSignature": developerAS
-    },
+    };
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) {
-      var jsonObj = $.parseJSON(data);
       if (data['error'] == undefined) {
-        gameId = parseInt(jsonObj['gameId']);
+        var id = new Number(data['gameId']);
+        gameId = id.toString();
       } 
-      $("#response").append("<br>" + JSON.stringify(jsonObj));
+      $("#response").append("<br>" + JSON.stringify(data));
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("ERROR: " + textStatus + " " + errorThrown);
@@ -321,7 +332,7 @@ function ajaxCallNewMatch(url) {
   var playerIds = [];
       playerIds.push(playerId.toString());
       playerIds.push(playerId2.toString());
-  var jsonObj = { 'accessSignature': accessSignature,
+  var jsonObj = { 'accessSignature': accessSignature2,
                   'playerIds': playerIds,
                   'gameId': gameId }
   $.ajax({
@@ -331,7 +342,7 @@ function ajaxCallNewMatch(url) {
     data: JSON.stringify(jsonObj),
     success: function(data, textStatus, jqXHR) { 
       if (data['error'] == undefined) {
-        matchId = parseInt(data['matchId']);
+        matchId = data['matchId'];
       } 
       $("#response").append("<br>" + JSON.stringify(data));    
     },

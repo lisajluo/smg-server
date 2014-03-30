@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -31,7 +32,7 @@ public class MatchInfo {
 
     // Makeup for "history"
     // TODO Delete this!
-    String hstryStr = (String) jsnObj.get(ContainerConstants.HISTORY);
+    String hstryStr = ((Text) jsnObj.get(ContainerConstants.HISTORY)).getValue();
     jsnObj.put(ContainerConstants.HISTORY, new JSONArray(hstryStr));
     /**
      * "[{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}},{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}}]"
