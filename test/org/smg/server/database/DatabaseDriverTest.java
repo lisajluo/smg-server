@@ -5,14 +5,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-import org.smg.server.database.models.PlayerStatistic;
+import org.smg.server.database.models.PlayerHistory.MatchResult;
 import org.smg.server.util.AccessSignatureUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -99,14 +102,26 @@ public class DatabaseDriverTest {
 
     employee.setProperty("firstName", "Antonio");
     employee.setProperty("lastName", "Salieri");
-    List<PlayerStatistic> strings = new ArrayList<PlayerStatistic>();
+    List<Map<String,Object>> strings = new ArrayList<Map<String,Object>>();
     //strings.setProperty(StatisticProperty.PLAYERID, "1234");
-    strings.add(new PlayerStatistic());
+    //strings.add(new PlayerStatistic());
+    Map<String,Object> m = new HashMap<String,Object>();
+    m.put("playerId",12345);
+    //m.put("date", new Date());
+    strings.add(m);
     employee.setProperty("listString",strings);
     datastore.put(employee);
     Key k = KeyFactory.createKey("Employee", "123"+"456");
     Entity e2 = datastore.get(k);
     assertEquals(employee,e2);
     assertEquals(strings,e2.getProperty("listString"));
+  }
+  
+  @Test
+  public void testSt() {
+    MatchResult m = MatchResult.valueOf("WIN");
+    assertEquals(m,MatchResult.WIN);
+    MatchResult m2 = MatchResult.valueOf(null);
+    assertEquals(m2,MatchResult.WIN);
   }
 }

@@ -18,8 +18,8 @@ public class PlayerHistory {
   private final long gameId;
   private final long matchId;
   private Date date;
-  private int tokenChange = 0;
-  private int scoreChange = 0;
+  private long tokenChange = 0;
+  private long scoreChange = 0;
   private List<Long> opponentIds = new ArrayList<Long>();
   private MatchResult matchResult;
 
@@ -40,19 +40,19 @@ public class PlayerHistory {
   }
 
 
-  public int getTokenChange() {
+  public long getTokenChange() {
     return tokenChange;
   }
 
-  public void setTokenChange(int tokenChange) {
+  public void setTokenChange(long tokenChange) {
     this.tokenChange = tokenChange;
   }
 
-  public int getScoreChange() {
+  public long getScoreChange() {
     return scoreChange;
   }
 
-  public void setScoreChange(int scoreChange) {
+  public void setScoreChange(long scoreChange) {
     this.scoreChange = scoreChange;
   }
 
@@ -104,5 +104,39 @@ public class PlayerHistory {
       throw new IllegalArgumentException();
     }
     this.matchResult = matchResult;
+  }
+  
+
+  @Override
+  public boolean equals(Object p) {
+    if (!(p instanceof PlayerHistory)){
+      return false;
+    }
+    PlayerHistory temp = (PlayerHistory)p;
+    if (!this.date.equals(temp.date)){
+      return false;
+    }
+    if (this.gameId != temp.gameId) {
+      return false;
+    }
+    if (this.matchId != temp.matchId) {
+      return false;
+    }
+    if (this.playerId != temp.playerId) {
+      return false;
+    }
+    if (!this.matchResult.equals(temp.matchResult)) {
+      return false;
+    }
+    if (!this.opponentIds.equals(temp.opponentIds)) {
+      return false;
+    }
+    if (this.scoreChange != temp.scoreChange) {
+      return false;
+    }
+    if (this.tokenChange != temp.tokenChange) {
+      return false;
+    }
+    return true;
   }
 }
