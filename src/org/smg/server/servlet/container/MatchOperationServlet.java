@@ -194,12 +194,13 @@ public class MatchOperationServlet extends HttpServlet {
       }
 
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
+      List<Operation> operationsOps = GameStateManager.messageToOperationList(operations);
 
       EndGame endGame = null;
       AttemptChangeTokens attemptChangeTokens = null;
       // If the game is "turn" based, nextMovePlayerId will never be -1.
       long nextMovePlayerId = -1;
-      for (Object op : operations) {
+      for (Object op : operationsOps) {
         if (op instanceof EndGame) {
           endGame = (EndGame) op;
         } else if (op instanceof SetTurn) {
@@ -245,12 +246,15 @@ public class MatchOperationServlet extends HttpServlet {
           long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
           winInfo.put(ContainerConstants.GAME_ID, gameId);
           winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
-          winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
-              mi.getPlayerIdToNumberOfTokensInPot());
+          if (mi.getPlayerIdToNumberOfTokensInPot() != null) {
+            winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
+                mi.getPlayerIdToNumberOfTokensInPot());
+          }
           winInfo.put(ContainerConstants.MATCH_ID, matchId);
 
           EndGameDatabaseDriver.updateStats(winInfo);
 
+          
         }
 
         // Write the object back to JSON formation.
