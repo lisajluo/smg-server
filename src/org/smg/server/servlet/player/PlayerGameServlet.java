@@ -10,10 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.DatabaseDriverPlayerStatistic;
-import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerStatistic;
 import org.smg.server.database.models.PlayerStatistic.StatisticProperty;
 import org.smg.server.util.CORSUtil;
