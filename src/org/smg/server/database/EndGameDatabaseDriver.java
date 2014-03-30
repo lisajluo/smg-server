@@ -3,7 +3,8 @@ package org.smg.server.database;
 import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT;
-import static org.smg.server.servlet.developer.DeveloperConstants.FIRST_NAME;
+import org.smg.server.servlet.developer.DeveloperConstants;
+import org.smg.server.servlet.game.GameConstants;
 import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
 import static org.smg.server.servlet.game.GameConstants.FINISHED_GAMES;
 import static org.smg.server.servlet.game.GameConstants.GAME_ID;
@@ -103,11 +104,11 @@ public class EndGameDatabaseDriver {
 
       try {
         Map playerNames = DatabaseDriverPlayer.getPlayerNames(playerId);
-        firstName = (String) playerNames.get(FIRST_NAME);
+        firstName = (String) playerNames.get(GameConstants.FIRST_NAME);
         nickname = (String) playerNames.get(NICKNAME);
         score = (int) entry.getValue(); 
 
-        player.put(FIRST_NAME, firstName);
+        player.put(DeveloperConstants.FIRST_NAME, firstName);
         player.put(NICKNAME, nickname);
         player.put(SCORE, score);
 
