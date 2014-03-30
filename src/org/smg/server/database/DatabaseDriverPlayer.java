@@ -228,5 +228,27 @@ public class DatabaseDriverPlayer {
     result.put(PlayerProperty.NICKNAME.toString(), name);
     return result;
   }
-
+  
+  /**
+   * Check if player accessSignature is correct. Return false is accessSignature is wrong or 
+   * playerId is wrong(cannot find record).
+   * @param playerId
+   * @param accessSignature
+   * @return
+   */
+  public static boolean validatePlayerAccessSignature(long playerId, String accessSignature) {
+    Key playerKey = KeyFactory.createKey(PLAYER, playerId);
+    Entity playerDB;
+    try {
+      playerDB = datastore.get(playerKey);
+    } catch (EntityNotFoundException e) {
+      return false;
+    }
+    if (playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE.toString())
+        .equals(accessSignature)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

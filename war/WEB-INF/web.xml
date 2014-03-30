@@ -45,6 +45,30 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <url-pattern>/players/*</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>playerInfo</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerInfo</servlet-name>
+    <url-pattern>/playerInfo</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>playerGame</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerGameServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerGame</servlet-name>
+    <url-pattern>/playerGame</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>playerHistory</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerHistoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerHistory</servlet-name>
+    <url-pattern>/history</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>gameinfo</servlet-name>
     <servlet-class>org.smg.server.servlet.game.GameInfoServlet</servlet-class>
   </servlet>

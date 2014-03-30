@@ -48,6 +48,17 @@ public final class GameConstants {
 	  public static final String FINISHED_GAMES = "finishedGames";
 	  public static final String PLAYERS = "players";
 	  public static final String FIRST_NAME = "firstname";
+	  public static final String LAST_NAME = "lastname";
 	  public static final String NICKNAME = "nickname";
 	  public static final String TOKENS = "tokens";
+	  public static final String TOKEN = "token";
+	  public static final String EMAIL = "email";
+	  public static final String RESULT = "result";
+	  public static final String DATE = "date";
+	  public static final String TOKENCHANGE = "tokenChange";
+	  public static final String SCORECHANGE = "scoreChange";
+	  public static final String OPPONENTIDS = "opponentIds";
+	  public static final String WIN = "win";
+	  public static final String LOST = "lost";
+	  public static final String DRAW = "draw";
 	}
