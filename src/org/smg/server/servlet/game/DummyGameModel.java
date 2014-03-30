@@ -2,17 +2,10 @@ package org.smg.server.servlet.game;
 
 import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID;
-import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT;
-import static org.smg.server.servlet.developer.DeveloperConstants.FIRST_NAME;
-import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
 import static org.smg.server.servlet.game.GameConstants.FINISHED_GAMES;
-import static org.smg.server.servlet.game.GameConstants.GAME_ID;
 import static org.smg.server.servlet.game.GameConstants.GAME_STATISTICS;
 import static org.smg.server.servlet.game.GameConstants.HIGH_SCORE;
-import static org.smg.server.servlet.game.GameConstants.PLAYERS;
-import static org.smg.server.servlet.game.GameConstants.RATING;
 import static org.smg.server.servlet.game.GameConstants.SCORE;
-import static org.smg.server.servlet.game.GameConstants.TOKENS;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,17 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.smg.server.database.ContainerDatabaseDriver;
-import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.servlet.container.ContainerConstants;
-import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.datastore.TransactionOptions;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
