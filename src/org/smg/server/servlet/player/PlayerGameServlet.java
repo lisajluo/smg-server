@@ -1,6 +1,10 @@
 package org.smg.server.servlet.player;
 
-import static org.smg.server.servlet.game.GameConstants.*;
+import static org.smg.server.servlet.game.GameConstants.DRAW;
+import static org.smg.server.servlet.game.GameConstants.LOST;
+import static org.smg.server.servlet.game.GameConstants.SCORE;
+import static org.smg.server.servlet.game.GameConstants.TOKEN;
+import static org.smg.server.servlet.game.GameConstants.WIN;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,10 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.DatabaseDriverPlayerStatistic;
-import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerStatistic;
 import org.smg.server.database.models.PlayerStatistic.StatisticProperty;
 import org.smg.server.util.CORSUtil;
@@ -21,6 +23,7 @@ import org.smg.server.util.CORSUtil;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@SuppressWarnings("serial")
 public class PlayerGameServlet extends HttpServlet{
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
