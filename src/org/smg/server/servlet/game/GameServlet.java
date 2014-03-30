@@ -254,7 +254,7 @@ public class GameServlet extends HttpServlet {
       } else {
 
         long gameId = GameDatabaseDriver.saveGameMetaInfo(parameterMap);
-        jObj.put(GAME_ID, gameId);
+        jObj.put(GAME_ID, Long.toString(gameId));
         jObj.write(resp.getWriter());
 
       }
