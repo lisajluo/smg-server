@@ -67,7 +67,9 @@ public class ContainerDatabaseDriver {
     Entity entity = null;    
     try {
       entity = datastore.get(key);
-    } catch (EntityNotFoundException e) {  }
+    } catch (EntityNotFoundException e) { 
+      return entity; 
+    }
     return entity;
   }
   

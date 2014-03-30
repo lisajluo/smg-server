@@ -107,6 +107,7 @@ $(document).ready(function() {
       dataType: "json",
       type: "GET",
       success: function(data, textStatus, jqXHR) {
+      console.log(data);
         $("#response").append("<p>" + JSON.stringify(data) + "</p>");
       },
       error: function(jqXHR, textStatus, errorThrown) {

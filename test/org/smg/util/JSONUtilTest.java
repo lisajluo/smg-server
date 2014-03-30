@@ -16,7 +16,7 @@ public class JSONUtilTest {
   
   @Test
   public void testParseHistory() throws IOException {
-    List<HashMap<String,Object>> list = JSONUtil.parseHistory(
+    List<HashMap<String,Object>> list = JSONUtil.parseList(
         "[{\"gameState\":{"
             + "\"state\":{},"
             + "\"visibleTo\":{},\"playerIdToNumberOfTokensInPot\":{}},"
