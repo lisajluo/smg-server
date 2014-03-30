@@ -6,7 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.GameDatabaseDriver;
+import org.smg.server.database.models.Player;
+import org.smg.server.database.models.Player.PlayerProperty;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -22,9 +25,13 @@ public class ContainerVerification {
    * @return
    */
   public static boolean accessSignatureVerify(String accessSignature, long playerId) {
-    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
-    if (entity.getProperty(ContainerConstants.DS_ACCESS_SIGNATURE).equals(accessSignature)) {
-      return true;
+    try {
+      Player player = DatabaseDriverPlayer.getPlayerById(playerId);
+      if (player != null) {
+        return player.getProperty(PlayerProperty.ACCESSSIGNATURE).equals(accessSignature);
+      }
+    } catch (EntityNotFoundException e) {
+      return false;
     }
     return false;
   }
@@ -71,8 +78,12 @@ public class ContainerVerification {
    * @return
    */
   public static boolean playerIdVerify(long playerId) {
-    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.PLAYER, playerId);
-    if (entity == null) {
+    try {
+      Player player = DatabaseDriverPlayer.getPlayerById(playerId);
+      if (player == null) {
+        return false;
+      }
+    } catch (EntityNotFoundException e) {
       return false;
     }
     return true;
@@ -98,11 +109,8 @@ public class ContainerVerification {
    */
   public static boolean gameIdVerify(long gameId) {
     //Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.GAME, gameId);
-    //TODO get rid of Version info
-    Entity entity;
     try {
-      entity = GameDatabaseDriver.getGame(gameId);
-      return true;
+      return GameDatabaseDriver.checkGameIdExists(gameId);
     } catch (EntityNotFoundException e) {
       return false;
     }

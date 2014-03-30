@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -18,7 +19,7 @@ public class MatchInfo {
   private long gameId;
   private List<Long> playerIds;
   private long playerThatHasTurn;
-  private Map<String, Integer> gameOverScores;
+  private Map<Long, Integer> gameOverScores;
   private String gameOverReason;
   private List<GameStateHistoryItem> history;
   private Map<Long, Long> playerIdToNumberOfTokensInPot;
@@ -31,7 +32,7 @@ public class MatchInfo {
 
     // Makeup for "history"
     // TODO Delete this!
-    String hstryStr = (String) jsnObj.get(ContainerConstants.HISTORY);
+    String hstryStr = ((Text) jsnObj.get(ContainerConstants.HISTORY)).getValue();
     jsnObj.put(ContainerConstants.HISTORY, new JSONArray(hstryStr));
     /**
      * "[{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}},{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}}]"
@@ -83,11 +84,11 @@ public class MatchInfo {
     this.playerThatHasTurn = playerThatHasTurn;
   }
 
-  public final Map<String, Integer> getGameOverScores() {
+  public final Map<Long, Integer> getGameOverScores() {
     return gameOverScores;
   }
 
-  public final void setGameOverScores(Map<String, Integer> gameOverScores) {
+  public final void setGameOverScores(Map<Long, Integer> gameOverScores) {
     this.gameOverScores = gameOverScores;
   }
 

@@ -59,7 +59,7 @@ public class QueueServlet extends HttpServlet {
         return;
       }
       // verify playerId
-      String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
+      String pId = String.valueOf(jsonMap.get(ContainerConstants.PLAYER_ID));
       long playerId = 0;
       try {
         playerId = IDUtil.stringToLong(pId);
@@ -74,7 +74,7 @@ public class QueueServlet extends HttpServlet {
         return;
       }
       // verify accessSignature
-      String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
+      String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
       if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
         ContainerVerification.sendErrorMessage(
             resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);

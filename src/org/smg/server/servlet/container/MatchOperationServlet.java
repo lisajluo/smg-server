@@ -201,36 +201,43 @@ public class MatchOperationServlet extends HttpServlet {
           mi.setPlayerIdToNumberOfTokensInPot(newTokensInPot);
         }
 
+        // Attention! This will also update MatchInfo.
         GameState newState = updateMatchInfoByOperations(mi, operations);
+
+        if (endGame != null) {
+          // Only update GameOverReason here.
+          mi.setGameOverReason(ContainerConstants.OVER);
+
+          // Update gameOverScores.
+          Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
+          Map<Long, Integer> newPlayerIdToScoreMap = Maps.newHashMap();
+          for (String key : playerIdToScoreMap.keySet()) {
+            newPlayerIdToScoreMap.put(Long.parseLong(key), playerIdToScoreMap.get(key));
+          }
+          mi.setGameOverScores(newPlayerIdToScoreMap);
+          
+          //Update winInfo         
+          Map<String, Object> winInfo = new HashMap<String, Object>();
+          winInfo.put(ContainerConstants.PLAYER_IDS, playerIds);
+          long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
+          winInfo.put(ContainerConstants.GAME_ID, gameId);
+          winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
+          winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, 
+              mi.getPlayerIdToNumberOfTokensInPot());
+          endGameInterface.updateStats(winInfo);
+          
+        }
 
         // Write the object back to JSON formation.
         String rtnJsn = new ObjectMapper().writeValueAsString(mi);
+
+        // Write back to Database.
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response
         String rtnStr = new ObjectMapper().writeValueAsString(newState
             .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
         returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
-
-        // TODO If game is ended. Do update things.
-        if (endGame != null) {
-          mi.setGameOverReason(ContainerConstants.OVER);
-         
-          //update stats to player and game
-          Map<String,Object> winInfo = new HashMap<String,Object>();
-          winInfo.put(ContainerConstants.PLAYER_IDS, playerIds);
-          long gameId = (Long)entity.getProperty(ContainerConstants.GAME_ID);
-          winInfo.put(ContainerConstants.GAME_ID, gameId);
-          Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
-          Map<Long, Long> tokenPot = mi.getPlayerIdToNumberOfTokensInPot();
-          winInfo.put(ContainerConstants.GAME_OVER_SCORES, playerIdToScoreMap);
-          if (!tokenPot.isEmpty()) {
-            winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, tokenPot);
-          }
-          endGameInterface.updateStats(winInfo);
-          
-          
-        }
 
       } catch (JSONException e) {
         // This will be reached if there is something wrong with the formation
