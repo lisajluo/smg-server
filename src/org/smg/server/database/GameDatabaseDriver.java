@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Transaction;
 
 import com.google.appengine.api.datastore.Key;
@@ -33,7 +34,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import org.smg.server.util.JSONUtil;
 
@@ -56,11 +56,12 @@ public class GameDatabaseDriver implements EndGameInterface {
           parameterMap.get(GAME_NAME));
       Query q = new Query(GAME_META_INFO).setFilter(nameFilter);
       PreparedQuery pq = datastore.prepare(q);
-      if (pq.countEntities() > 0)
+      if (pq.countEntities(FetchOptions.Builder.withDefaults()) > 0) {
         return true;
-      else
-        return false;
-    } catch (Exception e) {
+      }
+      return false;
+    }
+    catch (Exception e) {
       return false;
     }
 
