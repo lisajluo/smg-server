@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
+import org.smg.server.database.DatabaseDriverPlayer;
+import org.smg.server.database.models.Player;
+import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.database.EndGameDatabaseDriver;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
@@ -24,14 +27,18 @@ import org.smg.server.util.IDUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.appengine.api.channel.ChannelMessage;
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
 public class MatchOperationServlet extends HttpServlet {
-  
+
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
@@ -120,7 +127,7 @@ public class MatchOperationServlet extends HttpServlet {
       }
 
       // check if missing info
-      if ( !jsonMap.containsKey(ContainerConstants.PLAYER_IDS) 
+      if (!jsonMap.containsKey(ContainerConstants.PLAYER_IDS)
           || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
           || !jsonMap.containsKey(ContainerConstants.OPERATIONS)) {
         ContainerVerification.sendErrorMessage(
@@ -165,16 +172,35 @@ public class MatchOperationServlet extends HttpServlet {
             resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
         return;
       }
+
       // Get entity for MatchInfo from database.
       Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.MATCH, matchId);
 
+      // Get current playerId
+      long currentPlayerId = -1;
+      for (Long pid : playerIds) {
+        Player currentPlayer;
+        try {
+          currentPlayer = DatabaseDriverPlayer.getPlayerById(pid);
+          if (currentPlayer.getProperty(PlayerProperty.ACCESSSIGNATURE).equals(accessSignature)) {
+            currentPlayerId = pid;
+            break;
+          }
+        } catch (EntityNotFoundException e) {
+          // This should not be reached. If reached, there must be a bug in
+          // logic.
+          e.printStackTrace();
+        }
+      }
+
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
+      List<Operation> operationsOps = GameStateManager.messageToOperationList(operations);
 
       EndGame endGame = null;
       AttemptChangeTokens attemptChangeTokens = null;
       // If the game is "turn" based, nextMovePlayerId will never be -1.
       long nextMovePlayerId = -1;
-      for (Object op : operations) {
+      for (Object op : operationsOps) {
         if (op instanceof EndGame) {
           endGame = (EndGame) op;
         } else if (op instanceof SetTurn) {
@@ -213,16 +239,22 @@ public class MatchOperationServlet extends HttpServlet {
             newPlayerIdToScoreMap.put(Long.parseLong(key), playerIdToScoreMap.get(key));
           }
           mi.setGameOverScores(newPlayerIdToScoreMap);
-          
-          //Update winInfo         
+
+          // Update winInfo
           Map<String, Object> winInfo = new HashMap<String, Object>();
           winInfo.put(ContainerConstants.PLAYER_IDS, playerIds);
           long gameId = (Long) entity.getProperty(ContainerConstants.GAME_ID);
           winInfo.put(ContainerConstants.GAME_ID, gameId);
           winInfo.put(ContainerConstants.GAME_OVER_SCORES, newPlayerIdToScoreMap);
-          winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, 
-              mi.getPlayerIdToNumberOfTokensInPot());
+          if (mi.getPlayerIdToNumberOfTokensInPot() != null) {
+            winInfo.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT,
+                mi.getPlayerIdToNumberOfTokensInPot());
+          }
+          winInfo.put(ContainerConstants.MATCH_ID, matchId);
+
           EndGameDatabaseDriver.updateStats(winInfo);
+
+          
         }
 
         // Write the object back to JSON formation.
@@ -236,6 +268,21 @@ public class MatchOperationServlet extends HttpServlet {
             .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
         returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
 
+        // Response through channel.
+        for (long pid : playerIds) {
+          if (pid == currentPlayerId) {
+            continue;
+          }
+          ChannelService channelService = ChannelServiceFactory.getChannelService();
+          String clientId = String.valueOf(pid);
+          JSONObject returnValueChannel = new JSONObject();
+          try {
+            returnValueChannel.put(ContainerConstants.GAME_STATE, newState
+                .getStateForPlayerId(String.valueOf(pid)));
+          } catch (JSONException e1) {
+          }
+          channelService.sendMessage(new ChannelMessage(clientId, returnValueChannel.toString()));
+        }
       } catch (JSONException e) {
         // This will be reached if there is something wrong with the formation
         // in Entity.

@@ -115,6 +115,18 @@ public class ContainerVerification {
       return false;
     }
   }
+  /**
+   * Verify if a player already in waiting queue
+   * @param playerId
+   * @return
+   */
+  public static boolean playerAlreadyInQueue(long playerId) {
+    Entity entity = ContainerDatabaseDriver.getEntityByKey(ContainerConstants.QUEUE, playerId);
+    if (entity == null) {
+      return false;
+    }
+    return true;
+  }
   
   /**
    * send error message to the client
