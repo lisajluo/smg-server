@@ -134,6 +134,7 @@ public class NewMatchServlet extends HttpServlet {
       // put result in returnValue
       try {
         returnValue.put(ContainerConstants.MATCH_ID, IDUtil.longToString(matchId));
+        returnValue.put(ContainerConstants.PLAYER_IDS, ids);
       } catch (JSONException e) {
         e.printStackTrace();
       }

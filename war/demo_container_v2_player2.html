@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Servlet Test</title>
+  <title>Player2</title>
   <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="../resources/json2.js"></script>
   <script type="text/javascript" src="/_ah/channel/jsapi"></script>
@@ -18,21 +18,20 @@
 </style>
 
 <div class="container">
-    <div class="left">
-      <br><a href = "#" id = "NewPlayers">Insert Two Players</a>
-      <br><a href = "#" id = "NewDevloper">Insert New Developer</a>
-      <br><a href = "#" id = "NewGame">Insert New Game</a>
-      <br>
-      <br><a href = "#" id = "Enqueue">player1 Enqueue</a>
+    <div class="left" style="width:300px">
+      <br><a href = "#" id = "NewPlayer2">Insert Player2</a>
+      <br>Assign gameId in console 
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a>
-      <br><a href = "#" id = "NewMatch">newMatch</a>
+      <br>Find another player in waiting queue, insert a new match. Go back to player1 page check server-push info: matchId and playerIds.
+     <!-- <br><a href = "#" id = "NewMatch">newMatch</a> !-->
     <!--  <br><a href = "#" id = "MakeMove">player1 Make A Move</a> !-->
-      <br><a href = "#" id = "MakeMove2">player2 Make A Move2</a>
+      <br><a href = "#" id = "MakeMove2">player2 Make A Move</a>
+      <br>Player2 make a move, go to player1 page to check out server-push new game state
       <br>
       <br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
       <br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
     </div>
-    <div id="response" class="right" style="width:900px">Response</div>
+    <div id="response" class="right" style="width:500px">Response</div>
 </div>
 
 <script type="text/javascript">
@@ -50,6 +49,7 @@ var developerId = "";
 var developerAS = "";
 var channel_token = "";
 var channel_token2 = "";
+var playerIds = [];
 
 $(document).ready(function() {
   
@@ -61,6 +61,14 @@ $(document).ready(function() {
     ajaxCallEnqueue2( domainUrl+"/queue");
   });
 
+  $("#NewPlayer").on("click", function(event) {
+    ajaxCallNewPlayer( domainUrl+"/players");
+  });
+
+  $("#NewPlayer2").on("click", function(event) {
+    ajaxCallNewPlayer2( domainUrl+"/players");
+  });
+  
   $("#NewPlayers").on("click", function(event) {
     ajaxCallNewPlayer( domainUrl+"/players");
     ajaxCallNewPlayer2( domainUrl+"/players");
@@ -86,9 +94,9 @@ $(document).ready(function() {
   });
   
   $("#MakeMove").on("click", function(event) {
-      var playerIds = [];
-      playerIds.push(playerId.toString());
-      playerIds.push(playerId2.toString());
+      // var playerIds = [];
+      // playerIds.push(playerId.toString());
+      // playerIds.push(playerId2.toString());
       var jsonObj = {
           "accessSignature":accessSignature, 
           "playerIds":playerIds, 
@@ -108,9 +116,9 @@ $(document).ready(function() {
   });
 
   $("#MakeMove2").on("click", function(event) {
-      var playerIds = [];
-      playerIds.push(playerId);
-      playerIds.push(playerId2);
+      // var playerIds = [];
+      // playerIds.push(playerId);
+      // playerIds.push(playerId2);
       var jsonObj = {
           "accessSignature":accessSignature2, 
           "playerIds":playerIds, 
@@ -161,6 +169,8 @@ function ajaxCallEnqueue(url) {
           channel_token = (data)["channelToken"];         
           if(data["playerIds"]!=undefined) {
               playerIds = data["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
               console.log(playerIds);
               needSendNewMatch = true;
           }
@@ -176,6 +186,14 @@ function ajaxCallEnqueue(url) {
           socket.onmessage = function(data){
             var job = $.parseJSON(data["data"]);
             $("#response").append("<br>Server to Player1:" + JSON.stringify(job));
+            if(job["matchId"]!=undefined) {
+              matchId = job["matchId"];
+            }
+            if(job["playerIds"]!=undefined) {
+              playerIds = job["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
+            }
           };
           socket.onerror = function(description, code){
           
@@ -214,6 +232,8 @@ function ajaxCallEnqueue2(url) {
         
           if(data["playerIds"]!=undefined) {
               playerIds = data["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
               console.log(playerIds);
               needSendNewMatch = true;
           }
@@ -229,6 +249,14 @@ function ajaxCallEnqueue2(url) {
           socket.onmessage = function(data){
             var job = $.parseJSON(data["data"]);
             $("#response").append("<br>Server to Player2:" + JSON.stringify(job));
+            if(job["matchId"]!=undefined) {
+              matchId = job["matchId"];
+            }
+            if(job["playerIds"]!=undefined) {
+              playerIds = job["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
+            }
           };
           socket.onerror = function(description, code){
           
@@ -404,9 +432,9 @@ function ajaxCallDelGame(url) {
 }
 
 function ajaxCallNewMatch(url) {
-  var playerIds = [];
-      playerIds.push(playerId.toString());
-      playerIds.push(playerId2.toString());
+  // var playerIds = [];
+  //     playerIds.push(playerId.toString());
+  //     playerIds.push(playerId2.toString());
   var jsonObj = { 'accessSignature': accessSignature2,
                   'playerIds': playerIds,
                   'gameId': gameId }
@@ -418,6 +446,7 @@ function ajaxCallNewMatch(url) {
     success: function(data, textStatus, jqXHR) { 
       if (data['error'] == undefined) {
         matchId = data['matchId'];
+        playerIds = data['playerIds'];
       } 
       $("#response").append("<br>" + JSON.stringify(data));    
     },
