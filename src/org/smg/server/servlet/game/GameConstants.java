@@ -25,7 +25,7 @@ public final class GameConstants {
 	  static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
 	  static final String WRONG_RATING = "WRONG_RATING";
 	  static final String INVALID_JSON = "INVALID_JSON";
-	  
+	  static final String NO_MATCH_RECORD = "NO_MATCH_RECORDS";
 	  // Success messages
 	  static final String SUCCESS = "success";
 	  static final String DELETED_GAME = "DELETED_GAME";
