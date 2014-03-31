@@ -5,7 +5,7 @@
   <title>Servlet Test</title>
   <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="../resources/json2.js"></script>
-	<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+  <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 </head>
 <body>
 <h3> Demo Page - Container V2</h3>
@@ -25,7 +25,8 @@
       <br>
       <br><a href = "#" id = "Enqueue">player1 Enqueue</a>
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a>
-      <br><a href = "#" id = "MakeMove">player1 Make A Move</a>
+      <br><a href = "#" id = "NewMatch">newMatch</a>
+    <!--  <br><a href = "#" id = "MakeMove">player1 Make A Move</a> !-->
       <br><a href = "#" id = "MakeMove2">player2 Make A Move2</a>
       <br>
       <br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
@@ -36,7 +37,7 @@
 
 <script type="text/javascript">
 
-//var domainUrl = "http://1-dot-smg-server-rl.appspot.com";
+//var domainUrl = "http://2-dot-smg-server-rl.appspot.com";
 var domainUrl = "http://2-dot-smg-server.appspot.com";
 //var domainUrl = "http://localhost:8888";
 var playerId = "";
@@ -134,7 +135,7 @@ $(document).ready(function() {
         type: "GET",
         success: function(data, textStatus, jqXHR) {
           var jsonObj = $.parseJSON(data);
-        	$("#response").append("<br>" + JSON.stringify(jsonObj));
+          $("#response").append("<br>" + JSON.stringify(jsonObj));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -143,7 +144,7 @@ $(document).ready(function() {
 });
 
 function ajaxCallEnqueue(url) {
-	var jsonObj = {
+  var jsonObj = {
         "accessSignature": accessSignature,
         "playerId" : playerId,
         "gameId": gameId
@@ -156,31 +157,32 @@ function ajaxCallEnqueue(url) {
     success: function(data, textStatus, jqXHR) {
         console.log(data);
         var needSendNewMatch = false;
-				if(data["error"] == undefined) {
-					channel_token = (data)["channelToken"];  				
+        if(data["error"] == undefined) {
+          channel_token = (data)["channelToken"];         
           if(data["playerIds"]!=undefined) {
               playerIds = data["playerIds"];
               console.log(playerIds);
               needSendNewMatch = true;
           }
-  				$("#response").append("<br>" + JSON.stringify(data));
-  				channel = new goog.appengine.Channel(channel_token);
-  				socket = channel.open();
-  				socket.onopen = function(){
+          $("#response").append("<br>" + JSON.stringify(data));
+          channel = new goog.appengine.Channel(channel_token);
+          socket = channel.open();
+          socket.onopen = function(){
             if(needSendNewMatch) {
+              console.log("herererere");
               ajaxCallNewMatch( domainUrl+"/newMatch");
             }
-  				};
-  				socket.onmessage = function(data){
+          };
+          socket.onmessage = function(data){
             var job = $.parseJSON(data["data"]);
-  					$("#response").append("<br>Server to Player1:" + JSON.stringify(job));
-  				};
-  				socket.onerror = function(description, code){
-  				
-  				};
-  				socket.onclose = function(){
-  				
-  				};
+            $("#response").append("<br>Server to Player1:" + JSON.stringify(job));
+          };
+          socket.onerror = function(description, code){
+          
+          };
+          socket.onclose = function(){
+          
+          };
         } else {
           $("#response").append("<br>" + JSON.stringify(data));
         }
@@ -220,6 +222,7 @@ function ajaxCallEnqueue2(url) {
           socket = channel.open();
           socket.onopen = function(){
             if(needSendNewMatch) {
+              console.log("herererere");
               ajaxCallNewMatch( domainUrl+"/newMatch");
             }
           };
@@ -244,7 +247,7 @@ function ajaxCallEnqueue2(url) {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"containterV2_API_1@gmail.com",
+      "email":"containterV2_API_111@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -269,7 +272,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"containterV2_API_2@gmail.com",
+      "email":"containterV2_API_222@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -321,7 +324,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "containterV2_API_3@gmail.com", 
+  var jsonObj =  { "email": "containterV2_API_333@gmail.com", 
       "password": "soldkfjlaskdf",
       "nickname": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -364,7 +367,7 @@ function ajaxCallNewGame(url) {
     url: url, 
     type: "POST",
     data: JSON.stringify({
-        "gameName": "TEST GAME for container V2",
+        "gameName": "TEST GAME for container V2222",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,
