@@ -21,3 +21,5 @@ war/WEB-INF/classes/
 war/WEB-INF/lib
 .settings/
 
+.settings/com.google.appengine.eclipse.core.prefs
+
