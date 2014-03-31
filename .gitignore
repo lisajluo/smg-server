@@ -21,3 +21,4 @@ war/WEB-INF/classes/
 war/WEB-INF/lib
 .settings/com.google.appengine.eclipse.core.prefs
 3pq5djy5.oxs.txt
+war/WEB-INF/appengine-generated/
