@@ -43,7 +43,7 @@ public class DatabaseDriverPlayerHistoryTest {
     ph1.setDate(new Date());
     ph1.setMatchResult(MatchResult.WIN);
     ph1.setScore(1);
-    ph1.setToken(0);
+    ph1.setTokenChange(0);
     ph1.addOpponentId((long)2);
     ph1.addOpponentId((long)3);
     Thread.sleep(2000);
@@ -51,7 +51,7 @@ public class DatabaseDriverPlayerHistoryTest {
     ph2.setDate(new Date());
     ph2.setMatchResult(MatchResult.LOST);
     ph2.setScore(-1);
-    ph2.setToken(0);
+    ph2.setTokenChange(0);
     ph2.addOpponentId((long)2);
     ph2.addOpponentId((long)3);
     
@@ -73,7 +73,7 @@ public class DatabaseDriverPlayerHistoryTest {
     ph.setDate(new Date());
     ph.setMatchResult(MatchResult.WIN);
     ph.setScore(1);
-    ph.setToken(0);
+    ph.setTokenChange(0);
     ph.addOpponentId((long)2);
     ph.addOpponentId((long)3);
     DatabaseDriverPlayerHistory.savePlayerHistory(ph);

@@ -18,7 +18,7 @@ public class PlayerHistory {
   private final long gameId;
   private final long matchId;
   private Date date;
-  private long token = 0;
+  private long tokenChange = 0;
   private long score = 0;
   private List<Long> opponentIds = new ArrayList<Long>();
   private MatchResult matchResult;
@@ -40,12 +40,12 @@ public class PlayerHistory {
   }
 
 
-  public long getToken() {
-    return token;
+  public long getTokenChange() {
+    return tokenChange;
   }
 
-  public void setToken(long token) {
-    this.token = token;
+  public void setTokenChange(long tokenChange) {
+    this.tokenChange = tokenChange;
   }
 
   public long getScore() {
@@ -134,7 +134,7 @@ public class PlayerHistory {
     if (this.score != temp.score) {
       return false;
     }
-    if (this.token != temp.token) {
+    if (this.tokenChange != temp.tokenChange) {
       return false;
     }
     return true;

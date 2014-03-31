@@ -156,7 +156,7 @@ public class EndGameDatabaseDriver {
       temp.removeOpponentIds(id);
       temp.setDate(date);
       temp.setScore(scoreMap.get(id));
-      temp.setToken(tokens.get(id));
+      temp.setTokenChange(tokens.get(id));
       //TODO determine winner
       temp.setMatchResult(MatchResult.WIN);
       result.add(temp);

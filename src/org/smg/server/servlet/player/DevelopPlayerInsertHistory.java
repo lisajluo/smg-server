@@ -62,7 +62,7 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
     ph.setDate(new Date());
     ph.setMatchResult(MatchResult.valueOf((String) map.get("result")));
     ph.setScore(Long.valueOf((String) map.get("score")));
-    ph.setToken(Long.valueOf((String) map.get("token")));
+    ph.setTokenChange(Long.valueOf((String) map.get("tokenChange")));
     List<String> ids = (List<String>) map.get("opponentIds");
     System.out.println(map.get("opponentIds"));
     for (String id:ids) {
