@@ -21,7 +21,7 @@ public class PlayerStatistic {
   public static enum StatisticProperty {
     PLAYERID, GAMEID, 
     WIN, LOST, DRAW, 
-    SCORE, TOKEN;
+    HIGHSCORE, TOKEN;
     /**
      * return StatisticProperty by value.
      * If not found, return null;

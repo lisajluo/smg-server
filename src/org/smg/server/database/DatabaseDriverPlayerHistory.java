@@ -26,7 +26,7 @@ public class DatabaseDriverPlayerHistory {
   private static final String MATCHID = "MATCHID";
   private static final String DATE = "DATE";
   private static final String TOKENCHANGE = "TOKENCHANGE";
-  private static final String SCORECHANGE = "SCORECHANGE";
+  private static final String SCORE = "SCORE";
   private static final String OPPONENTIDS = "OPPONENTIDS";
   private static final String MATCHRESULT = "MATCHRESULT";
   private static int HISTORYLIMITPERGAME = 20;
@@ -53,7 +53,7 @@ public class DatabaseDriverPlayerHistory {
     psDB.setProperty(MATCHID, ph.getMatchId());
     psDB.setProperty(DATE, ph.getDate());
     psDB.setProperty(TOKENCHANGE, ph.getTokenChange());
-    psDB.setProperty(SCORECHANGE, ph.getScoreChange());
+    psDB.setProperty(SCORE, ph.getScore());
     psDB.setProperty(OPPONENTIDS, ph.getOpponentIds());
     psDB.setProperty(MATCHRESULT, ph.getMatchResult().toString());
     datastore.put(psDB);
@@ -83,8 +83,8 @@ public class DatabaseDriverPlayerHistory {
     ph.setDate(date);
     long tokenChange = e.getProperty(TOKENCHANGE) == null? 0: (long)(e.getProperty(TOKENCHANGE));
     ph.setTokenChange(tokenChange);
-    long scoreChange = e.getProperty(SCORECHANGE) == null? 0: (long)(e.getProperty(SCORECHANGE));
-    ph.setScoreChange(scoreChange);
+    long score = e.getProperty(SCORE) == null? 0: (long)(e.getProperty(SCORE));
+    ph.setScore(score);
     MatchResult matchResult = e.getProperty(MATCHRESULT) == null? 
         null: MatchResult.valueOf((String)(e.getProperty(MATCHRESULT)));
     ph.setMatchResult(matchResult);

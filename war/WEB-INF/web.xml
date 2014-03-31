@@ -69,6 +69,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <url-pattern>/history</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>developInsertHistory</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.DevelopPlayerInsertHistory</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>developInsertHistory</servlet-name>
+    <url-pattern>/developHistory</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>gameinfo</servlet-name>
     <servlet-class>org.smg.server.servlet.game.GameInfoServlet</servlet-class>
   </servlet>

@@ -3,7 +3,7 @@ package org.smg.server.servlet.player;
 import static org.smg.server.servlet.game.GameConstants.DATE;
 import static org.smg.server.servlet.game.GameConstants.OPPONENTIDS;
 import static org.smg.server.servlet.game.GameConstants.RESULT;
-import static org.smg.server.servlet.game.GameConstants.SCORECHANGE;
+import static org.smg.server.servlet.game.GameConstants.SCORE;
 import static org.smg.server.servlet.game.GameConstants.TOKENCHANGE;
 
 import java.io.IOException;
@@ -112,7 +112,7 @@ public class PlayerHistoryServlet extends HttpServlet {
           h.put(DATE, ph.getDate());
           h.put(RESULT, ph.getMatchResult().toString());
           h.put(TOKENCHANGE, String.valueOf(ph.getTokenChange()));
-          h.put(SCORECHANGE, String.valueOf(ph.getScoreChange()));
+          h.put(SCORE, String.valueOf(ph.getScore()));
           JSONArray oppoids = new JSONArray();
           for (long id: ph.getOpponentIds()) {
             oppoids.put(String.valueOf(id));
