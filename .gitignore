@@ -15,9 +15,7 @@ gwt-unitCache/
 
 # more caches and things from deploy #
 *.cache.html
-war/WEB-INF/deploy/
-war/WEB-INF/classes/
 /lib
-war/WEB-INF/lib
 .settings/
-war/WEB-INF/appengine-generated/
+war/WEB-INF/
+!war/WEB-INF/web.xml

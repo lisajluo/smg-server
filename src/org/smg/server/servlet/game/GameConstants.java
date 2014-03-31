@@ -60,4 +60,5 @@ public final class GameConstants {
 	  public static final String WIN = "win";
 	  public static final String LOST = "lost";
 	  public static final String DRAW = "draw";
+	  public static final String DEVELOPER_LOWER = "developer";
 	}

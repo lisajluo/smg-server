@@ -219,20 +219,17 @@ public class DatabaseDriverPlayer {
    */
   public static Map<String, String> getPlayerNames(long playerId) throws EntityNotFoundException {
     Map<String, String> result = new HashMap<String, String>();
-    try
-    {
-    Player p = getPlayerById(playerId);
-    String name = p.getProperty(PlayerProperty.FIRSTNAME);
-    result.put(PlayerProperty.FIRSTNAME.toString(), name);
-    name = p.getProperty(PlayerProperty.LASTNAME);
-    result.put(PlayerProperty.LASTNAME.toString(), name);
-    name = p.getProperty(PlayerProperty.NICKNAME);
-    result.put(PlayerProperty.NICKNAME.toString(), name);
-    
+    try {
+      Player p = getPlayerById(playerId);
+      String name = p.getProperty(PlayerProperty.FIRSTNAME);
+      result.put(PlayerProperty.FIRSTNAME.toString(), name);
+      name = p.getProperty(PlayerProperty.LASTNAME);
+      result.put(PlayerProperty.LASTNAME.toString(), name);
+      name = p.getProperty(PlayerProperty.NICKNAME);
+      result.put(PlayerProperty.NICKNAME.toString(), name);
     }
-    catch (Exception e)
-    {
-    	System.out.println(e.getMessage());
+    catch (Exception e) {
+    	e.printStackTrace();
     }
     return result;
   }

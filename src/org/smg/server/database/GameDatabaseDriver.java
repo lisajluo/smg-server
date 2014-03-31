@@ -1,7 +1,6 @@
 package org.smg.server.database;
 
 import static org.smg.server.servlet.game.GameConstants.*;
-import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
 import static org.smg.server.servlet.developer.DeveloperConstants.FIRST_NAME;
@@ -172,23 +171,22 @@ public class GameDatabaseDriver {
   public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
     try {
       String developerIdStr = null;
-      if (developerQuery == true)
+      if (developerQuery == true) {
         developerIdStr = String.valueOf(developerId);
+      }
       Query gameQuery = new Query(GAME_META_INFO);
       PreparedQuery pq = datastore.prepare(gameQuery);
       List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
-        if (developerQuery == true
-            && developerIdList.contains(developerIdStr) == false)
-        {
+        currentQueryResult.put(GAME_ID, Long.toString(result.getKey().getId()));
+        if (developerQuery == true && !developerIdList.contains(developerIdStr)) {
           continue;
         }
         List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
-        currentQueryResult.put(DEVELOPER, developerListInfo);
-        Map<String, Object> gameInfo = new HashMap<String, Object>(
-            result.getProperties());
+        currentQueryResult.put(DEVELOPER_LOWER, developerListInfo);
+        Map<String, Object> gameInfo = new HashMap<String, Object>(result.getProperties());
 				for (String key : gameInfo.keySet()) {
 					if (key.equals(DEVELOPER_ID) == false) {
 						currentQueryResult.put(key, gameInfo.get(key));
