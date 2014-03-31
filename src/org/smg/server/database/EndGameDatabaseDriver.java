@@ -151,6 +151,7 @@ public class EndGameDatabaseDriver {
     Map<Long, Long> tokens = (Map<Long, Long>) winInfo.get("playerIdToNumberOfTokensInPot");
     Map<Long, Integer> scoreMap = (Map<Long,Integer>) winInfo.get(GAME_OVER_SCORES);
     Date date = new Date();
+    List<Long> winnerIds = determineWinner(scoreMap);
     for (Long id: playerIds) {
       PlayerHistory temp = new PlayerHistory(id,gameId,matchId);
       temp.addOpponentIds(playerIds);
@@ -159,15 +160,50 @@ public class EndGameDatabaseDriver {
       temp.setScore(scoreMap.get(id));
       temp.setTokenChange(tokens.get(id));
       //TODO determine winner
-      temp.setMatchResult(MatchResult.WIN);
+      if (winnerIds.size() == 0) {
+        temp.setMatchResult(MatchResult.DRAW);
+      } else if (winnerIds.contains(id)) {
+        temp.setMatchResult(MatchResult.WIN);
+      } else {
+        temp.setMatchResult(MatchResult.LOST);
+      }
       result.add(temp);
     }
     return result;
   }
   
   /**
-   * Returns a Map of statistics properties (for a game) or throws exception if not found.  For
-   * internal use in GameDatabaseDriver.
+   * Determine winner: winner should be the one with highest score
+   * if no winner, return empty list and all result should be DRAW
+   */
+  private static List<Long> determineWinner(Map<Long, Integer> scoreMap) {
+    List<Long> result = new ArrayList<Long>();
+    if (scoreMap.size() == 0){
+      return result;
+    }
+    int maxScore = Integer.MIN_VALUE;
+    int minScore = Integer.MAX_VALUE;
+    for (Long key : scoreMap.keySet()){
+      int temp = scoreMap.get(key);
+      maxScore = Math.max(maxScore, temp);
+      minScore = Math.min(minScore, temp);
+    }
+    if (maxScore == Integer.MIN_VALUE && minScore == Integer.MAX_VALUE) {
+      return result;
+    }
+    if (maxScore == minScore){
+      return result;
+    }
+    for (Long key : scoreMap.keySet()){
+      if (scoreMap.get(key).equals(maxScore)){
+        result.add(key);
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * Returns a Map of statistics properties (for a game) or throws exception if not found.
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private static Map getStatisticsMap(long gameId) throws EntityNotFoundException {
