@@ -1,0 +1,11 @@
+<!-- Indices written at Mon, 31 Mar 2014 14:53:42 EDT -->
+
+<datastore-indexes>
+
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="Queue" ancestor="false" source="auto">
+        <property name="gameId" direction="asc"/>
+        <property name="enqueueTime" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
