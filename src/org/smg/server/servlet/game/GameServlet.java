@@ -51,7 +51,8 @@ public class GameServlet extends HttpServlet {
         }
       }
     }
-
+    if (returnMap.containsKey(HAS_TOKENS)==false)
+    	returnMap.put(HAS_TOKENS, false);
     return returnMap;
   }
 

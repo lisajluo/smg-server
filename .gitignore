@@ -15,9 +15,9 @@ gwt-unitCache/
 
 # more caches and things from deploy #
 *.cache.html
-war/WEB-INF/deploy/
-war/WEB-INF/classes/
 /lib
-war/WEB-INF/lib
-.settings/com.google.appengine.eclipse.core.prefs
-3pq5djy5.oxs.txt
+.settings/
+war/WEB-INF/
+!war/WEB-INF/web.xml
+.settings/com.google.gdt.eclipse.core.prefs
+war/WEB-INF/appengine-web.xml

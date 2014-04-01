@@ -171,7 +171,7 @@ public class GameInfoServlet extends HttpServlet {
 		catch (Exception e)
 		{
 			
-			put(jObj, ERROR, WRONG_GAME_ID, resp);
+			put(jObj, ERROR, NO_MATCH_RECORD, resp);
 			return;
 		}
 	}
