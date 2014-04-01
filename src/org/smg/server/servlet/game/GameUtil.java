@@ -18,7 +18,8 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class GameUtil {
-	public static  boolean signatureRight(HttpServletRequest req)
+	@SuppressWarnings("rawtypes")
+  public static  boolean signatureRight(HttpServletRequest req)
 	{
 		try
 		{
@@ -35,7 +36,8 @@ public class GameUtil {
 		}
 		
 	}
-	public static boolean signatureRight(Map<Object, Object> parameterMap) {
+	@SuppressWarnings("rawtypes")
+  public static boolean signatureRight(Map<Object, Object> parameterMap) {
 		try {
 			long developerId = Long.parseLong((String) parameterMap
 					.get(DEVELOPER_ID));

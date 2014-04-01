@@ -143,6 +143,7 @@ public class EndGameDatabaseDriver {
     }
   }
   
+  @SuppressWarnings("unchecked")
   private static List<PlayerHistory> winInfoToHistories(Map<String, Object>winInfo) {
     long gameId = (Long)winInfo.get("gameId");
     long matchId = (Long)winInfo.get("matchId");

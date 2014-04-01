@@ -27,7 +27,8 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class DummyGameModel {
 	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	static public void updateStats() {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+  static public void updateStats() {
 		//System.out.println("I am here");
 		Map ScoreInfo = new HashMap();
 		long virtualId = 1234;
@@ -65,7 +66,8 @@ public class DummyGameModel {
 	    datastore.put(statistics);
 	    
 	  }
-	public static void  insertMatchEntity() throws JSONException {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+  public static void  insertMatchEntity() throws JSONException {
 		System.out.println("I am here");
 		JSONObject match = new JSONObject();
 		List playerIdList = new ArrayList();

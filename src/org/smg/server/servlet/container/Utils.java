@@ -52,6 +52,7 @@ public class Utils {
     return body;
   }
 
+  @SuppressWarnings("rawtypes")
   public static Object toJSON(Object object) throws JSONException {
     if (object instanceof Map) {
       JSONObject json = new JSONObject();
@@ -79,6 +80,7 @@ public class Utils {
     return toMap(object.getJSONObject(key));
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public static Map<String, Object> toMap(JSONObject object) throws JSONException {
     Map<String, Object> map = new HashMap();
     Iterator keys = object.keys();
@@ -89,6 +91,7 @@ public class Utils {
     return map;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public static List toList(JSONArray array) throws JSONException {
     List list = new ArrayList();
     for (int i = 0; i < array.length(); i++) {

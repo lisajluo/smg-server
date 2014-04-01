@@ -33,31 +33,25 @@ import org.smg.server.util.JSONUtil;
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet {
 
-  private static final String[] validParams = { HAS_TOKENS, SCREENSHOT, ICON,
-      DEVELOPER_ID, GAME_NAME, DESCRIPTION, URL, WIDTH, HEIGHT,
-      ACCESS_SIGNATURE };
+  private static final String[] validParams = { HAS_TOKENS, SCREENSHOT, ICON, DEVELOPER_ID, 
+    GAME_NAME, DESCRIPTION, URL, WIDTH, HEIGHT, ACCESS_SIGNATURE };
 
   private Map<Object, Object> deleteInvalid(Map<Object, Object> params,
       String[] validParams) {
     Map<Object, Object> returnMap = new HashMap<Object, Object>();
     for (Map.Entry<Object, Object> entry : params.entrySet()) {
       if (Arrays.asList(validParams).contains(entry.getKey())) {
-
-        // if (entry.getKey() instanceof String && entry.getValue() instanceof
-        // String) {
         if (entry.getKey() instanceof String) {
-
           returnMap.put(entry.getKey(), entry.getValue());
         }
       }
     }
-    if (returnMap.containsKey(HAS_TOKENS)==false)
-    	returnMap.put(HAS_TOKENS, false);
+    if (returnMap.containsKey(HAS_TOKENS) == false)
+      returnMap.put(HAS_TOKENS, false);
     return returnMap;
   }
 
-  private void put(JSONObject jObj, String key, String value,
-      HttpServletResponse resp) {
+  private void put(JSONObject jObj, String key, String value, HttpServletResponse resp) {
     try {
       jObj.put(key, value);
       resp.setContentType("text/plain");
@@ -74,7 +68,6 @@ public class GameServlet extends HttpServlet {
       if (pathInfo.length() == 1) {
         if (pathInfo.charAt(0) != '/') {
           return false;
-
         } else
           return true;
       }
@@ -84,6 +77,7 @@ public class GameServlet extends HttpServlet {
     return true;
   }
 
+  @SuppressWarnings("rawtypes")
   private boolean developerIdExists(String idAsStr) {
     try {
       long developerId = Long.parseLong(idAsStr);
@@ -97,72 +91,42 @@ public class GameServlet extends HttpServlet {
     }
   }
 
-  private boolean gameNameDuplicate(long gameId,
-      Map<Object, Object> parameterMap)
-
-  {
+  private boolean gameNameDuplicate(long gameId, Map<Object, Object> parameterMap) {
     return GameDatabaseDriver.checkGameNameDuplicate(gameId, parameterMap);
-
   }
 
   private boolean requiredFieldForUpdate(Map<Object, Object> parameterMap) {
-
     if (parameterMap.get(DEVELOPER_ID) == null)
-
       return false;
     return true;
   }
 
   private boolean requiredFieldsComplete(Map<Object, Object> parameterMap) {
-
-    if (parameterMap.get(DEVELOPER_ID) == null)
-
-    {
-
+    if (parameterMap.get(DEVELOPER_ID) == null) {
       return false;
     }
 
-    if (parameterMap.get(GAME_NAME) == null)
-
-    {
-
-      // System.out.println("gameName");
+    if (parameterMap.get(GAME_NAME) == null) {
       return false;
     }
 
-    if (parameterMap.get(DESCRIPTION) == null)
-
-    {
-
-      // System.out.println("description");
+    if (parameterMap.get(DESCRIPTION) == null) {
       return false;
     }
 
-    if (parameterMap.get(URL) == null)
-
-    {
-
-      // System.out.println("url");
+    if (parameterMap.get(URL) == null) {
       return false;
     }
 
-    if (parameterMap.get(WIDTH) == null)
-
-    {
-
-      // System.out.println("width");
+    if (parameterMap.get(WIDTH) == null) {
       return false;
     }
 
-    if (parameterMap.get(HEIGHT) == null)
-
-    {
-
+    if (parameterMap.get(HEIGHT) == null) {
       return false;
     }
 
     if (parameterMap.get(ACCESS_SIGNATURE) == null) {
-
       return false;
     }
     return true;
@@ -173,15 +137,10 @@ public class GameServlet extends HttpServlet {
     return GameDatabaseDriver.checkGameNameDuplicate(parameterMap);
   }
 
-  /*
-   * private boolean gameNameDuplicate(String gameName,HttpServletRequest req) {
-   * return DatabaseDriver.checkGameNameDuplicate(gameName,req); }
-   */
   private boolean gameIdExist(long gameId) {
     try {
       return GameDatabaseDriver.checkGameIdExists(gameId);
     } catch (EntityNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return false;
@@ -191,7 +150,6 @@ public class GameServlet extends HttpServlet {
       throws IOException, JSONException {
     JSONObject metainfo = new JSONObject();
 
-    // Entity targetEntity=DatabaseDriver.getEntity(gameName, versionNum);
     Entity targetEntity;
     try {
       targetEntity = GameDatabaseDriver.getGame(gameName);
@@ -208,11 +166,11 @@ public class GameServlet extends HttpServlet {
 
       metainfo.write(resp.getWriter());
     } catch (EntityNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
@@ -240,7 +198,6 @@ public class GameServlet extends HttpServlet {
         return;
       }
       if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
-
         put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
 
         return;
@@ -253,14 +210,12 @@ public class GameServlet extends HttpServlet {
         put(jObj, ERROR, GAME_EXISTS, resp);
         return;
       } else {
-
         long gameId = GameDatabaseDriver.saveGameMetaInfo(parameterMap);
         jObj.put(GAME_ID, Long.toString(gameId));
         jObj.write(resp.getWriter());
 
       }
     } catch (Exception e) {
-
       put(jObj, ERROR, INVALID_JSON, resp);
       return;
     }
@@ -279,13 +234,10 @@ public class GameServlet extends HttpServlet {
       if (gameIdExist(targetId) == false) {
         put(jObj, ERROR, WRONG_GAME_ID, resp);
         return;
-
       } else {
-
         try {
           returnMetaInfo(targetId, resp);
         } catch (JSONException e) {
-          // TODO Auto-generated catch block
           put(jObj, ERROR, INVALID_JSON, resp);
         }
       }
@@ -302,6 +254,7 @@ public class GameServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
@@ -326,7 +279,8 @@ public class GameServlet extends HttpServlet {
         return;
       }
       Entity targetEntity = GameDatabaseDriver.getGame(gameId);
-      List<String> developerList = (List<String>) targetEntity.getProperty(DEVELOPER_ID);
+      List<String> developerList = (List<String>) targetEntity
+          .getProperty(DEVELOPER_ID);
       if (developerList.contains(developerId) == false) {
         put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
         return;
@@ -342,6 +296,7 @@ public class GameServlet extends HttpServlet {
 
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doPut(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
@@ -383,10 +338,9 @@ public class GameServlet extends HttpServlet {
           put(jObj, ERROR, GAME_EXISTS, resp);
           return;
         }
-        // String version = VERSION_ONE;
-        // Entity targetEntity = DatabaseDriver.getEntity(gameId, version);
         Entity targetEntity = GameDatabaseDriver.getGame(longId);
-        List<String> developerList = (List<String>) targetEntity.getProperty(DEVELOPER_ID);
+        List<String> developerList = (List<String>) targetEntity
+            .getProperty(DEVELOPER_ID);
         if (developerList.contains(parameterMap.get(DEVELOPER_ID)) == false) {
           put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
           return;

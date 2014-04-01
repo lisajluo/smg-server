@@ -22,12 +22,12 @@ import org.smg.server.util.JSONUtil;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@SuppressWarnings("serial")
 public class DevelopPlayerInsertHistory extends HttpServlet {
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
   }
-  
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -42,6 +42,7 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
    * For Development purpose only.
    * Add a winning Info to certain player
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {

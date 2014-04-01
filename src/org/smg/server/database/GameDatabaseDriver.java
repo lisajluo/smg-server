@@ -36,7 +36,6 @@ import org.smg.server.util.JSONUtil;
 public class GameDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   
-  //Huan
   public static Entity getGame(long gameId) throws EntityNotFoundException {
     try {
       Key gameKey = KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -60,7 +59,6 @@ public class GameDatabaseDriver {
     catch (Exception e) {
       return false;
     }
-
   }
 
   public static boolean checkGameIdExists(long gameId) throws EntityNotFoundException {
@@ -135,20 +133,16 @@ public class GameDatabaseDriver {
     }
   }
 
-  private static List<JSONObject> getDeveloperListInfo(
-      List<String> developerIdList) {
+  @SuppressWarnings("rawtypes")
+  private static List<JSONObject> getDeveloperListInfo(List<String> developerIdList) {
     List<JSONObject> result = new ArrayList<JSONObject>();
     try {
       for (int i = 0; i < developerIdList.size(); i++) {
         JSONObject currentDeveloper = new JSONObject();
-        //currentDeveloper.put(DEVELOPER_ID, developerIdList.get(i));
-        //result.add(currentDeveloper);
-        // TODO: ADD THE MAP INFORMATION FOR DEVELOPER!
 
 				try {
-					Map developerInfo = DeveloperDatabaseDriver
-							.getDeveloperMap(Long.parseLong(developerIdList
-									.get(i)));
+					Map developerInfo = DeveloperDatabaseDriver.getDeveloperMap(
+					    Long.parseLong(developerIdList.get(i)));
 					Map<String,String> filteredDeveloperInfo = new HashMap<String,String>();
 					if (developerInfo.get(FIRST_NAME)!=null)
 						filteredDeveloperInfo.put(FIRST_NAME, (String)developerInfo.get(FIRST_NAME));
@@ -168,6 +162,7 @@ public class GameDatabaseDriver {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
     try {
       String developerIdStr = null;
@@ -200,10 +195,7 @@ public class GameDatabaseDriver {
     }
   }
 
-  // Huan
   public static List<Long> getAllPlayableGameIds(long playerId) {
-    // TODO implement this method How does each playerId store all the game he
-    // played??
     List<Entity> matches = ContainerDatabaseDriver.getAllMatchesByPlayerId(playerId);
     Set<Long> gameIdCollection = new HashSet<Long>();
     List<Long> result = new ArrayList<Long>();
