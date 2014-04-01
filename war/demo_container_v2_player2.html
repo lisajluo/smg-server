@@ -8,7 +8,7 @@
   <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 </head>
 <body>
-<h3> Demo Page - Container V2</h3>
+<h3> Player2</h3>
 
 <style type="text/css">
         div.left, div.right {
@@ -20,10 +20,12 @@
 <div class="container">
     <div class="left" style="width:300px">
       <br><a href = "#" id = "NewPlayer2">Insert Player2</a>
-      <br>Assign gameId in console 
+      <form id="submitGame"></form>
+          <input type="text" name="gameId" form="submitGame">
+          <input type="submit" value="Assign gameId" form="submitGame">
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a>
       <br>Find another player in waiting queue, insert a new match. Go back to player1 page check server-push info: matchId and playerIds.
-     <!-- <br><a href = "#" id = "NewMatch">newMatch</a> !-->
+    <!--  <br><a href = "#" id = "NewMatch">newMatch</a> !-->
     <!--  <br><a href = "#" id = "MakeMove">player1 Make A Move</a> !-->
       <br><a href = "#" id = "MakeMove2">player2 Make A Move</a>
       <br>Player2 make a move, go to player1 page to check out server-push new game state
@@ -53,6 +55,17 @@ var playerIds = [];
 
 $(document).ready(function() {
   
+  $("#submitGame").submit(function(e) {
+    // Prevent all default form submission
+    //window.alert("!!");
+    e.preventDefault();    
+    var formValues = $(this).serializeArray();
+    var data = formValues[0].value;    
+    gameId = data;
+    $("#response").append("<br>" + "gameId: "+gameId);
+    console.log(data.toString());
+  });
+
   $("#Enqueue").on("click", function(event) {
     ajaxCallEnqueue( domainUrl+"/queue");
   });
@@ -275,7 +288,7 @@ function ajaxCallEnqueue2(url) {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"containterV2_API_111@gmail.com",
+      "email":"containterV2_API_111111@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -300,7 +313,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"containterV2_API_222@gmail.com",
+      "email":"containterV2_API_2221111@gmail.com",
       "password":"foobar",
       "firstname":"foo",
       "lastname":"bar",
@@ -352,7 +365,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "containterV2_API_333@gmail.com", 
+  var jsonObj =  { "email": "containterV2_API_3331111@gmail.com", 
       "password": "soldkfjlaskdf",
       "nickname": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -395,7 +408,7 @@ function ajaxCallNewGame(url) {
     url: url, 
     type: "POST",
     data: JSON.stringify({
-        "gameName": "TEST GAME for container V2222",
+        "gameName": "TEST GAME for container V22221111",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,

@@ -8,7 +8,7 @@
   <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 </head>
 <body>
-<h3> Demo Page - Container V2</h3>
+<h3> Player2</h3>
 
 <style type="text/css">
         div.left, div.right {
@@ -20,7 +20,9 @@
 <div class="container">
     <div class="left" style="width:300px">
       <br><a href = "#" id = "NewPlayer2">Insert Player2</a>
-      <br>Assign gameId in console 
+      <form id="submitGame"></form>
+          <input type="text" name="gameId" form="submitGame">
+          <input type="submit" value="Assign gameId" form="submitGame">
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a>
       <br>Find another player in waiting queue, insert a new match. Go back to player1 page check server-push info: matchId and playerIds.
     <!--  <br><a href = "#" id = "NewMatch">newMatch</a> !-->
@@ -53,6 +55,16 @@ var playerIds = [];
 
 $(document).ready(function() {
   
+  $("#submitGame").submit(function(e) {
+    // Prevent all default form submission
+    //window.alert("!!");
+    e.preventDefault();    
+    var formValues = $(this).serializeArray();
+    var data = formValues[0].value;    
+    gameId = data;
+    console.log(data.toString());
+  });
+
   $("#Enqueue").on("click", function(event) {
     ajaxCallEnqueue( domainUrl+"/queue");
   });
