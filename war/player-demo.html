@@ -90,8 +90,9 @@
 
 
 <script type="text/javascript">
-//var url = "http://2-dot-smg-server.appspot.com";
-var url = "http://localhost:8888";
+//var url = "http://2-dot-dazzling-bruin-537.appspot.com/";
+var url = "http://2-dot-smg-server.appspot.com";
+//var url = "http://localhost:8888";
 $(document).ready(function() {
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -202,7 +203,7 @@ function ajaxCallGetGames(url){
       dataType: 'json',
       type: "GET",
       success: function(data, textStatus, jqXHR){
-        $("#rawResponse2").append("<p>Login:"+JSON.stringify(data)+"</p>");
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
         if (data["accessSignature"] != undefined) {
           $("#accessSignatureInput").val(data["accessSignature"]);
         }
