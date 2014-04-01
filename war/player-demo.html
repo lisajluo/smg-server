@@ -79,7 +79,8 @@
 </div>
 <p><a href = "#" id = "GET-GAMES">GET A LIST OF GAME</a></p>
 <p><a href = "#" id = "INSERT-A-HIS">INSERT A GAME HISTORY</a></p>
-
+<!-- <p><a href = "#" id = "INSERT-A-HIS2">INSERT A GAME HISTORY</a></p>
+ -->
 
 <div id = "responseArea2">
   <div>
@@ -91,7 +92,6 @@
 
 <script type="text/javascript">
 var url = "http://2-dot-smg-server.appspot.com";
-//var url = "http://localhost:8888";
 $(document).ready(function() {
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -117,6 +117,9 @@ $(document).ready(function() {
   });
   $("#INSERT-A-HIS").on("click", function(event){
     ajaxCallInsertHistory(url+"/developHistory");
+  });
+  $("#INSERT-A-HIS2").on("click", function(event){
+    ajaxCallInsertHistory2(url+"/developHistory");
   });
   $("#GET-GAMES").on("click", function(event){
     ajaxCallGetGames(url+"/gameinfo/all");
@@ -196,13 +199,40 @@ function ajaxCallInsertHistory(url){
     });
 }
 
+function ajaxCallInsertHistory2(url){
+    var jsonObj;
+    var r = Math.floor((Math.random()*3));
+    jsonObj = matchResult[r];
+    jsonObj["playerId"] =$("#playerIdInput").val();
+    jsonObj["gameId"] = $("#gameIdInput").val();
+    jsonObj["matchId"] = matchId.toString();
+    var i = (Math.floor((Math.random()*100))+1);
+    jsonObj["score"] = i.toString();
+    matchId ++;
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      data: jsonString,
+      type: "PUT",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Insert New GameHistory:"+jsonString+"</p>");
+        $("#rawResponse2").append("<p>Result:"+JSON.stringify(data)+"</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+
 function ajaxCallGetGames(url){
     $.ajax({
       url: url,
       dataType: 'json',
       type: "GET",
       success: function(data, textStatus, jqXHR){
-        $("#rawResponse2").append("<p>Login:"+JSON.stringify(data)+"</p>");
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
         if (data["accessSignature"] != undefined) {
           $("#accessSignatureInput").val(data["accessSignature"]);
         }

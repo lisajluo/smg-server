@@ -38,7 +38,7 @@ public class PlayerInfoServlet extends HttpServlet {
    *            {  ¡°firstname¡± : ¡­,  ¡°nickname¡± : ¡­.}
    *            {"error": "WRONG_ACCESS_SIGNATURE"}
    *            {"error": "WRONG_PLAYER_ID"}
-   *            {"error": "WRONG_TARGETID"}
+   *            {"error": "WRONG_TARGET_ID"}
    */
   @SuppressWarnings("unchecked")
   @Override
