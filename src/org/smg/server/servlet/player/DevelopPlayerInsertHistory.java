@@ -46,6 +46,7 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     CORSUtil.addCORSHeader(resp);
+    JSONObject returnValue = new JSONObject();
     BufferedReader br = new BufferedReader(new InputStreamReader(
         req.getInputStream()));
     String json = new String();
@@ -55,9 +56,18 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
       buffer.append(line);
     json = buffer.toString();
     Map<String, Object> map = JSONUtil.parse(json);
-    long playerId = Long.parseLong((String) map.get("playerId"));
-    long gameId = Long.parseLong((String) map.get("gameId"));
-    long matchId = Long.parseLong((String) map.get("matchId"));
+    long playerId;
+    long gameId;
+    long matchId;
+    try {
+      playerId = Long.parseLong((String) map.get("playerId"));
+      gameId = Long.parseLong((String) map.get("gameId"));
+      matchId = Long.parseLong((String) map.get("matchId"));
+    } catch (NumberFormatException e1) {
+      // TODO Auto-generated catch block
+      addErrorMessage(returnValue,"Illegal ID",resp);
+      return;
+    }
     PlayerHistory ph = new PlayerHistory(playerId,gameId,matchId);
     ph.setDate(new Date());
     ph.setMatchResult(MatchResult.valueOf((String) map.get("result")));
@@ -70,7 +80,6 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
     }
     DatabaseDriverPlayerHistory.savePlayerHistory(ph);
     DatabaseDriverPlayerStatistic.savePlayerStatisticFromHistory(ph);
-    JSONObject returnValue = new JSONObject();
     try {
       returnValue.put("success", "SUCCESS");
       returnValue.write(resp.getWriter());
