@@ -20,4 +20,3 @@ gwt-unitCache/
 war/WEB-INF/
 !war/WEB-INF/web.xml
 .settings/com.google.gdt.eclipse.core.prefs
-war/WEB-INF/appengine-web.xml
