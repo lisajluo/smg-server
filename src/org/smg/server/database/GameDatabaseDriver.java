@@ -92,7 +92,7 @@ public class GameDatabaseDriver {
     		Map<Object,Object> picObj = (Map<Object,Object>)(parameterMap.get(key));
     		Text picText = new Text(picObj.toString());
     		game.setProperty((String) key,picText);
-    		System.out.println("finished8888****");
+
     	}
       }
     }
@@ -118,12 +118,20 @@ public class GameDatabaseDriver {
     Entity target = datastore.get(gameKey);
     for (Object key : parameterMap.keySet()) {
       String keyStr = (String) key;
-
+      if (keyStr.equals(PICS)==true)
+      {
+    	Map<Object,Object> picObj = (Map<Object,Object>)(parameterMap.get(key));
+  		Text picText = new Text(picObj.toString());
+  		target.setProperty((String) key,picText);
+      }
+      else
+      {
       if (keyStr.equals(ACCESS_SIGNATURE) == false
           && keyStr.equals(DEVELOPER_ID) == false
           && keyStr.equals(GAME_ID) == false)
 
         target.setProperty((String) key, parameterMap.get(key));
+      }
     }
 
     datastore.put(target);

@@ -164,7 +164,6 @@ public class GameServlet extends HttpServlet {
       {
     	  Text picText = (Text)targetEntity.getProperty(PICS);
     	  JSONObject picMap = new JSONObject(picText.getValue());
-    	  System.out.println("I am finished");
     	  metainfo.put(PICS, picMap);
       }
       metainfo.put(DEVELOPER_ID, targetEntity.getProperty(DEVELOPER_ID));
@@ -193,7 +192,6 @@ public class GameServlet extends HttpServlet {
       System.out.println(buffer.toString());
       Map<Object, Object> parameterMap = deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
-      System.out.println("fnished");
       if (parsePathForPost(pathInfo) == false) {
 
         put(jObj, ERROR, URL_ERROR, resp);
