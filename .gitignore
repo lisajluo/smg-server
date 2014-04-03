@@ -1,0 +1,22 @@
+.class
+resources/
+war/resources/
+
+# Package Files #
+*.jar
+*.war
+
+# gwt caches and compiled units #
+war/gwt_bree/
+gwt-unitCache/
+
+# boilerplate generated classes #
+.apt_generated/
+
+# more caches and things from deploy #
+*.cache.html
+/lib
+.settings/
+war/WEB-INF/
+!war/WEB-INF/web.xml
+.settings/com.google.gdt.eclipse.core.prefs
