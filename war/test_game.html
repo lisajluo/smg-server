@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Game Test</title>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
+</head>
+<body>
+<h3> Test Page</h3>
+
+<p><a href = "#" id = "submitGame">Submit</a></p>
+<p><a href = "#" id = "getGame">Get</a></p>
+<p><a href = "#" id = "deleteGame">Delete</a></p>
+<p><a href = "#" id = "putGame">Put</a></p>
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $("#submitGame").on("click", function(event) {
+    ajaxCall("http://localhost:8888/games");
+  });
+   $("#getGame").on("click", function(event) {
+    ajaxCall_get("http://localhost:8888/games/5910974510923776");
+  });
+    $("#deleteGame").on("click", function(event) {
+    ajaxCall_delete("http://localhost:8888/games/5910974510923776?developerId=5629499534213120&accessSignature=d2fc5c11e7c51e74d06b00a942c11db7");
+  });
+   $("#putGame").on("click", function(event) {
+    ajaxCall_put("http://localhost:8888/games/5910974510923776");
+  });
+});
+
+function ajaxCall(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "POST",
+    data: {
+        "gameName": "fireFox2",
+        "url" : "www.foo.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+        "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
+        "developerId" : "5629499534213120",
+        "accessSignature" : "d2fc5c11e7c51e74d06b00a942c11db7"
+    },
+    success: function(data, textStatus, jqXHR) {
+      alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_get(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "GET",
+    success: function(data, textStatus, jqXHR) {
+      alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_delete(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    success: function(data, textStatus, jqXHR) {
+      alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+function ajaxCall_put(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "PUT",
+    crossDomain: true,
+    data: {
+        "gameName": "fireFox2",
+        "url" : "www.foo2.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+        "pic" : "{\"icon\" : \"www.google.com\" ,\"screenshots\" : [\"www.test3.com\",\"www.test2.com\"]}",
+        "developerId" : "5629499534213120",
+        "accessSignature" : "d2fc5c11e7c51e74d06b00a942c11db7"
+    },
+    success: function(data, textStatus, jqXHR) {
+      alert(data);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+</script>
+</body>
+</html>

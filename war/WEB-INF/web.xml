@@ -5,29 +5,109 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
-		<servlet-name>Smg_server</servlet-name>
-		<servlet-class>org.smg.server.Smg_serverServlet</servlet-class>
+		<servlet-name>developers</servlet-name>
+		<servlet-class>org.smg.server.servlet.developer.DeveloperServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Smg_server</servlet-name>
-		<url-pattern>/smg_server</url-pattern>
+		<servlet-name>developers</servlet-name>
+		<url-pattern>/developers/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>Test</servlet-name>
-		<servlet-class>org.smg.server.TestServlet</servlet-class>
+		<servlet-name>games</servlet-name>
+		<servlet-class>org.smg.server.servlet.game.GameServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Test</servlet-name>
-		<url-pattern>/test</url-pattern>
+		<servlet-name>games</servlet-name>
+		<url-pattern>/games/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>developer</servlet-name>
-		<servlet-class>org.smg.server.servlet.DeveloperServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>developer</servlet-name>
-		<url-pattern>/developer</url-pattern>
-	</servlet-mapping>
+    <servlet-name>newMatch</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.NewMatchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>newMatch</servlet-name>
+    <url-pattern>/newMatch</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>matches</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.MatchOperationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>matches</servlet-name>
+    <url-pattern>/matches/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>players</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayersServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>players</servlet-name>
+    <url-pattern>/players/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>playerInfo</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerInfo</servlet-name>
+    <url-pattern>/playerInfo</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>playerGame</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerGameServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerGame</servlet-name>
+    <url-pattern>/playerGame</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>playerHistory</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerHistoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerHistory</servlet-name>
+    <url-pattern>/history</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>developInsertHistory</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.DevelopPlayerInsertHistory</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>developInsertHistory</servlet-name>
+    <url-pattern>/developHistory</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>gameinfo</servlet-name>
+    <servlet-class>org.smg.server.servlet.game.GameInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gameinfo</servlet-name>
+    <url-pattern>/gameinfo/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>developerinfo</servlet-name>
+    <servlet-class>org.smg.server.servlet.developer.DeveloperInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>developerinfo</servlet-name>
+    <url-pattern>/developerinfo/*</url-pattern>
+  </servlet-mapping>  
+  <servlet>
+    <servlet-name>queue</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.QueueServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>queue</servlet-name>
+    <url-pattern>/queue</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>channel</servlet-name>
+    <servlet-class>org.smg.server.servlet.container.ChannelConnectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>channel</servlet-name>
+    <url-pattern>/_ah/channel/*</url-pattern>
+  </servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

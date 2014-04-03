@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Test</title>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
+</head>
+<body>
+<h3>Test Page</h3>
+
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $("#get1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var jsonObj = { "key": "value2" };
+    
+    $.ajax({
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?password=soldkfjlaskdf", 
+      dataType: "json",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
+  
+  $("#post1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var jsonObj = { "email": "blahblaasdaaaasdfsffh@bladsfah.com", 
+      "password": "soldkfjlaskdf",
+      "nickname": "blahb lah blah",
+      "whatever": "some thing should be deleted"
+    };
+    
+    
+    $.ajax({
+      url: "http://1-dot-smg-server.appspot.com/developers", 
+      dataType: "json",
+      type: "POST",
+      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#delete1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+
+    $.ajax({
+      url: "http://1-dot-smg-server.appspot.com/developers/5000?accessSignature=abc",
+      dataType: "json",
+      type: "DELETE",
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+});
+</script>
+
+<form id="get1"></form>
+<input type="submit" value="Login" form="get1">
+
+<form id="post1"></form>
+<input type="submit" value="Insert" form="post1">
+
+
+<form id="delete1"></form>
+<input type="submit" value="Delete" form="delete1">
+</body>
+</html>
