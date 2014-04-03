@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import com.google.appengine.api.datastore.Text;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -83,7 +84,17 @@ public class GameDatabaseDriver {
     for (Object key : parameterMap.keySet()) {
       String keyStr = (String) key;
       if (keyStr.equals(ACCESS_SIGNATURE) == false)
-        game.setProperty((String) key, parameterMap.get(key));
+      {
+    	if (keyStr.equals(PICS)==false)
+          game.setProperty((String) key, parameterMap.get(key));
+    	else
+    	{
+    		Map<Object,Object> picObj = (Map<Object,Object>)(parameterMap.get(key));
+    		Text picText = new Text(picObj.toString());
+    		game.setProperty((String) key,picText);
+    		System.out.println("finished8888****");
+    	}
+      }
     }
 
     List<String> developerList = new ArrayList<String>();

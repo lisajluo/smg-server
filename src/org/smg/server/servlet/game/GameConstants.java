@@ -4,7 +4,8 @@ public final class GameConstants {
 	  private GameConstants() { }  // Prevent instantiation/subclassing
 	
 	  // Game entity
-	  public static final String SCREENSHOT = "screenshot";
+	  public static final String PICS = "pics";
+	  public static final String SCREENSHOT = "screenshots";
 	  public static final String ICON = "icon";
 	  public static final String GAME_NAME = "gameName";
 	  public static final String DESCRIPTION = "description";

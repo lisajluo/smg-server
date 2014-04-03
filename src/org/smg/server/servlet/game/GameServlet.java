@@ -10,7 +10,7 @@ import static org.smg.server.servlet.game.GameUtil.*;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
@@ -33,7 +33,7 @@ import org.smg.server.util.JSONUtil;
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet {
 
-  private static final String[] validParams = { HAS_TOKENS, SCREENSHOT, ICON, DEVELOPER_ID, 
+  private static final String[] validParams = { HAS_TOKENS, PICS, DEVELOPER_ID, 
     GAME_NAME, DESCRIPTION, URL, WIDTH, HEIGHT, ACCESS_SIGNATURE };
 
   private Map<Object, Object> deleteInvalid(Map<Object, Object> params,
@@ -160,8 +160,13 @@ public class GameServlet extends HttpServlet {
       metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
       metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));
       metainfo.put(POST_DATE, targetEntity.getProperty(POST_DATE));
-      metainfo.put(ICON, targetEntity.getProperty(ICON));
-      metainfo.put(SCREENSHOT, targetEntity.getProperty(SCREENSHOT));
+      if (targetEntity.hasProperty(PICS))
+      {
+    	  Text picText = (Text)targetEntity.getProperty(PICS);
+    	  JSONObject picMap = new JSONObject(picText.getValue());
+    	  System.out.println("I am finished");
+    	  metainfo.put(PICS, picMap);
+      }
       metainfo.put(DEVELOPER_ID, targetEntity.getProperty(DEVELOPER_ID));
 
       metainfo.write(resp.getWriter());
@@ -185,8 +190,10 @@ public class GameServlet extends HttpServlet {
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
       }
+      System.out.println(buffer.toString());
       Map<Object, Object> parameterMap = deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
+      System.out.println("fnished");
       if (parsePathForPost(pathInfo) == false) {
 
         put(jObj, ERROR, URL_ERROR, resp);
