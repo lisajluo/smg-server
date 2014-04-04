@@ -263,6 +263,7 @@ public class MatchOperationServlet extends HttpServlet {
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response
+        returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
         returnValue.put(ContainerConstants.GAME_STATE, newState
             .getStateForPlayerId(String.valueOf(currentPlayerId)));
 
@@ -275,7 +276,8 @@ public class MatchOperationServlet extends HttpServlet {
           String clientId = String.valueOf(pid);
           JSONObject returnValueChannel = new JSONObject();
           try {
-            returnValueChannel.put(ContainerConstants.GAME_STATE, newState
+            returnValueChannel.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+            returnValueChannel.put(ContainerConstants.STATE, newState
                 .getStateForPlayerId(String.valueOf(pid)));
           } catch (JSONException e1) {
           }
