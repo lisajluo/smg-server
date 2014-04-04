@@ -1,8 +1,10 @@
 package org.smg.server.database;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerStatistic;
@@ -57,6 +59,22 @@ public class DatabaseDriverPlayerStatistic {
         long newResult = Long.parseLong(
             (String)(psDB.getProperty(ph.getMatchResult().toString()))) + 1;
         psDB.setProperty(ph.getMatchResult().toString(), String.valueOf(newResult));
+        String oldRankString = (String)(psDB.getProperty(StatisticProperty.RANK.toString())); 
+        long rank;
+        try {
+          rank = Long.parseLong(oldRankString);
+        } catch (Exception e) {
+          rank = -1;
+        }
+        long newRank = ph.getRank();
+        if (newRank == -1) {
+          if (rank == -1) {
+            newRank = 1500;
+          } else {
+            newRank = rank;
+          }
+        }
+        psDB.setProperty(StatisticProperty.RANK.toString(), String.valueOf(newRank));
         datastore.put(psDB);
       } catch (EntityNotFoundException e) {
         psDB = new Entity(PLAYERSTATISTIC,
@@ -67,6 +85,7 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.WIN.toString(), "0");
         psDB.setProperty(StatisticProperty.LOST.toString(), "0");
         psDB.setProperty(StatisticProperty.DRAW.toString(), "0");
+        psDB.setProperty(StatisticProperty.RANK.toString(), "1500");
         psDB.setProperty(ph.getMatchResult().toString(), "1");
         psDB.setProperty(StatisticProperty.HIGHSCORE.toString(), String.valueOf(ph.getScore()));
         psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(ph.getTokenChange()));
@@ -105,6 +124,7 @@ public class DatabaseDriverPlayerStatistic {
       ps.setProperty(StatisticProperty.DRAW, "0");
       ps.setProperty(StatisticProperty.HIGHSCORE, "0");
       ps.setProperty(StatisticProperty.TOKEN, "0");
+      ps.setProperty(StatisticProperty.RANK, "1500");
       return ps;
     }
     ps = fromEntitytoStatistic(playerStatisticDB);
@@ -140,6 +160,7 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.DRAW.toString(), "0");
         psDB.setProperty(StatisticProperty.HIGHSCORE.toString(), "0");
         psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(newValue));
+        psDB.setProperty(StatisticProperty.RANK.toString(), "1500");
         datastore.put(psDB);
       }
       txn.commit();
@@ -195,5 +216,30 @@ public class DatabaseDriverPlayerStatistic {
       }
     }
     return ps;
+  }
+  
+  /**
+   * get a map of current ranking of player in given game
+   * @param ids
+   * @param gameId
+   * @return
+   */
+  public static Map<Long, Long> getPlayersRanking(Set<Long> ids, long gameId) {
+    //TODO improve efficient
+    Map<Long, Long> result = new HashMap<Long, Long>();
+    for (Long playerId: ids) {
+      Key psKey = KeyFactory.createKey(PLAYERSTATISTIC, 
+          String.valueOf(playerId)+"@"+String.valueOf(gameId));
+      Entity playerStatisticDB;
+      try {
+        playerStatisticDB = datastore.get(psKey);
+        Long rank = Long.parseLong(
+            (String) playerStatisticDB.getProperty(StatisticProperty.RANK.toString()));
+        result.put(playerId, rank);
+      } catch (EntityNotFoundException e) {
+        result.put(playerId, (long)1500);
+      }
+    }
+    return result;
   }
 }

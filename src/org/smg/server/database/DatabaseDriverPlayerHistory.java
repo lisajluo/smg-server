@@ -29,6 +29,7 @@ public class DatabaseDriverPlayerHistory {
   private static final String SCORE = "SCORE";
   private static final String OPPONENTIDS = "OPPONENTIDS";
   private static final String MATCHRESULT = "MATCHRESULT";
+  private static final String RANK = "RANK";
   private static int HISTORYLIMITPERGAME = 20;
   private static int HISTORYLIMITALL = 100;
   
@@ -56,6 +57,7 @@ public class DatabaseDriverPlayerHistory {
     psDB.setProperty(SCORE, ph.getScore());
     psDB.setProperty(OPPONENTIDS, ph.getOpponentIds());
     psDB.setProperty(MATCHRESULT, ph.getMatchResult().toString());
+    psDB.setProperty(RANK, ph.getRank());
     datastore.put(psDB);
     return "SUCCEED";
   }
@@ -85,6 +87,8 @@ public class DatabaseDriverPlayerHistory {
     ph.setTokenChange(tokenChange);
     long score = e.getProperty(SCORE) == null? 0: (long)(e.getProperty(SCORE));
     ph.setScore(score);
+    long rank = e.getProperty(RANK) == null? 1500: (long)(e.getProperty(SCORE));
+    ph.setRank(rank);
     MatchResult matchResult = e.getProperty(MATCHRESULT) == null? 
         null: MatchResult.valueOf((String)(e.getProperty(MATCHRESULT)));
     ph.setMatchResult(matchResult);
