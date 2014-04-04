@@ -254,7 +254,6 @@ public class MatchOperationServlet extends HttpServlet {
 
           EndGameDatabaseDriver.updateStats(winInfo);
 
-          
         }
 
         // Write the object back to JSON formation.
@@ -264,9 +263,8 @@ public class MatchOperationServlet extends HttpServlet {
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response
-        String rtnStr = new ObjectMapper().writeValueAsString(newState
-            .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
-        returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
+        returnValue.put(ContainerConstants.GAME_STATE, newState
+            .getStateForPlayerId(String.valueOf(currentPlayerId)));
 
         // Response through channel.
         for (long pid : playerIds) {

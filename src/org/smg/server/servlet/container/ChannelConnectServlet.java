@@ -46,9 +46,8 @@ public class ChannelConnectServlet extends HttpServlet {
       long playerId = Long.parseLong(presence.clientId());
 
       ContainerDatabaseDriver.deleteQueueEntity(playerId);
-
-      resp.getWriter().close();
     }
+    resp.getWriter().close();
   }
 
   @Override
