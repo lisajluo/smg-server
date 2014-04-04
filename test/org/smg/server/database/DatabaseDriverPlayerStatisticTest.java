@@ -119,8 +119,8 @@ public class DatabaseDriverPlayerStatisticTest {
   public void getRankingMapTest() {
     Map<Long,Integer> scoreMap = new HashMap<Long,Integer>();
     scoreMap.put((long)1, 2);
-    scoreMap.put((long)2, 0);
-    scoreMap.put((long)3, 0);
+    scoreMap.put((long)2, 1);
+    scoreMap.put((long)3, 1);
     scoreMap.put((long)4, 0);
     Map<Long, Long> rankingMap = ELORankingUtil.getRankingMap(scoreMap, 2);
     for (Long id: rankingMap.keySet()) {
