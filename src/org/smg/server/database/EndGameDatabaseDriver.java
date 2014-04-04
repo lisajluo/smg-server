@@ -159,7 +159,11 @@ public class EndGameDatabaseDriver {
       temp.removeOpponentIds(id);
       temp.setDate(date);
       temp.setScore(scoreMap.get(id));
-      temp.setTokenChange(tokens.get(id));
+      if (tokens != null) {
+        temp.setTokenChange(tokens.get(id));
+      } else {
+        temp.setTokenChange(0);
+      }
       //TODO determine winner
       if (winnerIds.size() == 0) {
         temp.setMatchResult(MatchResult.DRAW);
