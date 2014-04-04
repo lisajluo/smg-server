@@ -1,0 +1,9 @@
+<datastore-indexes>
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="Queue" ancestor="false" source="mannual">
+        <property name="gameId" direction="asc"/>
+        <property name="enqueueTime" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
