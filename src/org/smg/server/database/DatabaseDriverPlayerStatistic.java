@@ -9,6 +9,7 @@ import java.util.Set;
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerStatistic;
 import org.smg.server.database.models.PlayerStatistic.StatisticProperty;
+import org.smg.server.util.NamespaceUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -25,7 +26,7 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class DatabaseDriverPlayerStatistic {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  private static final String PLAYERSTATISTIC = "PLAYERSTATISTIC";
+  private static final String PLAYERSTATISTIC = NamespaceUtil.VERSION+"PLAYERSTATISTIC";
   
   /**
    * save player's statistic information to database (insert or update)

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerHistory.MatchResult;
+import org.smg.server.util.NamespaceUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -20,7 +21,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 
 public class DatabaseDriverPlayerHistory {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  private static final String PLAYERHISTORY = "PLAYERHISTORY";
+  //TABLE NAME
+  private static final String PLAYERHISTORY = NamespaceUtil.VERSION+"PLAYERHISTORY";
+  
   private static final String PLAYERID = "PLAYERID";
   private static final String GAMEID = "GAMEID";
   private static final String MATCHID = "MATCHID";
