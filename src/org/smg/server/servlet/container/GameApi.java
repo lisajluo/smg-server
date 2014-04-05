@@ -472,9 +472,9 @@ public final class GameApi {
   }
 
   public static class Set extends Operation {
-    private final String key;
-    private final Object value;
-    private final Object visibleToPlayerIds;
+    private String key;
+    private Object value;
+    private Object visibleToPlayerIds;
 
     public Set(String key, Object value) {
       this(key, value, ALL);
@@ -511,6 +511,10 @@ public final class GameApi {
 
     public Object getVisibleToPlayerIds() {
       return visibleToPlayerIds;
+    }
+
+    public void setValue(Object value) {
+      this.value = value;
     }
   }
 
