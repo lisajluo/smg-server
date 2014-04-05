@@ -14,7 +14,7 @@ public final class DeveloperConstants {
   public static final String FIRST_NAME = "firstName";
   static final String MIDDLE_NAME = "middleName";
   static final String LAST_NAME = "lastName";
-  public static final String NICKNAME = "nickName";
+  public static final String NICK_NAME = "nickName";
   public static final String DEVELOPER_ID = "developerId";
   public static final String ACCESS_SIGNATURE = "accessSignature";
   

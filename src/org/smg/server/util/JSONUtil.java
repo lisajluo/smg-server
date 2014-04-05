@@ -18,7 +18,6 @@ public class JSONUtil {
 		Player player = new Player();
 		for(String key : jsonMap.keySet())
 		{
-		  System.out.println(key);
 		  PlayerProperty pp;
 		  String value;
 		  if (key.equalsIgnoreCase("password")) {

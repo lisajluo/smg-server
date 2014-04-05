@@ -76,7 +76,7 @@ public class DeveloperInfoServlet extends HttpServlet {
 
     JSONObject json = new JSONObject();
     
-    String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICKNAME};
+    String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICK_NAME};
     StringBuffer buffer = new StringBuffer();
     String line = null;
     try {

@@ -67,6 +67,7 @@ public class DatabaseDriverPlayer {
       playerId = Long.parseLong(playerInfo.get(PlayerProperty.PLAYERID
           .toString()));
     } catch (NumberFormatException e1) {
+     
       return "WRONG_PLAYER_ID";
     }
     Key playerKey = KeyFactory.createKey(PLAYER, playerId);

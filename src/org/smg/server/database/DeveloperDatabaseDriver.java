@@ -65,8 +65,9 @@ public class DeveloperDatabaseDriver {
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
      if (((String) entry.getKey()).equals(PASSWORD)) {
-    	     entity.setProperty((String) entry.getKey(), AccessSignatureUtil.getHashedPassword((String)entry.getValue()));
-		  }
+    	     String hashedPw = AccessSignatureUtil.getHashedPassword((String)entry.getValue());
+    	     entity.setProperty((String) entry.getKey(),  hashedPw);
+     }
      else
      {
       entity.setProperty((String) entry.getKey(), entry.getValue());
@@ -93,9 +94,15 @@ public class DeveloperDatabaseDriver {
     Transaction txn = datastore.beginTransaction();
     Entity entity = new Entity(DEVELOPER, developerId);
     
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String) entry.getKey(), entry.getValue());
-    }
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			if (((String) entry.getKey()).equals(PASSWORD)) {
+				String hashedPw = AccessSignatureUtil
+						.getHashedPassword((String) entry.getValue());
+				entity.setProperty((String) entry.getKey(), hashedPw);
+			} else {
+				entity.setProperty((String) entry.getKey(), entry.getValue());
+			}
+		}
     
     List<Entity> sameEmailList = queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL));
     
