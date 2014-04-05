@@ -89,8 +89,9 @@ public class StateServlet extends HttpServlet {
       state = new GameState();
       lastMove = Lists.newArrayList();
     } else {
-      state = mi.getHistory().get(0).getGameState();
-      lastMove = mi.getHistory().get(0).getLastMove();
+      int lastIndex = mi.getHistory().size()-1;
+      state = mi.getHistory().get(lastIndex).getGameState();
+      lastMove = mi.getHistory().get(lastIndex).getLastMove();
     }
 
     try {
