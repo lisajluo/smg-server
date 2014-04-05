@@ -16,7 +16,6 @@ import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-import org.smg.server.database.EndGameDatabaseDriver;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
@@ -34,7 +33,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-import com.google.appengine.repackaged.com.google.api.client.util.Lists;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
@@ -265,7 +264,7 @@ public class MatchOperationServlet extends HttpServlet {
 
         // Response
         returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
-        returnValue.put(ContainerConstants.GAME_STATE, newState
+        returnValue.put(ContainerConstants.STATE, newState
             .getStateForPlayerId(String.valueOf(currentPlayerId)));
         returnValue.put(
             ContainerConstants.LAST_MOVE,
