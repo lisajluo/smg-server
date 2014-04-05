@@ -20,15 +20,25 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("serial")
 public class StateServlet extends HttpServlet {
-
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    CORSUtil.addCORSHeader(resp);
+  }
+  
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
 
     // verify matchId
+    if (req.getPathInfo().length() < 2) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
+      return;
+    }
     String mId = req.getPathInfo().substring(1);
     long matchId = 0;
     try {
@@ -44,6 +54,11 @@ public class StateServlet extends HttpServlet {
       return;
     }
     // verify playerId
+    if (!req.getParameterMap().containsKey(ContainerConstants.PLAYER_ID)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.PLAYER_ID);
+      return;
+    }
     String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
     long playerId = 0;
     try {
@@ -59,6 +74,11 @@ public class StateServlet extends HttpServlet {
       return;
     }
     // verify accessSignature
+    if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
+      return;
+    }
     String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
       ContainerVerification.sendErrorMessage(
@@ -109,11 +129,5 @@ public class StateServlet extends HttpServlet {
       returnValue.write(resp.getWriter());
     } catch (JSONException e) {
     }
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
-    super.doPost(req, resp);
   }
 }

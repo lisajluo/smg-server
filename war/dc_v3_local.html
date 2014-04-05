@@ -83,6 +83,14 @@ $(document).ready(function() {
     ajaxCallGetNewMatch( domainUrl+"/newMatch/"+playerId2+"?accessSignature="+accessSignature2);
   });
 
+  $("#GetState").on("click", function(event) {
+    ajaxCallGetState( domainUrl+"/state/"+matchId+"?playerId="+playerId+"&accessSignature="+accessSignature);
+  });
+
+  $("#GetState2").on("click", function(event) {
+    ajaxCallGetState2( domainUrl+"/state/"+matchId+"?playerId="+playerId2+"&accessSignature="+accessSignature2);
+  });
+
   $("#NewMatch_parse_error").on("click", function(event) {
     ajaxCallNewMatch_parse_error(domainUrl+"/newMatch");
   });
@@ -350,6 +358,34 @@ function ajaxCallNewMatch(url) {
 }
 
 function ajaxCallGetNewMatch(url) {
+  $.ajax({
+    url: url,
+    type: 'GET',
+    success: function(data, textStatus, jqXHR) {  
+      var jsonObj = $.parseJSON(data);   
+      $("#response").append("<br>" + JSON.stringify(jsonObj));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+  });
+}
+
+function ajaxCallGetState(url) {
+  $.ajax({
+    url: url,
+    type: 'GET',
+    success: function(data, textStatus, jqXHR) {  
+      var jsonObj = $.parseJSON(data);   
+      $("#response").append("<br>" + JSON.stringify(jsonObj));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+  });
+}
+
+function ajaxCallGetState2(url) {
   $.ajax({
     url: url,
     type: 'GET',
