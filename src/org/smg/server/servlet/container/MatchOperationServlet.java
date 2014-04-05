@@ -337,24 +337,25 @@ public class MatchOperationServlet extends HttpServlet {
   private GameState updateMatchInfoByOperations(MatchInfo mi, List<Object> operationsMapList) {
     List<Operation> operations = GameStateHelper.messageToOperationList(operationsMapList);
 
-    // There is only one history record here.
-    // TODO Make sure which one will be the lastest state.
-    GameState currentState;
+    GameState lastState;
     if (mi.getHistory().size() == 0) {
       // There is not GameState in History. Initial move.
-      currentState = new GameState();
-
-      GameStateHistoryItem gshi = new GameStateHistoryItem();
-      gshi.setGameState(currentState);
-      gshi.setLastMove(getMapListFromOpsObjList(operationsMapList));
-
-      mi.getHistory().add(gshi);
+      lastState = new GameState();
     } else {
-      int lastIndex = mi.getHistory().size()-1;
-      currentState = mi.getHistory().get(lastIndex).getGameState();
+      int lastIndex = mi.getHistory().size() - 1;
+      lastState = mi.getHistory().get(lastIndex).getGameState();
     }
-    currentState.makeMove(operations);
-    return currentState;
+
+    GameState newState = lastState.copy();
+    newState.makeMove(operations);
+
+    GameStateHistoryItem gshi = new GameStateHistoryItem();
+    gshi.setGameState(newState);
+    gshi.setLastMove(getMapListFromOpsObjList(operationsMapList));
+
+    mi.getHistory().add(gshi);
+
+    return newState;
   }
 
   @SuppressWarnings("unchecked")
