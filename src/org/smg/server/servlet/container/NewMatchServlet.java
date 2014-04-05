@@ -92,6 +92,11 @@ public class NewMatchServlet extends HttpServlet {
             resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
         return;
       }
+      if (!ContainerVerification.insertMatchVerify(playerIds)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+        return;
+      }
       // verify accessSignature
       String accessSignature = String.valueOf(jsonMap.get(ContainerConstants.ACCESS_SIGNATURE));
       if (!ContainerVerification.accessSignatureVerify(accessSignature, playerIds)) {
@@ -205,13 +210,15 @@ public class NewMatchServlet extends HttpServlet {
       ContainerVerification.sendErrorMessage(
           resp, returnValue, ContainerConstants.NO_MATCH_FOUND);
       return;
-    }
-    
-    // TODO: add playerIds
-    
+    }    
+    //add playerIds and matchId
+    List<Long> playerIds = JSONUtil.parseDSPlayerIds(
+        (String)match.getProperty(ContainerConstants.PLAYER_IDS));
+    List<String> pIds = IDUtil.longListToStringList(playerIds);
     try {
       returnValue.put(ContainerConstants.MATCH_ID, 
-          IDUtil.longToString((long)match.getProperty(ContainerConstants.MATCH_ID)));
+          IDUtil.longToString((Long)match.getKey().getId()));
+      returnValue.put(ContainerConstants.PLAYER_IDS, pIds);
       
     } catch (JSONException e1) {
 

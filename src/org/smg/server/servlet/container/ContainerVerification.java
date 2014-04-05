@@ -100,6 +100,20 @@ public class ContainerVerification {
     }
     return false;
   }
+  /**
+   *  Verify if all players could insert new match. When he has unfinished match,
+   * it is not allowed to insert new match.
+   * @param playerIds
+   * @return
+   */
+  public static boolean insertMatchVerify(List<Long> playerIds) {
+    for (long playerId: playerIds) {
+      if (!insertMatchVerify(playerId)) {
+        return false;
+      }
+    }
+    return true;
+  }
   
   /**
    * Verify if a matchId is valid

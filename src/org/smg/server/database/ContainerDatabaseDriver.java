@@ -290,16 +290,24 @@ public class ContainerDatabaseDriver {
    */
   public static Entity getUnfinishedMatchByPlayerId(long playerId) {
     Filter filter = new FilterPredicate(
-        ContainerConstants.MATCH_ID, FilterOperator.EQUAL, playerId);
-    Filter filter2 = new FilterPredicate(
         ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
-    Query q = new Query(ContainerConstants.MATCH).setFilter(filter).setFilter(filter2);
-    List<Entity> result = datastore.prepare(q).asList(
+    Query q = new Query(ContainerConstants.MATCH).setFilter(filter);
+    List<Entity> raw = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
-    if (result.isEmpty()) {
-      return null;
+    for (Entity entity: raw) {
+      List<Long> playerIds = new ArrayList<Long>();
+      try {
+        playerIds = JSONUtil.parseDSPlayerIds(
+            (String)entity.getProperty(ContainerConstants.PLAYER_IDS));
+      } catch (Exception e) {
+      }
+      for (long id : playerIds) {
+        if (id == playerId) {
+          return entity;
+        }
+      }
     }
-    return result.get(0);
+    return null;
   }
   
   /**
