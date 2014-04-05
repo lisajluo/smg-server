@@ -20,6 +20,7 @@ import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
+import org.smg.server.servlet.container.GameApi.Message;
 import org.smg.server.servlet.container.GameApi.Operation;
 import org.smg.server.servlet.container.GameApi.SetTurn;
 import org.smg.server.util.CORSUtil;
@@ -32,7 +33,6 @@ import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 import com.google.common.collect.Lists;
@@ -288,12 +288,14 @@ public class MatchOperationServlet extends HttpServlet {
         returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
         returnValue.put(ContainerConstants.STATE, newState
             .getStateForPlayerId(String.valueOf(currentPlayerId)));
-        String jsnStr = new ObjectMapper().writeValueAsString(GameStateHelper
-            .getOperationsListForPlayer(operationsOps, newState.getVisibleTo(),
-                String.valueOf(currentPlayerId)));
+        returnValue.put(
+            ContainerConstants.LAST_MOVE,
+            Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
+                newState.getVisibleTo(),
+                String.valueOf(currentPlayerId))));
+
         // Write back to Database.
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
-        returnValue.put(ContainerConstants.LAST_MOVE, new JSONArray(jsnStr));
 
         // Response through channel.
         for (long pid : playerIds) {
@@ -307,11 +309,11 @@ public class MatchOperationServlet extends HttpServlet {
             returnValueChannel.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
             returnValueChannel.put(ContainerConstants.STATE, newState
                 .getStateForPlayerId(String.valueOf(pid)));
-            String jsnStrTmp = new ObjectMapper().writeValueAsString(GameStateHelper
-                .getOperationsListForPlayer(operationsOps, newState.getVisibleTo(),
-                    String.valueOf(pid)));
-            returnValueChannel.put(ContainerConstants.LAST_MOVE,
-                new JSONArray(jsnStrTmp));
+            returnValueChannel.put(
+                ContainerConstants.LAST_MOVE,
+                Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
+                    newState.getVisibleTo(),
+                    String.valueOf(pid))));
           } catch (JSONException e1) {
           }
           channelService.sendMessage(new ChannelMessage(clientId, returnValueChannel.toString()));
