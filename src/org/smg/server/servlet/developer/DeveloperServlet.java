@@ -119,10 +119,20 @@ public class DeveloperServlet extends HttpServlet {
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
       }
-   
+      
       Map<Object, Object> parameterMap = DeveloperUtil.deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
-      
+      String originalString = (String) parameterMap.get(PASSWORD);
+		if (originalString == null || originalString.length() < 6) {
+			try {
+				json.put("error", "PASSWORD_TOO_SHORT");
+				json.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
       if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
         DeveloperUtil.jsonPut(json, ERROR, MISSING_INFO);
       }

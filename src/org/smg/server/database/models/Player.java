@@ -20,9 +20,9 @@ public class Player {
    *
    */
   public static enum PlayerProperty {
-    PLAYERID, HASHEDPASSWORD, ACCESSSIGNATURE,
-    EMAIL,
-    FIRSTNAME, LASTNAME, NICKNAME;
+    PLAYERID, password, accessSignature,
+    email,
+    firstName, lastName, nickName;
     
     /**
      * return PlayerProperty by value.
@@ -30,10 +30,10 @@ public class Player {
      * @param value
      * @return
      */
-    
     public static PlayerProperty findByValue(String value) {
       for (PlayerProperty p: values()) {
-        if (p.toString().equals(value.toUpperCase())){
+    	  System.out.println("verifying to string"+p.toString());
+        if (p.toString().equals(value)){
           return p;
         }
       }
@@ -102,7 +102,7 @@ public class Player {
   public boolean isContain(Player subPlayer) {
     Map<String,String> subPlayerInfo = subPlayer.getAllProperties();
     for (String key: subPlayerInfo.keySet()) {
-      if (key.equals(PlayerProperty.HASHEDPASSWORD.toString())) {
+      if (key.equals(PlayerProperty.password.toString())) {
         continue;
       }
       if (!this.properties.containsKey(key) || 

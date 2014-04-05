@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.util.AccessSignatureUtil;
+
 import static org.smg.server.servlet.developer.DeveloperConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -61,7 +64,14 @@ public class DeveloperDatabaseDriver {
     Entity entity = new Entity(DEVELOPER);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+     if (((String) entry.getKey()).equals(PASSWORD)) {
+    	     entity.setProperty((String) entry.getKey(), AccessSignatureUtil.getHashedPassword((String)entry.getValue()));
+		  }
+     else
+     {
       entity.setProperty((String) entry.getKey(), entry.getValue());
+     }
+      
     }
     
     if (queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL)).isEmpty()) {

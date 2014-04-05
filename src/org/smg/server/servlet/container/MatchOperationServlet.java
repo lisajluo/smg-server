@@ -182,7 +182,7 @@ public class MatchOperationServlet extends HttpServlet {
         Player currentPlayer;
         try {
           currentPlayer = DatabaseDriverPlayer.getPlayerById(pid);
-          if (currentPlayer.getProperty(PlayerProperty.ACCESSSIGNATURE).equals(accessSignature)) {
+          if (currentPlayer.getProperty(PlayerProperty.accessSignature).equals(accessSignature)) {
             currentPlayerId = pid;
             break;
           }
