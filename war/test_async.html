@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Test</title>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
+	<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+</head>
+<body>
+<h3> Demo Page - Container</h3>
+
+<br><a href = "#" id = "NewPlayers">Insert Two Players</a>
+<br><a href = "#" id = "NewDevloper">Insert New Developer</a>
+<br><a href = "#" id = "NewGame">Insert New Game</a>
+<br><a href = "#" id = "Enqueue">Enqueue</a>
+<br><a href = "#" id = "Enqueue2">Enqueue2</a>
+<br><a href = "#" id = "MakeMove">Make A Move</a>
+<br><a href = "#" id = "MakeMove2">Make A Move2</a>
+<br><a href = "#" id = "EndGame">End Game</a>
+<br><a href = "#" id = "NewMatch">Insert New Match</a>
+<br><a href = "#" id = "GetState">Get State</a>
+<br>
+<br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
+<br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
+<h4>Response</h4>
+<div id="response"></div>
+
+<script type="text/javascript">
+
+//var domainUrl = "http://1-dot-smg-server-rl.appspot.com";
+//var domainUrl = "http://1-dot-smg-server.appspot.com";
+var domainUrl = "http://localhost:8888";
+var playerId = 0;
+var accessSignature ="";
+var playerId2 = 0;
+var accessSignature2 = "";
+var gameId = 0;
+var matchId = 0;
+var developerId = 0;
+var developerAS = "";
+var channel_token = "";
+var channel_token2 = "";
+
+$(document).ready(function() {
+  
+  $("#Enqueue").on("click", function(event) {
+    ajaxCallEnqueue( domainUrl+"/queue");
+  });
+
+  $("#EndGame").on("click", function(event) {
+    var playerIds = [];
+      playerIds.push(playerId.toString());
+      playerIds.push(playerId2.toString());
+      var jsonObj = {
+          "accessSignature":accessSignature, 
+          "playerIds":playerIds, 
+          "operations":[{"playerIdToScore":{"123":123, "345":345}, "type":"EndGame"}]
+      };
+      $.ajax({
+        url: domainUrl+"/matches/"+matchId, 
+        type: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+          $("#response").append("<br>" + JSON.stringify(data));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+
+  $("#Enqueue2").on("click", function(event) {
+    ajaxCallEnqueue2( domainUrl+"/queue");
+  });
+
+  $("#NewPlayers").on("click", function(event) {
+    ajaxCallNewPlayer( domainUrl+"/players");
+    ajaxCallNewPlayer2( domainUrl+"/players");
+  });
+
+  $("#NewDevloper").on("click", function(event) {
+    ajaxCallNewDeveloper( domainUrl+"/developers");
+  });
+
+  $("#NewGame").on("click", function(event) {
+    ajaxCallNewGame( domainUrl+"/games");
+  });
+
+  $("#Clear").on("click", function(event) {
+    ajaxCallDelPlayer( domainUrl+"/players/"+playerId+"?accessSignature="+accessSignature);
+    ajaxCallDelPlayer2( domainUrl+"/players/"+playerId2+"?accessSignature="+accessSignature2);
+    ajaxCallDelGame( domainUrl+"/games/"+gameId+"?developerId="+developerId+"&accessSignature="+developerAS);
+    ajaxCallDelDeveloper( domainUrl+"/developers/"+developerId+"?accessSignature="+developerAS);
+  });
+
+  $("#NewMatch").on("click", function(event) {
+    ajaxCallNewMatch( domainUrl+"/newMatch");
+  });
+  
+  $("#MakeMove").on("click", function(event) {
+      var playerIds = [];
+      playerIds.push(playerId.toString());
+      playerIds.push(playerId2.toString());
+      var jsonObj = {
+          "accessSignature":accessSignature2, 
+          "playerIds":playerIds, 
+          "operations":[{"type":"SetTurn","playerId":playerId.toString(),"numberOfSecondsForTurn":0},{"type":"Set","key":"W","value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"B","value":[26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"M","value":[99],"visibleToPlayerIds":"ALL"},{"type":"SetVisibility","key":"M","visibleToPlayerIds":[playerId2]}]
+      };
+      $.ajax({
+        url: domainUrl+"/matches/"+matchId, 
+        type: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+          $("#response").append("<br>" + JSON.stringify(data));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+
+  $("#MakeMove2").on("click", function(event) {
+      var playerIds = [];
+      playerIds.push(playerId);
+      playerIds.push(playerId2);
+      var jsonObj = {
+          "accessSignature":accessSignature, 
+          "playerIds":playerIds, 
+          "operations":[{"type":"SetTurn","playerId":playerId,"numberOfSecondsForTurn":0},{"type":"Set","key":"W","value":[1,2,3,4,5,6,7,8,9,10,11,13,14,16,17,18,19,20,21,23,24,25],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"M","value":[12,22,0,15],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"claim","value":["4cards","rank5"],"visibleToPlayerIds":"ALL"}]
+      };
+      $.ajax({
+        url: domainUrl+"/matches/"+matchId, 
+        type: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonObj),
+        success: function(data, textStatus, jqXHR) {
+          $("#response").append("<br>" + JSON.stringify(data));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+
+  $("#GetMatchInfo").on("click", function(event) {
+      $.ajax({
+        url: domainUrl+"/matches/"+matchId+"?accessSignature="+accessSignature+"&playerId="+playerId, 
+        type: "GET",
+        success: function(data, textStatus, jqXHR) {
+          var jsonObj = $.parseJSON(data);
+        	$("#response").append("<br>" + JSON.stringify(jsonObj));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+
+  $("#GetState").on("click", function(event) {
+      $.ajax({
+        url: domainUrl+"/state/"+matchId+"?accessSignature="+accessSignature+"&playerId="+playerId, 
+        type: "GET",
+        success: function(data, textStatus, jqXHR) {
+          var jsonObj = $.parseJSON(data);
+        	$("#response").append("<br>" + JSON.stringify(jsonObj));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert("ERROR: " + textStatus + " " + errorThrown);
+        }});
+  });
+});
+
+function ajaxCallEnqueue(url) {
+	var jsonObj = {
+        "accessSignature": accessSignature,
+        "playerId" : playerId,
+        "gameId": gameId
+  };
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        var needSendNewMatch = false;
+				if(data["error"] == undefined) {
+					channel_token = (data)["channelToken"];
+				}
+        if(data["playerIds"]!=undefined) {
+            playerIds = data["playerIds"];
+            console.log(playerIds);
+            needSendNewMatch = true;
+        }
+				$("#response").append("<br>" + JSON.stringify(data));
+				channel = new goog.appengine.Channel(channel_token);
+				socket = channel.open();
+				socket.onopen = function(){
+          if(needSendNewMatch) {
+            ajaxCallNewMatch( domainUrl+"/newMatch");
+          }
+				};
+				socket.onmessage = function(data){
+					$("#response").append("<br>1" + JSON.stringify(data));
+				};
+				socket.onerror = function(description, code){
+				
+				};
+				socket.onclose = function(){
+				
+				};
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+    }});
+}
+
+function ajaxCallEnqueue2(url) {
+  var as = accessSignature2;
+  var pid = playerId2;
+  var gid = gameId;
+  var jsonObj = {
+        "accessSignature": as.toString(),
+        "playerId" : pid.toString(),
+        "gameId": gid.toString()
+    };
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        var needSendNewMatch = false;
+        if(data["error"] == undefined) {
+          channel_token2 = (data)["channelToken"];
+        }
+        if(data["playerIds"]!=undefined) {
+            playerIds = data["playerIds"];
+            console.log(playerIds);
+            needSendNewMatch = true;
+        }
+        $("#response").append("<br>" + JSON.stringify(data));
+        channel = new goog.appengine.Channel(channel_token2);
+        socket = channel.open();
+        socket.onopen = function(){
+          if(needSendNewMatch) {
+            ajaxCallNewMatch( domainUrl+"/newMatch");
+          }
+        };
+        socket.onmessage = function(data){
+          $("#response").append("<br>2" + JSON.stringify(data));
+        };
+        socket.onerror = function(description, code){
+        
+        };
+        socket.onclose = function(){
+        
+        };
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+    }});
+}
+
+function ajaxCallNewPlayer(url) {
+  var jsonObj = { 
+      "email":"forcontainertestNEW@gmail.com",
+      "password":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar" }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {           
+      if (data['error'] == undefined) {
+        playerId = data['playerId'];
+        accessSignature = data["accessSignature"];
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallNewPlayer2(url) {
+  var jsonObj = { 
+      "email":"forcontainertestNEW2@gmail.com",
+      "password":"foobar",
+      "firstname":"foo",
+      "lastname":"bar",
+      "nickname":"foobar" }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) { 
+      if (data['error'] == undefined) {
+        playerId2 = data['playerId'];
+        accessSignature2 = data["accessSignature"];
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));    
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallDelPlayer(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallDelPlayer2(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallNewDeveloper(url) {
+  var jsonObj =  { "email": "forcontainertestNEW3@bladsfah.com", 
+      "password": "soldkfjlaskdf",
+      "nickname": "blahb lah blah",
+      "whatever": "some thing should be deleted"
+    }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) { 
+      if (data['error'] == undefined) {
+        developerId = data['developerId'];
+        developerAS = data["accessSignature"];
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));   
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+
+function ajaxCallDelDeveloper(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallNewGame(url) {
+  var jsonObj = { "key": "value2" };
+  $.ajax({
+    url: url, 
+    type: "POST",
+    data: JSON.stringify({
+        "gameName": "TEST GAME for container",
+        "url" : "www.foo.com",
+        "description": "This game is actually quite self-explanatory",
+        "width" : 50,
+        "height" : 100,
+        "pic" : "{\"icon\" : \"www.google.com\" , \"screenshots\" : [\"www.test1.com\",\"www.test2.com\"]}",
+        "developerId" : developerId.toString(),
+        "accessSignature": developerAS.toString()
+    }),
+    success: function(data, textStatus, jqXHR) {
+      data = $.parseJSON(data);
+      console.log(data);
+      if (data['error'] == undefined) {
+        gameId = parseInt(data['gameId']);
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallDelGame(url) {
+  $.ajax({
+    url: url, 
+    type: "DELETE",
+    crossDomain: true,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      $("#response").append("<br>" + JSON.stringify(data));
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }});
+}
+
+function ajaxCallNewMatch(url) {
+  var playerIds = [];
+      playerIds.push(playerId.toString());
+      playerIds.push(playerId2.toString());
+  var jsonObj = { 'accessSignature': accessSignature2,
+                  'playerIds': playerIds,
+                  'gameId': gameId }
+  $.ajax({
+    url: url, 
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) { 
+      if (data['error'] == undefined) {
+        matchId = data['matchId'];
+      } 
+      $("#response").append("<br>" + JSON.stringify(data));    
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("ERROR: " + textStatus + " " + errorThrown);
+    }
+    });
+}
+</script>
+</body>
+</html>
