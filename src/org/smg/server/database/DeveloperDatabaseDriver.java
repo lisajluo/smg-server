@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.util.AccessSignatureUtil;
+
 import static org.smg.server.servlet.developer.DeveloperConstants.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -61,7 +64,15 @@ public class DeveloperDatabaseDriver {
     Entity entity = new Entity(DEVELOPER);
     
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+     if (((String) entry.getKey()).equals(PASSWORD)) {
+    	     String hashedPw = AccessSignatureUtil.getHashedPassword((String)entry.getValue());
+    	     entity.setProperty((String) entry.getKey(),  hashedPw);
+     }
+     else
+     {
       entity.setProperty((String) entry.getKey(), entry.getValue());
+     }
+      
     }
     
     if (queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL)).isEmpty()) {
@@ -83,9 +94,15 @@ public class DeveloperDatabaseDriver {
     Transaction txn = datastore.beginTransaction();
     Entity entity = new Entity(DEVELOPER, developerId);
     
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-      entity.setProperty((String) entry.getKey(), entry.getValue());
-    }
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			if (((String) entry.getKey()).equals(PASSWORD)) {
+				String hashedPw = AccessSignatureUtil
+						.getHashedPassword((String) entry.getValue());
+				entity.setProperty((String) entry.getKey(), hashedPw);
+			} else {
+				entity.setProperty((String) entry.getKey(), entry.getValue());
+			}
+		}
     
     List<Entity> sameEmailList = queryDeveloperByProperty(EMAIL, (String) properties.get(EMAIL));
     

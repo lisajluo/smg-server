@@ -7,7 +7,7 @@ import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_N
 import org.smg.server.servlet.developer.DeveloperConstants;
 import org.smg.server.servlet.game.GameConstants;
 
-import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
+import static org.smg.server.servlet.developer.DeveloperConstants.NICK_NAME;
 import static org.smg.server.servlet.game.GameConstants.FINISHED_GAMES;
 import static org.smg.server.servlet.game.GameConstants.GAME_ID;
 import static org.smg.server.servlet.game.GameConstants.GAME_STATISTICS;
@@ -108,11 +108,11 @@ public class EndGameDatabaseDriver {
       try {
         Map playerNames = DatabaseDriverPlayer.getPlayerNames(playerId);
         firstName = (String) playerNames.get(GameConstants.FIRST_NAME);
-        nickname = (String) playerNames.get(NICKNAME);
+        nickname = (String) playerNames.get(NICK_NAME);
         score = (int) entry.getValue(); 
 
         player.put(DeveloperConstants.FIRST_NAME, firstName);
-        player.put(NICKNAME, nickname);
+        player.put(NICK_NAME, nickname);
         player.put(SCORE, score);
 
         if (winInfo.containsKey(PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT)) {

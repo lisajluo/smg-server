@@ -1,18 +1,20 @@
 package org.smg.server.servlet.developer;
 
+import org.smg.server.util.NamespaceUtil;
+
 public final class DeveloperConstants {
   private DeveloperConstants() { }  // Prevent instantiation/subclassing
   
   // Developer entity
-  public static final String DEVELOPER = "Developer";
+  public static final String DEVELOPER = NamespaceUtil.VERSION+"User";
   
   // Various properties in the table
   public static final String EMAIL = "email";
-  static final String PASSWORD = "password";
+  public static final String PASSWORD = "password";
   public static final String FIRST_NAME = "firstName";
   static final String MIDDLE_NAME = "middleName";
   static final String LAST_NAME = "lastName";
-  public static final String NICKNAME = "nickname";
+  public static final String NICK_NAME = "nickName";
   public static final String DEVELOPER_ID = "developerId";
   public static final String ACCESS_SIGNATURE = "accessSignature";
   

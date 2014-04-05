@@ -28,7 +28,7 @@ public class ContainerVerification {
     try {
       Player player = DatabaseDriverPlayer.getPlayerById(playerId);
       if (player != null) {
-        return player.getProperty(PlayerProperty.ACCESSSIGNATURE).equals(accessSignature);
+        return player.getProperty(PlayerProperty.accessSignature).equals(accessSignature);
       }
     } catch (EntityNotFoundException e) {
       return false;

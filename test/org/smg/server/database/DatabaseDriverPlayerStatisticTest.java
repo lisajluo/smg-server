@@ -32,11 +32,11 @@ public class DatabaseDriverPlayerStatisticTest {
   @Before 
   public void initPlayer() {
     legalPlayer = new Player();
-    legalPlayer.setProperty(PlayerProperty.EMAIL, "abc@nyu.edu");
-    legalPlayer.setProperty(PlayerProperty.FIRSTNAME, "foo");
-    legalPlayer.setProperty(PlayerProperty.LASTNAME, "bar");
-    legalPlayer.setProperty(PlayerProperty.NICKNAME, "foobar");
-    legalPlayer.setProperty(PlayerProperty.HASHEDPASSWORD,
+    legalPlayer.setProperty(PlayerProperty.email, "abc@nyu.edu");
+    legalPlayer.setProperty(PlayerProperty.firstName, "foo");
+    legalPlayer.setProperty(PlayerProperty.lastName, "bar");
+    legalPlayer.setProperty(PlayerProperty.nickName, "foobar");
+    legalPlayer.setProperty(PlayerProperty.password,
         AccessSignatureUtil.getHashedPassword("foobar"));
   }
   

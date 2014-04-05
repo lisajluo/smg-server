@@ -72,7 +72,7 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    String password = req.getParameter(PASSWORD);
+    String password =AccessSignatureUtil.getHashedPassword(req.getParameter(PASSWORD));
     
     try {
       long developerId = Long.parseLong(req.getPathInfo().substring(1));
@@ -80,6 +80,7 @@ public class DeveloperServlet extends HttpServlet {
       
       if (developer.get(PASSWORD).equals(password)) {
         developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
+        developer.put(PASSWORD, req.getParameter(PASSWORD));
         DeveloperDatabaseDriver.updateDeveloper(developerId, developer);
         json = new JSONObject(developer);
         json.remove(PASSWORD);
@@ -111,7 +112,7 @@ public class DeveloperServlet extends HttpServlet {
 
     JSONObject json = new JSONObject();
     
-    String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICKNAME};
+    String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICK_NAME};
     StringBuffer buffer = new StringBuffer();
     String line = null;
     try {
@@ -119,10 +120,20 @@ public class DeveloperServlet extends HttpServlet {
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
       }
-   
+      
       Map<Object, Object> parameterMap = DeveloperUtil.deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
-      
+      String originalString = (String) parameterMap.get(PASSWORD);
+		if (originalString == null || originalString.length() < 6) {
+			try {
+				json.put("error", "PASSWORD_TOO_SHORT");
+				json.write(resp.getWriter());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
       if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
         DeveloperUtil.jsonPut(json, ERROR, MISSING_INFO);
       }
