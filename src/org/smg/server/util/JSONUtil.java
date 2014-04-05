@@ -1,6 +1,7 @@
 package org.smg.server.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,11 +100,32 @@ public class JSONUtil {
    */
   public static List<String> parsePlayerIds(String json) throws IOException {
     ObjectMapper mapper = new ObjectMapper();    
-    List<String> list = new LinkedList<String>();    
+    List<String> list = new ArrayList<String>();    
       try {
         list = mapper.readValue(
           json,
           new TypeReference<List<String>>() {
+        });
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        throw new IOException("JSON_PARSE_ERROR");
+      }    
+     return list;
+  }
+  
+  /**
+   * Parse a playerIds string to a list<Long>
+   * @param json
+   * @return
+   * @throws IOException
+   */
+  public static List<Long> parseDSPlayerIds(String json) throws IOException {
+    ObjectMapper mapper = new ObjectMapper();    
+    List<Long> list = new ArrayList<Long>();    
+      try {
+        list = mapper.readValue(
+          json,
+          new TypeReference<List<Long>>() {
         });
       } catch (IOException e) {
         // TODO Auto-generated catch block

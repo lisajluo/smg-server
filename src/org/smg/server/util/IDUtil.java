@@ -41,4 +41,17 @@ public class IDUtil {
     }
     return ret;
   }
+  
+  /**
+   * Parse a Long List id to String list id
+   * @param ids
+   * @return
+   */
+  public static List<String> longListToStringList (List<Long> ids) {
+    ArrayList<String> ret = new ArrayList<String>();
+    for (Long id: ids) {
+      ret.add(longToString(id));
+    }
+    return ret;
+  }
 }

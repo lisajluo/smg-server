@@ -88,6 +88,18 @@ public class ContainerVerification {
     }
     return true;
   }
+  /**
+   * Verify if a player could insert new match. When he has unfinished match,
+   * it is not allowed to insert new match.
+   * @param playerId
+   * @return
+   */
+  public static boolean insertMatchVerify(long playerId) {
+    if (ContainerDatabaseDriver.getUnfinishedMatchByPlayerId(playerId) == null) {
+      return true;
+    }
+    return false;
+  }
   
   /**
    * Verify if a matchId is valid

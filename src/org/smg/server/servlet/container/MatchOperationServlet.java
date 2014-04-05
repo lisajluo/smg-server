@@ -252,7 +252,7 @@ public class MatchOperationServlet extends HttpServlet {
           }
           winInfo.put(ContainerConstants.MATCH_ID, matchId);
 
-          EndGameDatabaseDriver.updateStats(winInfo);
+//          EndGameDatabaseDriver.updateStats(winInfo);
 
           
         }
