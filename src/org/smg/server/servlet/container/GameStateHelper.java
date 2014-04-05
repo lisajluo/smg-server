@@ -35,7 +35,7 @@ public class GameStateHelper {
           Object visibleToObj = visibleTo.get(key);
           if (visibleToObj instanceof List) {
             if (!((List<String>) visibleToObj).contains(playerId)) {
-              continue;
+              set.setValue(null);;
             }
           }
         }

@@ -15,9 +15,11 @@ import org.smg.server.servlet.container.GameApi.GameState;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.IDUtil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.common.collect.Lists;
 
 public class StateServlet extends HttpServlet {
@@ -92,17 +94,15 @@ public class StateServlet extends HttpServlet {
       lastMove = mi.getHistory().get(0).getLastMove();
     }
 
-    Map<String, Object> stateForPlayerMap = stateForPlayerEntity.getProperties();
     try {
-      returnValue.put(ContainerConstants.MATCH_ID,
-          stateForPlayerMap.get(ContainerConstants.MATCH_ID));
-      returnValue.put(ContainerConstants.STATE,
-          stateForPlayerMap.get(ContainerConstants.GAME_STATE));
-      returnValue.put(
-          ContainerConstants.LAST_MOVE,
-          GameStateHelper.getOperationsListForPlayer(
-              GameStateHelper.messageToOperationList(lastMove), state.getVisibleTo(),
+      returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+      returnValue
+          .put(ContainerConstants.STATE, state.getStateForPlayerId(String.valueOf(playerId)));
+      String jsnStrTmp = new ObjectMapper().writeValueAsString(GameStateHelper
+          .getOperationsListForPlayer(GameStateHelper.messageToOperationList(lastMove),
+              state.getVisibleTo(),
               String.valueOf(playerId)));
+      returnValue.put(ContainerConstants.LAST_MOVE, new JSONArray(jsnStrTmp));
     } catch (JSONException e1) {
     }
     try {
