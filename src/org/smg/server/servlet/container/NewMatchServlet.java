@@ -19,6 +19,7 @@ import org.smg.server.util.JSONUtil;
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -87,6 +88,11 @@ public class NewMatchServlet extends HttpServlet {
         return;
       }
       if (!ContainerVerification.playerIdsVerify(playerIds)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+        return;
+      }
+      if (!ContainerVerification.insertMatchVerify(playerIds)) {
         ContainerVerification.sendErrorMessage(
             resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
         return;
@@ -160,6 +166,72 @@ public class NewMatchServlet extends HttpServlet {
     } catch (JSONException e) {
       e.printStackTrace();
     }
+  }
+  
+  @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+    CORSUtil.addCORSHeader(resp);
+    JSONObject returnValue = new JSONObject();
+    // verify playerId
+    if (req.getPathInfo().length() < 2) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+      return;
+    }
+    String pId = req.getPathInfo().substring(1);
+    long playerId = 0;
+    try {
+      playerId = IDUtil.stringToLong(pId);
+    } catch (Exception e) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+      return;
+    }
+    if (!ContainerVerification.playerIdVerify(playerId)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
+      return;
+    }
+    // verify accessSignature
+    if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
+      return;
+    }
+    String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
+    if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
+      return;
+    }
+    
+    Entity match = ContainerDatabaseDriver.getUnfinishedMatchByPlayerId(playerId);
+    if (match == null) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.NO_MATCH_FOUND);
+      return;
+    }    
+    //add playerIds and matchId
+    List<Long> playerIds = JSONUtil.parseDSPlayerIds(
+        (String)match.getProperty(ContainerConstants.PLAYER_IDS));
+    List<String> pIds = IDUtil.longListToStringList(playerIds);
+    try {
+      returnValue.put(ContainerConstants.MATCH_ID, 
+          IDUtil.longToString((Long)match.getKey().getId()));
+      returnValue.put(ContainerConstants.PLAYER_IDS, pIds);
+      
+    } catch (JSONException e1) {
+
+    }
+    
+    try {
+      // return value to client
+      returnValue.write(resp.getWriter());
+      
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    
   }
   
 }

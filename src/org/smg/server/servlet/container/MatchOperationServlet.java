@@ -14,12 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.ContainerDatabaseDriver;
 import org.smg.server.database.DatabaseDriverPlayer;
+import org.smg.server.database.EndGameDatabaseDriver;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
-import org.smg.server.database.EndGameDatabaseDriver;
 import org.smg.server.servlet.container.GameApi.AttemptChangeTokens;
 import org.smg.server.servlet.container.GameApi.EndGame;
 import org.smg.server.servlet.container.GameApi.GameState;
+import org.smg.server.servlet.container.GameApi.Message;
 import org.smg.server.servlet.container.GameApi.Operation;
 import org.smg.server.servlet.container.GameApi.SetTurn;
 import org.smg.server.util.CORSUtil;
@@ -34,6 +35,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @SuppressWarnings("serial")
@@ -51,6 +53,11 @@ public class MatchOperationServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     // verify matchId
+    if (req.getPathInfo().length() < 2) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
+      return;
+    }
     String mId = req.getPathInfo().substring(1);
     long matchId = 0;
     try {
@@ -66,6 +73,11 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     // verify playerId
+    if (!req.getParameterMap().containsKey(ContainerConstants.PLAYER_ID)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.PLAYER_ID);
+      return;
+    }
     String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
     long playerId = 0;
     try {
@@ -81,6 +93,11 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     // verify accessSignature
+    if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
+      return;
+    }
     String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
       ContainerVerification.sendErrorMessage(
@@ -158,6 +175,11 @@ public class MatchOperationServlet extends HttpServlet {
         return;
       }
       // verify matchId
+      if (req.getPathInfo().length() < 2) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
+        return;
+      }
       String mId = req.getPathInfo().substring(1);
       long matchId = 0;
       try {
@@ -194,7 +216,7 @@ public class MatchOperationServlet extends HttpServlet {
       }
 
       List<Object> operations = (List<Object>) jsonMap.get(ContainerConstants.OPERATIONS);
-      List<Operation> operationsOps = GameStateManager.messageToOperationList(operations);
+      List<Operation> operationsOps = GameStateHelper.messageToOperationList(operations);
 
       EndGame endGame = null;
       AttemptChangeTokens attemptChangeTokens = null;
@@ -254,7 +276,6 @@ public class MatchOperationServlet extends HttpServlet {
 
           EndGameDatabaseDriver.updateStats(winInfo);
 
-          
         }
 
         // Write the object back to JSON formation.
@@ -264,9 +285,17 @@ public class MatchOperationServlet extends HttpServlet {
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response
-        String rtnStr = new ObjectMapper().writeValueAsString(newState
-            .getStateForPlayerId(String.valueOf(nextMovePlayerId)));
-        returnValue.put(ContainerConstants.GAME_STATE, new JSONObject(rtnStr));
+        returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+        returnValue.put(ContainerConstants.STATE, newState
+            .getStateForPlayerId(String.valueOf(currentPlayerId)));
+        returnValue.put(
+            ContainerConstants.LAST_MOVE,
+            Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
+                newState.getVisibleTo(),
+                String.valueOf(currentPlayerId))));
+
+        // Write back to Database.
+        ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
         // Response through channel.
         for (long pid : playerIds) {
@@ -277,8 +306,14 @@ public class MatchOperationServlet extends HttpServlet {
           String clientId = String.valueOf(pid);
           JSONObject returnValueChannel = new JSONObject();
           try {
-            returnValueChannel.put(ContainerConstants.GAME_STATE, newState
+            returnValueChannel.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+            returnValueChannel.put(ContainerConstants.STATE, newState
                 .getStateForPlayerId(String.valueOf(pid)));
+            returnValueChannel.put(
+                ContainerConstants.LAST_MOVE,
+                Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
+                    newState.getVisibleTo(),
+                    String.valueOf(pid))));
           } catch (JSONException e1) {
           }
           channelService.sendMessage(new ChannelMessage(clientId, returnValueChannel.toString()));
@@ -300,23 +335,35 @@ public class MatchOperationServlet extends HttpServlet {
   }
 
   private GameState updateMatchInfoByOperations(MatchInfo mi, List<Object> operationsMapList) {
-    List<Operation> operations = GameStateManager.messageToOperationList(operationsMapList);
+    List<Operation> operations = GameStateHelper.messageToOperationList(operationsMapList);
 
-    // There is only one history record here.
-    // TODO Make sure which one will be the lastest state.
-    GameState currentState;
+    GameState lastState;
     if (mi.getHistory().size() == 0) {
       // There is not GameState in History. Initial move.
-      currentState = new GameState();
-
-      GameStateHistoryItem gshi = new GameStateHistoryItem();
-      gshi.setGameState(currentState);
-
-      mi.getHistory().add(gshi);
+      lastState = new GameState();
     } else {
-      currentState = mi.getHistory().get(0).getGameState();
+      int lastIndex = mi.getHistory().size() - 1;
+      lastState = mi.getHistory().get(lastIndex).getGameState();
     }
-    currentState.makeMove(operations);
-    return currentState;
+
+    GameState newState = lastState.copy();
+    newState.makeMove(operations);
+
+    GameStateHistoryItem gshi = new GameStateHistoryItem();
+    gshi.setGameState(newState);
+    gshi.setLastMove(getMapListFromOpsObjList(operationsMapList));
+
+    mi.getHistory().add(gshi);
+
+    return newState;
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Map<String, Object>> getMapListFromOpsObjList(List<Object> operationsMapList) {
+    List<Map<String, Object>> rtn = Lists.newArrayList();
+    for (Object obj : operationsMapList) {
+      rtn.add((Map<String, Object>) obj);
+    }
+    return rtn;
   }
 }
