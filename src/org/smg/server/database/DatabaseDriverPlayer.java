@@ -24,9 +24,10 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class DatabaseDriverPlayer {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  private static final String PLAYER = NamespaceUtil.VERSION+"PLAYER";
+  private static final String PLAYER = NamespaceUtil.VERSION+"User";
+
   private static List<String> playerPropertyBlackList = Arrays.asList(
-      PlayerProperty.EMAIL.toString(), PlayerProperty.PLAYERID.toString());
+      PlayerProperty.email.toString(), PlayerProperty.PLAYERID.toString());
 
   private static Object insertPlayerMutex = new Object();
   // TODO: Use Specific Mutex for each player login
@@ -66,15 +67,16 @@ public class DatabaseDriverPlayer {
       playerId = Long.parseLong(playerInfo.get(PlayerProperty.PLAYERID
           .toString()));
     } catch (NumberFormatException e1) {
+     
       return "WRONG_PLAYER_ID";
     }
     Key playerKey = KeyFactory.createKey(PLAYER, playerId);
     try {
       Entity playerDB = datastore.get(playerKey);
-      String as = (String) playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE
+      String as = (String) playerDB.getProperty(PlayerProperty.accessSignature
           .toString());
-      String asLocal = playerInfo.containsKey(PlayerProperty.ACCESSSIGNATURE
-          .toString()) ? playerInfo.get(PlayerProperty.ACCESSSIGNATURE
+      String asLocal = playerInfo.containsKey(PlayerProperty.accessSignature
+          .toString()) ? playerInfo.get(PlayerProperty.accessSignature
           .toString()) : "";
       if (asLocal != "" && as.equals(asLocal)) {
         for (String key : playerInfo.keySet()) {
@@ -100,7 +102,7 @@ public class DatabaseDriverPlayer {
       playerDB.setProperty(key, playerInfo.get(key));
     }
     long playerId;
-    final String EMAIL = PlayerProperty.EMAIL.toString();
+    final String EMAIL = PlayerProperty.email.toString();
     Filter emailFilter = new FilterPredicate(EMAIL, Query.FilterOperator.EQUAL,
         playerInfo.get(EMAIL));
     Query q = new Query(PLAYER).setFilter(emailFilter);
@@ -115,7 +117,7 @@ public class DatabaseDriverPlayer {
 
       String accessSignature = AccessSignatureUtil.getAccessSignature(String
           .valueOf(playerId));
-      playerDB.setProperty(PlayerProperty.ACCESSSIGNATURE.toString(),
+      playerDB.setProperty(PlayerProperty.accessSignature.toString(),
           accessSignature);
       datastore.put(playerDB);
       return "SUCCESS:" + playerId + ":" + accessSignature;
@@ -138,7 +140,7 @@ public class DatabaseDriverPlayer {
     Map<String, Object> properties = playerDB.getProperties();
     for (String key : properties.keySet()) {
       PlayerProperty p = PlayerProperty.findByValue(key);
-      if (p != null && p != PlayerProperty.HASHEDPASSWORD) {
+      if (p != null && p != PlayerProperty.password) {
         player.setProperty(p, (String) properties.get(key));
       }
     }
@@ -167,14 +169,14 @@ public class DatabaseDriverPlayer {
       Entity playerDB = datastore.get(playerKey);
       String hashedPassword = AccessSignatureUtil
           .getHashedPassword(originalPassword);
-      if (playerDB.getProperty(PlayerProperty.HASHEDPASSWORD.toString())
+      if (playerDB.getProperty(PlayerProperty.password.toString())
           .equals(hashedPassword)) {
 
         String accessSignature = AccessSignatureUtil.getAccessSignature(String
             .valueOf(playerId));
-        String email = (String) playerDB.getProperty(PlayerProperty.EMAIL
+        String email = (String) playerDB.getProperty(PlayerProperty.email
             .toString());
-        playerDB.setProperty(PlayerProperty.ACCESSSIGNATURE.toString(),
+        playerDB.setProperty(PlayerProperty.accessSignature.toString(),
             accessSignature);
         datastore.put(playerDB);
         return new String[] { email, accessSignature };
@@ -201,7 +203,7 @@ public class DatabaseDriverPlayer {
     Key playerKey = KeyFactory.createKey(PLAYER, playerId);
     synchronized (loginMutex) {
       Entity playerDB = datastore.get(playerKey);
-      if (playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE.toString())
+      if (playerDB.getProperty(PlayerProperty.accessSignature.toString())
           .equals(accessSignature)) {
         datastore.delete(playerKey);
         return "DELETED_PLAYER";
@@ -222,12 +224,12 @@ public class DatabaseDriverPlayer {
     Map<String, String> result = new HashMap<String, String>();
     try {
       Player p = getPlayerById(playerId);
-      String name = p.getProperty(PlayerProperty.FIRSTNAME);
-      result.put(PlayerProperty.FIRSTNAME.toString(), name);
-      name = p.getProperty(PlayerProperty.LASTNAME);
-      result.put(PlayerProperty.LASTNAME.toString(), name);
-      name = p.getProperty(PlayerProperty.NICKNAME);
-      result.put(PlayerProperty.NICKNAME.toString(), name);
+      String name = p.getProperty(PlayerProperty.firstName);
+      result.put(PlayerProperty.firstName.toString(), name);
+      name = p.getProperty(PlayerProperty.lastName);
+      result.put(PlayerProperty.lastName.toString(), name);
+      name = p.getProperty(PlayerProperty.nickName);
+      result.put(PlayerProperty.nickName.toString(), name);
     }
     catch (Exception e) {
     	e.printStackTrace();
@@ -250,7 +252,7 @@ public class DatabaseDriverPlayer {
     } catch (EntityNotFoundException e) {
       return false;
     }
-    if (playerDB.getProperty(PlayerProperty.ACCESSSIGNATURE.toString())
+    if (playerDB.getProperty(PlayerProperty.accessSignature.toString())
         .equals(accessSignature)) {
       return true;
     } else {

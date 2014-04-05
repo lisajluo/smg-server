@@ -22,7 +22,7 @@ public class JSONUtil {
 		  PlayerProperty pp;
 		  String value;
 		  if (key.equalsIgnoreCase("password")) {
-		    pp = PlayerProperty.HASHEDPASSWORD;
+		    pp = PlayerProperty.password;
 		    value = AccessSignatureUtil.getHashedPassword((String)jsonMap.get(key));
 		  } else {
 		    pp = PlayerProperty.findByValue(key);

@@ -60,7 +60,7 @@ public class GameUtil {
 					.get(PLAYER_ID));
 			Player player = DatabaseDriverPlayer.getPlayerById(playerId);
 			if (parameterMap.get(ACCESS_SIGNATURE).equals(
-					player.getProperty(Player.PlayerProperty.ACCESSSIGNATURE)))
+					player.getProperty(Player.PlayerProperty.accessSignature)))
 
 				return true;
 			else

@@ -4,7 +4,7 @@ import static org.smg.server.servlet.game.GameConstants.*;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.ACCESS_SIGNATURE;
 import static org.smg.server.servlet.developer.DeveloperConstants.FIRST_NAME;
-import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
+import static org.smg.server.servlet.developer.DeveloperConstants.NICK_NAME;
 
 import java.io.IOException;
 import java.util.Date;

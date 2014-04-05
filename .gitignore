@@ -17,9 +17,7 @@ gwt-unitCache/
 *.cache.html
 /lib
 .settings/
-war/WEB-INF/appengine-generated/local_db.bin
-.settings/com.google.gdt.eclipse.core.prefs
-.settings/com.google.appengine.eclipse.core.prefs
-war/WEB-INF/lib
+war/WEB-INF/appengine-generated
 war/WEB-INF/classes
+war/WEB-INF/lib
 

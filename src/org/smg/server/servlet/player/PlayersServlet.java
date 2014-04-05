@@ -280,6 +280,7 @@ public class PlayersServlet extends HttpServlet {
     while ((line = br.readLine()) != null)
       buffer.append(line);
     json = buffer.toString();
+    System.out.println("json"+json);
     JSONObject returnValue = new JSONObject();
     Player player = JSONUtil.jSON2Player(json);
     String playerId = null;
@@ -288,6 +289,7 @@ public class PlayersServlet extends HttpServlet {
     }
     if (playerId == null) {
       try {
+    	
         returnValue.put("error", "WRONG_PLAYER_ID");
         returnValue.write(resp.getWriter());
       } catch (JSONException e) {

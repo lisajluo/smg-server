@@ -34,8 +34,8 @@ public class PlayerInfoServlet extends HttpServlet {
    *    Get player Info:
    *    method: GET
    *    url:/playerInfo?playerId=...&targetId=...&accessSignature=...
-   *    return: {  ¡°email¡± : ¡­,  ¡°firstname¡± : ¡­,  ¡°lastname¡± : ¡­,  ¡°nickname¡± : ¡­.}
-   *            {  ¡°firstname¡± : ¡­,  ¡°nickname¡± : ¡­.}
+   *    return: {  ï¿½ï¿½emailï¿½ï¿½ : ï¿½ï¿½,  ï¿½ï¿½firstnameï¿½ï¿½ : ï¿½ï¿½,  ï¿½ï¿½lastnameï¿½ï¿½ : ï¿½ï¿½,  ï¿½ï¿½nicknameï¿½ï¿½ : ï¿½ï¿½.}
+   *            {  ï¿½ï¿½firstnameï¿½ï¿½ : ï¿½ï¿½,  ï¿½ï¿½nicknameï¿½ï¿½ : ï¿½ï¿½.}
    *            {"error": "WRONG_ACCESS_SIGNATURE"}
    *            {"error": "WRONG_PLAYER_ID"}
    *            {"error": "WRONG_TARGET_ID"}
@@ -89,15 +89,15 @@ public class PlayerInfoServlet extends HttpServlet {
         Player target = DatabaseDriverPlayer.getPlayerById(targetIdLong);
         if (targetIdLong == playerIdLong) {
           try {
-            returnValue.put(EMAIL, target.getProperty(PlayerProperty.EMAIL));
-            returnValue.put(LAST_NAME, target.getProperty(PlayerProperty.LASTNAME));
+            returnValue.put(EMAIL, target.getProperty(PlayerProperty.email));
+            returnValue.put(LAST_NAME, target.getProperty(PlayerProperty.lastName));
           } catch (JSONException e) {
             e.printStackTrace();
           }
         }
         try {
-          returnValue.put(FIRST_NAME, target.getProperty(PlayerProperty.FIRSTNAME));
-          returnValue.put(NICKNAME, target.getProperty(PlayerProperty.NICKNAME));
+          returnValue.put(FIRST_NAME, target.getProperty(PlayerProperty.firstName));
+          returnValue.put(NICKNAME, target.getProperty(PlayerProperty.nickName));
           returnValue.write(resp.getWriter());
         } catch (JSONException e) {
           e.printStackTrace();
