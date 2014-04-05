@@ -5,6 +5,7 @@ import static org.smg.server.servlet.game.GameConstants.LOST;
 import static org.smg.server.servlet.game.GameConstants.SCORE;
 import static org.smg.server.servlet.game.GameConstants.TOKEN;
 import static org.smg.server.servlet.game.GameConstants.WIN;
+import static org.smg.server.servlet.game.GameConstants.RANK;
 
 import java.io.IOException;
 import java.util.Map;
@@ -108,6 +109,7 @@ public class PlayerGameServlet extends HttpServlet{
         returnValue.put(WIN, ps.getProperty(StatisticProperty.WIN));
         returnValue.put(LOST, ps.getProperty(StatisticProperty.LOST));
         returnValue.put(DRAW, ps.getProperty(StatisticProperty.DRAW));
+        returnValue.put(RANK, ps.getProperty(StatisticProperty.RANK));
         returnValue.write(resp.getWriter());
       } catch (JSONException e) {
         // TODO Auto-generated catch block

@@ -103,26 +103,29 @@ public class PlayerHistoryServlet extends HttpServlet {
         addErrorMessage(returnValue,"WRONG_GAME_ID",resp);
         return;
       }
+      
       List<PlayerHistory> lph = DatabaseDriverPlayerHistory.getPlayerHistory(targetIdLong, gameIdLong);
       JSONArray his = new JSONArray();
-      for (PlayerHistory ph: lph) {
-        JSONObject h = new JSONObject();
-        try {
-          //TODO TOSTRING?
-          h.put(DATE, ph.getDate());
-          h.put(RESULT, ph.getMatchResult().toString());
-          h.put(TOKENCHANGE, String.valueOf(ph.getTokenChange()));
-          h.put(SCORE, String.valueOf(ph.getScore()));
-          JSONArray oppoids = new JSONArray();
-          for (long id: ph.getOpponentIds()) {
-            oppoids.put(String.valueOf(id));
+      if (targetIdLong == playerIdLong) {
+        for (PlayerHistory ph: lph) {
+          JSONObject h = new JSONObject();
+          try {
+            //TODO TOSTRING?
+            h.put(DATE, ph.getDate());
+            h.put(RESULT, ph.getMatchResult().toString());
+            h.put(TOKENCHANGE, String.valueOf(ph.getTokenChange()));
+            h.put(SCORE, String.valueOf(ph.getScore()));
+            JSONArray oppoids = new JSONArray();
+            for (long id: ph.getOpponentIds()) {
+              oppoids.put(String.valueOf(id));
+            }
+            h.put(OPPONENTIDS, oppoids);
+          } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
           }
-          h.put(OPPONENTIDS, oppoids);
-        } catch (JSONException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          his.put(h);
         }
-        his.put(h);
       }
       try {
         returnValue.put("history", his);

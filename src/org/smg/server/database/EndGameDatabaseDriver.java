@@ -3,8 +3,10 @@ package org.smg.server.database;
 import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID;
 import static org.smg.server.servlet.container.ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT;
+
 import org.smg.server.servlet.developer.DeveloperConstants;
 import org.smg.server.servlet.game.GameConstants;
+
 import static org.smg.server.servlet.developer.DeveloperConstants.NICKNAME;
 import static org.smg.server.servlet.game.GameConstants.FINISHED_GAMES;
 import static org.smg.server.servlet.game.GameConstants.GAME_ID;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerHistory.MatchResult;
+import org.smg.server.util.ELORankingUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -151,6 +154,7 @@ public class EndGameDatabaseDriver {
     List<PlayerHistory> result = new ArrayList<PlayerHistory>();
     Map<Long, Long> tokens = (Map<Long, Long>) winInfo.get("playerIdToNumberOfTokensInPot");
     Map<Long, Integer> scoreMap = (Map<Long,Integer>) winInfo.get(GAME_OVER_SCORES);
+    Map<Long, Long> rankMap = ELORankingUtil.getRankingMap(scoreMap,gameId);
     Date date = new Date();
     List<Long> winnerIds = determineWinner(scoreMap);
     for (Long id: playerIds) {
@@ -159,7 +163,12 @@ public class EndGameDatabaseDriver {
       temp.removeOpponentIds(id);
       temp.setDate(date);
       temp.setScore(scoreMap.get(id));
-      temp.setTokenChange(tokens.get(id));
+      temp.setRank(rankMap.get(id));
+      if (tokens != null) {
+        temp.setTokenChange(tokens.get(id));
+      } else {
+        temp.setTokenChange(0);
+      }
       //TODO determine winner
       if (winnerIds.size() == 0) {
         temp.setMatchResult(MatchResult.DRAW);
