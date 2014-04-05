@@ -51,6 +51,11 @@ public class MatchOperationServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     JSONObject returnValue = new JSONObject();
     // verify matchId
+    if (req.getPathInfo().length() < 2) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
+      return;
+    }
     String mId = req.getPathInfo().substring(1);
     long matchId = 0;
     try {
@@ -66,6 +71,11 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     // verify playerId
+    if (!req.getParameterMap().containsKey(ContainerConstants.PLAYER_ID)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.PLAYER_ID);
+      return;
+    }
     String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
     long playerId = 0;
     try {
@@ -81,6 +91,11 @@ public class MatchOperationServlet extends HttpServlet {
       return;
     }
     // verify accessSignature
+    if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
+      return;
+    }
     String accessSignature = req.getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
       ContainerVerification.sendErrorMessage(
@@ -158,6 +173,11 @@ public class MatchOperationServlet extends HttpServlet {
         return;
       }
       // verify matchId
+      if (req.getPathInfo().length() < 2) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_MATCH_ID);
+        return;
+      }
       String mId = req.getPathInfo().substring(1);
       long matchId = 0;
       try {
@@ -252,7 +272,7 @@ public class MatchOperationServlet extends HttpServlet {
           }
           winInfo.put(ContainerConstants.MATCH_ID, matchId);
 
-//          EndGameDatabaseDriver.updateStats(winInfo);
+          EndGameDatabaseDriver.updateStats(winInfo);
 
         }
 
