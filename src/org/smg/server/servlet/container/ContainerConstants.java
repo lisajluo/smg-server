@@ -1,12 +1,14 @@
 
 package org.smg.server.servlet.container;
 
+import org.smg.server.util.NamespaceUtil;
+
 public final class ContainerConstants {
  private ContainerConstants() {}
   
  //entity Name
- public static final String MATCH = "Match";
- public static final String QUEUE = "Queue";
+ public static final String MATCH = NamespaceUtil.VERSION+"Match";
+ public static final String QUEUE = NamespaceUtil.VERSION+"Queue";
 
  // Various properties in the Match
  public static final String MATCH_ID = "matchId";
@@ -45,6 +47,7 @@ public final class ContainerConstants {
  public static final String MISSING_INFO = "MISSING_INFO";
  public static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
  public static final String WRONG_GAME_ID = "WRONG_GAME_ID";
+ public static final String NO_MATCH_FOUND = "NO_MATCH_FOUND";
  public static final String WRONG_MATCH_ID = "WROING_MATCH_ID";
  public static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
  public static final String BUILD_CHANNEL_FIALED = "BUILD_CHANNEL_FAILED";
