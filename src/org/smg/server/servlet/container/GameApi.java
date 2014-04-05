@@ -875,7 +875,7 @@ public final class GameApi {
       return toMessage().toString();
     }
 
-    private List<?> listToMessage(List<?> values) {
+    public static List<?> listToMessage(List<?> values) {
       if (values.isEmpty() || !(values.get(0) instanceof Message)) {
         return values;
       }
