@@ -8,6 +8,7 @@ import java.util.Map;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.util.AccessSignatureUtil;
+import org.smg.server.util.NamespaceUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -23,7 +24,8 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class DatabaseDriverPlayer {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  private static final String PLAYER = "User";
+  private static final String PLAYER = NamespaceUtil.VERSION+"User";
+
   private static List<String> playerPropertyBlackList = Arrays.asList(
       PlayerProperty.email.toString(), PlayerProperty.PLAYERID.toString());
 

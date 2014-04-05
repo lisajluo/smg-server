@@ -22,6 +22,15 @@ public class PlayerHistory {
   private long score = 0;
   private List<Long> opponentIds = new ArrayList<Long>();
   private MatchResult matchResult;
+  private long rank = -1;
+
+  public long getRank() {
+    return rank;
+  }
+
+  public void setRank(long rank) {
+    this.rank = rank;
+  }
 
   public PlayerHistory(long playerId, long gameId, long matchId){
     date = new Date();
@@ -29,6 +38,7 @@ public class PlayerHistory {
     this.gameId = gameId;
     this.matchId = matchId;
     this.opponentIds = new ArrayList<Long>();
+    this.rank = -1;
   }
   
   public Date getDate() {

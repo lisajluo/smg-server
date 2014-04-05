@@ -29,11 +29,11 @@ public class DatabaseDriverPlayerHistoryTest {
   @Before 
   public void initPlayer() {
     legalPlayer = new Player();
-    legalPlayer.setProperty(PlayerProperty.EMAIL, "abc@nyu.edu");
-    legalPlayer.setProperty(PlayerProperty.FIRSTNAME, "foo");
-    legalPlayer.setProperty(PlayerProperty.LASTNAME, "bar");
-    legalPlayer.setProperty(PlayerProperty.NICKNAME, "foobar");
-    legalPlayer.setProperty(PlayerProperty.HASHEDPASSWORD,
+    legalPlayer.setProperty(PlayerProperty.email, "abc@nyu.edu");
+    legalPlayer.setProperty(PlayerProperty.firstName, "foo");
+    legalPlayer.setProperty(PlayerProperty.lastName, "bar");
+    legalPlayer.setProperty(PlayerProperty.nickName, "foobar");
+    legalPlayer.setProperty(PlayerProperty.password,
         AccessSignatureUtil.getHashedPassword("foobar"));
   }
   
@@ -46,6 +46,7 @@ public class DatabaseDriverPlayerHistoryTest {
     ph1.setTokenChange(0);
     ph1.addOpponentId((long)2);
     ph1.addOpponentId((long)3);
+    ph1.setRank(1530);
     Thread.sleep(2000);
     ph2 = new PlayerHistory(1,1,2);
     ph2.setDate(new Date());
@@ -54,7 +55,7 @@ public class DatabaseDriverPlayerHistoryTest {
     ph2.setTokenChange(0);
     ph2.addOpponentId((long)2);
     ph2.addOpponentId((long)3);
-    
+    ph1.setRank(1520);
   }
   
   @Before

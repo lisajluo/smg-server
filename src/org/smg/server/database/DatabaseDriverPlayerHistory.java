@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerHistory.MatchResult;
+import org.smg.server.util.NamespaceUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -20,7 +21,9 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 
 public class DatabaseDriverPlayerHistory {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  private static final String PLAYERHISTORY = "PLAYERHISTORY";
+  //TABLE NAME
+  private static final String PLAYERHISTORY = NamespaceUtil.VERSION+"PLAYERHISTORY";
+  
   private static final String PLAYERID = "PLAYERID";
   private static final String GAMEID = "GAMEID";
   private static final String MATCHID = "MATCHID";
@@ -29,6 +32,7 @@ public class DatabaseDriverPlayerHistory {
   private static final String SCORE = "SCORE";
   private static final String OPPONENTIDS = "OPPONENTIDS";
   private static final String MATCHRESULT = "MATCHRESULT";
+  private static final String RANK = "RANK";
   private static int HISTORYLIMITPERGAME = 20;
   private static int HISTORYLIMITALL = 100;
   
@@ -56,6 +60,7 @@ public class DatabaseDriverPlayerHistory {
     psDB.setProperty(SCORE, ph.getScore());
     psDB.setProperty(OPPONENTIDS, ph.getOpponentIds());
     psDB.setProperty(MATCHRESULT, ph.getMatchResult().toString());
+    psDB.setProperty(RANK, ph.getRank());
     datastore.put(psDB);
     return "SUCCEED";
   }
@@ -85,6 +90,8 @@ public class DatabaseDriverPlayerHistory {
     ph.setTokenChange(tokenChange);
     long score = e.getProperty(SCORE) == null? 0: (long)(e.getProperty(SCORE));
     ph.setScore(score);
+    long rank = e.getProperty(RANK) == null? 1500: (long)(e.getProperty(SCORE));
+    ph.setRank(rank);
     MatchResult matchResult = e.getProperty(MATCHRESULT) == null? 
         null: MatchResult.valueOf((String)(e.getProperty(MATCHRESULT)));
     ph.setMatchResult(matchResult);

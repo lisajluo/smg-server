@@ -35,11 +35,11 @@ public class DatabaseDriverTest {
   @Before 
   public void initPlayer() {
     legalPlayer = new Player();
-    legalPlayer.setProperty(PlayerProperty.EMAIL, "abc@nyu.edu");
-    legalPlayer.setProperty(PlayerProperty.FIRSTNAME, "foo");
-    legalPlayer.setProperty(PlayerProperty.LASTNAME, "bar");
-    legalPlayer.setProperty(PlayerProperty.NICKNAME, "foobar");
-    legalPlayer.setProperty(PlayerProperty.HASHEDPASSWORD,
+    legalPlayer.setProperty(PlayerProperty.email, "abc@nyu.edu");
+    legalPlayer.setProperty(PlayerProperty.firstName, "foo");
+    legalPlayer.setProperty(PlayerProperty.lastName, "bar");
+    legalPlayer.setProperty(PlayerProperty.nickName, "foobar");
+    legalPlayer.setProperty(PlayerProperty.password,
         AccessSignatureUtil.getHashedPassword("foobar"));
   }
   
@@ -64,8 +64,8 @@ public class DatabaseDriverTest {
     String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
     Player p = DatabaseDriverPlayer.getPlayerById(playerId);
-    System.out.println(p.getProperty(PlayerProperty.ACCESSSIGNATURE));
-    p.setProperty(PlayerProperty.NICKNAME, "Jinxuan");
+    System.out.println(p.getProperty(PlayerProperty.accessSignature));
+    p.setProperty(PlayerProperty.nickName, "Jinxuan");
     String resp2 = DatabaseDriverPlayer.savePlayer(p);
     assertEquals(resp2,"UPDATED_PLAYER");
   }
@@ -75,7 +75,7 @@ public class DatabaseDriverTest {
     String resp = DatabaseDriverPlayer.savePlayer(legalPlayer);
     long playerId = Long.parseLong(resp.split(":")[1]);
     Player p = DatabaseDriverPlayer.getPlayerById(playerId);
-    String accessSignature = p.getProperty(PlayerProperty.ACCESSSIGNATURE);
+    String accessSignature = p.getProperty(PlayerProperty.accessSignature);
     String resp2 = DatabaseDriverPlayer.deletePlayer(playerId, accessSignature);
     assertEquals(resp2,"DELETED_PLAYER");
   }
@@ -88,7 +88,7 @@ public class DatabaseDriverTest {
     if (resp2 == "WRONG_PASSWORD") {
       fail("wrong password");
     } else {
-      assertEquals(resp2,legalPlayer.getProperty(PlayerProperty.EMAIL));
+      assertEquals(resp2,legalPlayer.getProperty(PlayerProperty.email));
     }
   }
   
