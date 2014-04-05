@@ -350,7 +350,8 @@ public class MatchOperationServlet extends HttpServlet {
 
       mi.getHistory().add(gshi);
     } else {
-      currentState = mi.getHistory().get(0).getGameState();
+      int lastIndex = mi.getHistory().size()-1;
+      currentState = mi.getHistory().get(lastIndex).getGameState();
     }
     currentState.makeMove(operations);
     return currentState;
