@@ -81,7 +81,8 @@ $(document).ready(function() {
       success: function(data, textStatus, jqXHR) {
         //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
         if (data["error"] == undefined) {
-           window.location.replace("login.html");
+          toastr["success"]("Account Creation", "SUCCESS");
+          window.location.replace("login.html");
         } else {
           //document.getElementById("response").innerHTML=data["error"].toString();
           toastr["error"](data["error"].toString(), "ERROR");
