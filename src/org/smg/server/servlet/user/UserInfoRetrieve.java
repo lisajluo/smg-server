@@ -53,6 +53,15 @@ public class UserInfoRetrieve extends HttpServlet{
 			return;
 
 		}
+		if (userAsList.get(0).getProperty(SOCIAL_AUTH) != null) {
+			UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
+			try {
+				json.write(writer);
+			} catch (Exception t) {
+				t.printStackTrace();
+			}
+			return;
+		}
 		long userId = userAsList.get(0).getKey().getId();
 		String accessSignature = (String) userAsList.get(0).getProperty(
 				ACCESS_SIGNATURE);

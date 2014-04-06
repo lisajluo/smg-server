@@ -33,6 +33,7 @@ public class UserConstants {
 	public static final String UNSUPPORTED_SOCIAL_AUTH = "UNSUPPORTED_SOCIAL_AUTH";
 	public static final String EMAIL_HAS_BEEN_REGISTERED = "EMAIL_HAS_BEEN_REGISTERED";
 	public static final String SOCIAL_AUTH_DENIED = "SOCIAL_AUTH_DENIED";
+	public static final String SOCIAL_AUTH_ACCOUNT = "SOCIAL_AUTH_ACCOUNT";
 	
 	public static final String SUCCESS = "success";
 	public static final String DELETED_USER = "DELETED_USER";
