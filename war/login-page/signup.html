@@ -82,7 +82,8 @@ $(document).ready(function() {
         //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
         if (data["error"] == undefined) {
           toastr["success"]("Account Creation", "SUCCESS");
-          window.location.replace("login.html");
+          window.setTimeout(function(){
+            window.location.replace("login.html")},2000);
         } else {
           //document.getElementById("response").innerHTML=data["error"].toString();
           toastr["error"](data["error"].toString(), "ERROR");
