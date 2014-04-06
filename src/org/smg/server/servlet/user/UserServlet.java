@@ -113,6 +113,7 @@ public class UserServlet extends HttpServlet{
 			}
 
 			userId = userAsList.get(0).getKey().getId();
+
 		}
 		try {
 			if (userId == -1) {

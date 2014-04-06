@@ -70,13 +70,13 @@
 				var jsonObj = {
 					"email" : formValues.email,
 					"password" : formValues.password,
-					"firstname" : formValues.firstName,
-					"lastname" : formValues.lastName,
-					"nickname" : formValues.nickName
+					"firstName" : formValues.firstName,
+					"lastName" : formValues.lastName,
+					"nickName" : formValues.nickName,
+					"accessSignature" : accessSignature
 				};
-				console.log("1");
 				$.ajax({
-					url : "http://" + domain + "/userinfo",
+					url : "http://" + domain + "/userinfo/"+userId,
 					dataType : "json",
 					type : "PUT",
 					data : JSON.stringify(jsonObj),
