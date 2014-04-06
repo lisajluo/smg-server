@@ -54,6 +54,44 @@ public class UserDatabaseDriver {
 	      return false;
 	    }  
 	  }
+	
+	public static void updateUserAccessSignature(long userId, String accessSignature) throws Exception
+	{
+		Key key = KeyFactory.createKey(USER, userId);
+		Transaction txn = datastore.beginTransaction();
+		try {
+			Entity entity = datastore.get(key);
+			entity.setProperty(ACCESS_SIGNATURE, accessSignature);
+			datastore.put(entity);
+			txn.commit();
+		} catch (Exception e) {
+			throw new Exception();
+
+		}
+	}
+	public static boolean insertUserWithoutPassWord(long userId, Map<Object, Object> properties) throws Exception{
+	    Transaction txn = datastore.beginTransaction();
+	    Entity entity = new Entity(USER, userId);
+	    
+			for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+				  
+					entity.setProperty((String) entry.getKey(), entry.getValue());
+				
+			}
+	    
+	    List<Entity> sameEmailList = queryUserByProperty(EMAIL, (String) properties.get(EMAIL));
+	    
+	    // Either there is nobody else with the email, or the one with the same email is me
+	    if (sameEmailList.isEmpty() || sameEmailList.get(0).getKey().getId() == userId) {
+	      datastore.put(entity);
+	      txn.commit();
+	      return true;
+	    }
+	    else {
+	      txn.rollback();
+	      return false;
+	    }  
+	  }
 	public static long insertUser(Map<Object, Object> properties) throws Exception {
 	    long key;
 	    Transaction txn = datastore.beginTransaction();
@@ -102,6 +140,9 @@ public class UserDatabaseDriver {
 	  }
 	 public static boolean updateUser (long userId, Map<Object, Object> properties) throws Exception{
 		    return insertUser(userId, properties);    
+		  }
+	 public static boolean updateUserWithoutPassWord (long userId, Map<Object, Object> properties) throws Exception{
+		    return insertUserWithoutPassWord(userId, properties);    
 		  }
 	 
 	 public static boolean deleteUser(long userId) {
