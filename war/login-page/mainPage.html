@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Main Page</title>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<link rel="stylesheet"
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+<script
+	src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<link
+	href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+	rel="stylesheet">
+<!--<link href="./css/float.css" rel="stylesheet">
+<script src="./js/float.js">-->
+</head>
+<body>
+	<div class="container">
+		<ul id="tabs" class="nav nav-pills">
+			<li><a href="#play" data-toggle="tab">Play</a></li>
+			<li><a href="#dev" data-toggle="tab">Game Developer</a></li>
+			<li><a href="#account" data-toggle="tab">Account Management</a>
+			</li>
+			<li class="dropdown pull-right" id="logoutDeopdown"><a
+				class="dropdown-toggle" data-toggle="dropdown" href="#">Logout <b
+					class="caret"></b>
+			</a>
+				<ul class="dropdown-menu">
+					<li><a href="#">Logout</a></li>
+				</ul></li>
+		</ul>
+		<div id="my-tab-content" class="tab-content">
+			<div class="tab-pane active" id="play">
+				<div class="page-header">Enjoy your game</div>
+			</div>
+			<div class="tab-pane" id="dev">
+				<div class="page-header">Deploy your game</div>
+			</div>
+			<div class="tab-pane" id="account">
+				<div class="row">
+					<div class="col-sm-8">
+
+						<h4 class="page-header">Basic Information</h4>
+						<form role="form">
+							<div class="form-group float-label-control">
+								<label for="">Email</label> <input type="email"
+									class="form-control" placeholder="Email">
+							</div>
+							<div class="form-group float-label-control">
+								<label for="">Password</label> <input type="password"
+									class="form-control" placeholder="Password">
+							</div>
+							<div class="form-group float-label-control">
+								<label for="">Confirm Password</label><input type="password"
+									class="form-control" placeholder="Password">
+							</div>
+						</form>
+
+
+						<h4 class="page-header">Other Information</h4>
+						<form role="form">
+							<div class="form-group float-label-control label-bottom">
+								<label for="">First Name</label> <input type="email"
+									class="form-control" placeholder="First Name">
+							</div>
+							<div class="form-group float-label-control label-bottom">
+								<label for="">Last Name</label> <input type="email"
+									class="form-control" placeholder="Last Name">
+							</div>
+							<div class="form-group float-label-control label-bottom">
+								<label for="">Nickname</label> <input type="email"
+									class="form-control" placeholder="Nickname">
+							</div>
+						</form>
+
+						<div class="panel-footer" style="margin-bottom: -14px;">
+							<input type="submit" class="btn btn-success" value="Update" /> 
+							<input type="reset" class="btn btn-danger" value="Clear" />
+						</div>
+
+					</div>
+					<div class="col-sm-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Note</h3>
+							</div>
+							<div class="panel-body">
+								<ul>
+									<li>Google authorized user can not change basic
+										information</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$('#tabs').tab();
+			});
+		</script>
+	</div>
+</body>
+</html>
