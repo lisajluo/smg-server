@@ -34,7 +34,7 @@
 		var isSocial = getUrlParam("isSocial");
 		var userId = getUrlParam("userId");
 		var accessSignature = getUrlParam("accessSignature");
-		$("#logouturl").prop('href', 'domain/userLogOut/' + userId + '?' +accessSignature);		
+				
 		if(isSocial === undefined)
 			isSocial = true;
 		// Simple jsonify - doesn't handle nesting
@@ -50,6 +50,7 @@
 		}
 
 		$(document).ready( function() {
+			$("#logouturl").prop('href', "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
 			if(isSocial == true) {
 				$("#formId1").hide();
 			} else {
@@ -133,11 +134,11 @@
 			<li><a href="#account" data-toggle="tab">Account Management</a>
 			</li>
 			<li class="dropdown pull-right" id="logoutDeopdown"><a
-				class="dropdown-toggle" data-toggle="dropdown" id="logouturl">Logout <b
+				class="dropdown-toggle" data-toggle="dropdown" >Logout <b
 					class="caret"></b>
 			</a>
 				<ul class="dropdown-menu">
-					<li><a href="#">Logout</a></li>
+					<li><a href="#" id="logouturl">Logout</a></li>
 				</ul></li>
 		</ul>
 		<div id="my-tab-content" class="tab-content">
