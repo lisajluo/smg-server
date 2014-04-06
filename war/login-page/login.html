@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Insert title here
+    </title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js">
+    </script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+    </script>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js">
+    </script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
+    <link href="css/login-page.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+			  padding-top: 40px;
+			  padding-bottom: 40px;
+			  background-color: #eee;
+			}
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      
+      var domain = "localhost:8888";
+      
+    	function jsonify(array) {
+			  var json = {};
+			  for (var i = 0; i < array.length; i++) {
+			    var obj = array[i];
+			    if (obj.value) {
+			      
+			        json[obj.name] = obj.value;
+			      
+			    }
+			  }
+			  return json;
+			}
+
+			toastr.options = {
+			  "closeButton": true,
+			  "debug": false,
+			  "positionClass": "toast-top-right",
+			  "onclick": null,
+			  "showDuration": "300",
+			  "hideDuration": "1000",
+			  "timeOut": "5000",
+			  "extendedTimeOut": "1000",
+			  "showEasing": "swing",
+			  "hideEasing": "linear",
+			  "showMethod": "fadeIn",
+			  "hideMethod": "fadeOut"
+			};
+		  
+		  $("#post_form").submit(function(e) {
+		    e.preventDefault();
+		    var formValues = jsonify($(this).serializeArray());
+		    $.ajax({
+		      url: "http://" + domain + "/user/" +"?password=" + formValues.password+ "&email=" + formValues.email, 
+		      dataType: "json",
+		      type: "GET",
+		      success: function(data, textStatus, jqXHR) {
+		      	console.log(data);
+		      	if(data["error"] == undefined) {
+		      		window.location = "http://" + domain + "/mainpage.html?playerId=" + data["playerId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
+		      	} else {
+              toastr["error"]("Login failed. Please check your email and password.", "ERROR");
+		      	}
+		      },
+		      error: function(jqXHR, textStatus, errorThrown) {
+		        alert("ERROR: " + textStatus + " " + errorThrown);
+		      }
+		    });  
+		  });
+		});
+    </script>
+  </head>
+  <body>
+    <div class="xxxx">
+      <form class="form-signin" role="form" id="post_form">
+        <div class="row">
+          <div class="span0">
+            <h3>
+              Please sign in
+            </h3>
+          </div>
+          <div class="span1">
+            <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus/>
+          </div>
+          <div class="span2">
+            <input type="password" name="password" class="form-control" placeholder="Password" required/>
+            <a href="demo_retrieve.html">
+              Forget password
+            </a>
+          </div>
+          <div class="span3 pull-right">
+            <a href="signup.html" class="btn btn-me btn-info">
+              Register
+            </a>
+            <button class="btn btn-md btn-success" type="submit">
+              Sign in
+            </button>
+          </div>
+        </div>
+      </form>
+      <div class="row">
+        <div class="span1">
+          <h4 class="text-left">
+            Login with other services.
+          </h4>
+        </div>
+        <div class="span1">
+          <a class="btn btn-google-plus-style btn-lg btn-block" href="../userSocialAuth/google">
+            <i class="fa fa-google-plus-square">
+            </i>
+            
+            <span>
+              Login with 
+              <strong>
+                Google+
+              </strong>
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+  </body>
+</html>
