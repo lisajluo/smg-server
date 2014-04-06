@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Insert title here</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="css/login-page.css" rel="stylesheet">
+  </head>
+<body>
+<h3>User Sign Up</h3>
+
+
+<script type="text/javascript">
+
+//var domain = "3-dot-smg-server.appspot.com";
+var domain = "localhost:8888";
+
+// Simple jsonify - doesn't handle nesting
+function jsonify(array) {
+  var json = {};
+  for (var i = 0; i < array.length; i++) {
+    var obj = array[i];
+    if (obj.value) {
+      
+        json[obj.name] = obj.value;
+      
+    }
+  }
+  return json;
+}
+
+
+$(document).ready(function() {
+  
+  $("#post1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+
+    var formValues = jsonify($(this).serializeArray());
+    if (formValues.password != formValues.confirm) {
+      document.getElementById("confirmError").innerHTML="Please enter the same password";
+      return;
+    } else {
+      document.getElementById("confirmError").innerHTML="";
+    }
+
+    var jsonObj = { "email": formValues.email, 
+      "password": formValues.password,
+      "firstName": formValues.firstName,
+      "lastName": formValues.lastName
+    };
+
+    $.ajax({
+      url: "http://" + domain + "/user", 
+      dataType: "json",
+      type: "POST",
+      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+        if (data["error"] == undefined) {
+           window.location.replace("index.html");
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
+});
+
+</script>
+<table width="100%" cellspacing="0" cellpadding="0"><tr valign="top"><td width="20%">
+<form id="post1"></form>
+<table>
+<tr>
+<tr><td>E-mail:<td><input type="text" name="email" form="post1" value="">
+<tr><td>Password:</td><td><input type="password" name="password" form="post1" value=""></td></tr>
+<tr><td>Confirm Password:</td><td><input type="password" name="confirm" form="post1" value=""></td><td id="confirmError"></td></tr>
+<tr><td>First Name:</td><td><input type="text" name="firstName" form="post1" value=""></td></tr>
+<tr><td>Last Name:</td><td><input type="text" name="lastName" form="post1" value=""></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Create Account" form="post1"></td></tr>
+</table>
+
+<h4>Response</h4>
+<div id="response"></div>
+</td></tr></table>
+</body>
+</html>
+
