@@ -1,8 +1,4 @@
 @CHARSET "UTF-8";
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
 
 .footer {
   padding-top: 19px;
@@ -84,4 +80,31 @@ form * {
   color: #fff !important;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.36);
   -webkit-font-smoothing: antialiased;
+}
+
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.xxxx {
+  max-width: 300px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
 }
