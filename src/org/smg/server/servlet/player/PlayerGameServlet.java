@@ -51,7 +51,7 @@ public class PlayerGameServlet extends HttpServlet{
     CORSUtil.addCORSHeader(resp);
     resp.setContentType("text/plain");
     JSONObject returnValue = new JSONObject();
-    Map<String, Object> map = req.getParameterMap();
+    Map<String, String[]> map = req.getParameterMap();
     String playerId = null;
     if (!map.containsKey("playerId")){
       addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp);
