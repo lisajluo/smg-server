@@ -35,6 +35,7 @@ public class UserConstants {
 	public static final String SOCIAL_AUTH_DENIED = "SOCIAL_AUTH_DENIED";
 	public static final String SOCIAL_AUTH_ACCOUNT = "SOCIAL_AUTH_ACCOUNT";
 	
+	public static final String LOG_OUT = "LOG_OUT";
 	public static final String SUCCESS = "success";
 	public static final String DELETED_USER = "DELETED_USER";
 	public static final String EMAIL_UNABLE_TO_REACH = "EMAIL_UNABLE_TO_REACH";

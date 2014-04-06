@@ -147,7 +147,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   <servlet-mapping>
 	<servlet-name>userSocialAuthCallBack</servlet-name>
 	<url-pattern>/socialAuthCallBack/*</url-pattern>
-  </servlet-mapping>   
+  </servlet-mapping>
+  <servlet>
+	<servlet-name>userLogOut</servlet-name>
+	<servlet-class>org.smg.server.servlet.user.UserLogOutServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>userLogOut</servlet-name>
+	<url-pattern>/userLogOut/*</url-pattern>
+  </servlet-mapping>    
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
