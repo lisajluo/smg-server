@@ -100,7 +100,7 @@ public class PlayersServlet extends HttpServlet {
       }
       return;
     }
-		Map<String, Object> map = req.getParameterMap();
+		Map<String, String[]> map = req.getParameterMap();
 		if (!map.containsKey("password")){
 		  try {
         returnValue.put("error", "WRONG_PASSWORD");
@@ -226,8 +226,7 @@ public class PlayersServlet extends HttpServlet {
       }
       return;
     }
-    @SuppressWarnings("unchecked")
-    Map<String, Object> map = req.getParameterMap();
+    Map<String, String[]> map = req.getParameterMap();
     if (!map.containsKey("accessSignature")){
       try {
         returnValue.put("error", "WRONG_ACCESS_SIGNATURE");

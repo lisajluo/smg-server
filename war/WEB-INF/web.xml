@@ -140,6 +140,30 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>state</servlet-name>
     <url-pattern>/state/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>imageupload</servlet-name>
+    <servlet-class>org.smg.server.servlet.image.ImageForwardServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>imageupload</servlet-name>
+    <url-pattern>/imageupload</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>blobupload</servlet-name>
+    <servlet-class>org.smg.server.servlet.image.ImageUploadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>blobupload</servlet-name>
+    <url-pattern>/blobupload</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>imagedownload</servlet-name>
+    <servlet-class>org.smg.server.servlet.image.ImageDownloadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>imagedownload</servlet-name>
+    <url-pattern>/images/*</url-pattern>
+  </servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
