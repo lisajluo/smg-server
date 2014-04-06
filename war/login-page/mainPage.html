@@ -50,7 +50,7 @@
 		}
 
 		$(document).ready( function() {
-			if(isSocial) {
+			if(isSocial == true) {
 				$("#formId1").hide();
 			} else {
 				$("#formId2").hide();
@@ -74,7 +74,7 @@
 					"lastname" : formValues.lastName,
 					"nickname" : formValues.nickName
 				};
-
+				console.log("1");
 				$.ajax({
 					url : "http://" + domain + "/userinfo",
 					dataType : "json",
@@ -105,6 +105,7 @@
 					"nickname" : formValues.nickName
 				};
 
+				console.log("2");
 				$.ajax({
 					url : "http://" + domain + "/userinfo",
 					dataType : "json",

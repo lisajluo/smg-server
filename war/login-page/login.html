@@ -71,7 +71,8 @@
 		      success: function(data, textStatus, jqXHR) {
 		      	console.log(data);
 		      	if(data["error"] == undefined) {
-		      		window.location = "http://" + domain + "/mainpage.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
+              console.log(data);
+		      		//window.location = "./mainPage.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
 		      	} else {
               toastr["error"]("Login failed. Please check your email and password.", "ERROR");
 		      	}
