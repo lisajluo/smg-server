@@ -23,6 +23,108 @@
 <script src="./js/float.js">-->
 </head>
 <body>
+	<script type="text/javascript">
+		function getUrlParam(name) {
+		    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); 
+		    var r = window.location.search.substr(1).match(reg);  
+		    if (r!=null) return unescape(r[2]); return null; 
+		}
+		//var domain = "3-dot-smg-server.appspot.com";
+		var domain = "localhost:8888";
+		var isSocial = getUrlParam("isSocial");
+		var userId = getUrlParam("userId");
+		var accessSignature = getUrlParam("accessSignature");
+		$("#logouturl").prop('href', 'domain/userLogOut/' + userId + '?' +accessSignature);		
+		if(isSocial === undefined)
+			isSocial = true;
+		// Simple jsonify - doesn't handle nesting
+		function jsonify(array) {
+			var json = {};
+			for (var i = 0; i < array.length; i++) {
+				var obj = array[i];
+				if (obj.value) {
+					json[obj.name] = obj.value;
+				}
+			}
+			return json;
+		}
+
+		$(document).ready( function() {
+			if(isSocial) {
+				$("#formId1").hide();
+			} else {
+				$("#formId2").hide();
+			}
+			$("#post1").submit(function(e) {
+				// Prevent all default form submission
+				e.preventDefault();
+
+				var formValues = jsonify($(this).serializeArray());
+				if (formValues.password != formValues.confirm) {
+					document.getElementById("response").innerHTML = "Please enter the same password";
+					return;
+				} else {
+					document.getElementById("response").innerHTML = "";
+				}
+
+				var jsonObj = {
+					"email" : formValues.email,
+					"password" : formValues.password,
+					"firstname" : formValues.firstName,
+					"lastname" : formValues.lastName,
+					"nickname" : formValues.nickName
+				};
+
+				$.ajax({
+					url : "http://" + domain + "/userinfo",
+					dataType : "json",
+					type : "PUT",
+					data : JSON.stringify(jsonObj),
+					success : function(data, textStatus, jqXHR) {
+						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
+						if (data["error"] == undefined) {
+							document.getElementById("response").innerHTML = "Update success";
+						} else {
+							document.getElementById("response").innerHTML = data["error"].toString();
+						}
+					},
+					error : function(jqXHR, textStatus, errorThrown) {
+						alert("ERROR: " + textStatus + " " + errorThrown);
+					}
+				});
+			});
+			$("#post2").submit(function(e) {
+				// Prevent all default form submission
+				e.preventDefault();
+
+				var formValues = jsonify($(this).serializeArray());
+
+				var jsonObj = {
+					"firstname" : formValues.firstName,
+					"lastname" : formValues.lastName,
+					"nickname" : formValues.nickName
+				};
+
+				$.ajax({
+					url : "http://" + domain + "/userinfo",
+					dataType : "json",
+					type : "PUT",
+					data : JSON.stringify(jsonObj),
+					success : function(data, textStatus, jqXHR) {
+						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
+						if (data["error"] == undefined) {
+							document.getElementById("response").innerHTML = "Update success";
+						} else {
+							document.getElementById("response").innerHTML = data["error"].toString();
+						}
+					},
+					error : function(jqXHR, textStatus, errorThrown) {
+						alert("ERROR: " + textStatus + " " + errorThrown);
+					}
+				});
+			});
+		});
+	</script>
 	<div class="container">
 		<ul id="tabs" class="nav nav-pills">
 			<li><a href="#play" data-toggle="tab">Play</a></li>
@@ -30,7 +132,7 @@
 			<li><a href="#account" data-toggle="tab">Account Management</a>
 			</li>
 			<li class="dropdown pull-right" id="logoutDeopdown"><a
-				class="dropdown-toggle" data-toggle="dropdown" href="#">Logout <b
+				class="dropdown-toggle" data-toggle="dropdown" id="logouturl">Logout <b
 					class="caret"></b>
 			</a>
 				<ul class="dropdown-menu">
@@ -40,51 +142,58 @@
 		<div id="my-tab-content" class="tab-content">
 			<div class="tab-pane active" id="play">
 				<div class="page-header">Enjoy your game</div>
+				<div>
+					<iframe src="http://www.google.com" width="100%" height="1000">
+					</iframe>
+				</div>
 			</div>
+			
 			<div class="tab-pane" id="dev">
 				<div class="page-header">Deploy your game</div>
+				<div>
+					<iframe src="http://www.google.com" width="100%" height="1000">
+					</iframe>
+				</div>
 			</div>
+			
 			<div class="tab-pane" id="account">
-				<div class="row">
+				<div class="row" id="formId1">
 					<div class="col-sm-8">
 
 						<h4 class="page-header">Basic Information</h4>
-						<form role="form">
+						<form role="form" id="post1">
 							<div class="form-group float-label-control">
-								<label for="">Email</label> <input type="email"
+								<label for="">Email</label> <input type="email" name="email"
 									class="form-control" placeholder="Email">
 							</div>
 							<div class="form-group float-label-control">
-								<label for="">Password</label> <input type="password"
+								<label for="">Password</label> <input type="password" name="password"
 									class="form-control" placeholder="Password">
 							</div>
 							<div class="form-group float-label-control">
-								<label for="">Confirm Password</label><input type="password"
+								<label for="">Confirm Password</label><input type="password" name="confirm"
 									class="form-control" placeholder="Password">
 							</div>
-						</form>
-
-
-						<h4 class="page-header">Other Information</h4>
-						<form role="form">
 							<div class="form-group float-label-control label-bottom">
-								<label for="">First Name</label> <input type="email"
+								<label for="">First Name</label> <input type="email" name="firstName"
 									class="form-control" placeholder="First Name">
 							</div>
 							<div class="form-group float-label-control label-bottom">
-								<label for="">Last Name</label> <input type="email"
+								<label for="">Last Name</label> <input type="email" name="lastName"
 									class="form-control" placeholder="Last Name">
 							</div>
 							<div class="form-group float-label-control label-bottom">
-								<label for="">Nickname</label> <input type="email"
+								<label for="">Nickname</label> <input type="email" name="nickName"
 									class="form-control" placeholder="Nickname">
+							</div>
+							<div class="panel-footer" style="margin-bottom: -14px;">
+								<input type="submit" class="btn btn-success" value="Submit" />
+								<input type="reset" class="btn btn-danger" value="Clear" /> 
+								<label id="response"></label>
 							</div>
 						</form>
 
-						<div class="panel-footer" style="margin-bottom: -14px;">
-							<input type="submit" class="btn btn-success" value="Update" /> 
-							<input type="reset" class="btn btn-danger" value="Clear" />
-						</div>
+
 
 					</div>
 					<div class="col-sm-4">
@@ -101,6 +210,48 @@
 						</div>
 					</div>
 				</div>
+				<div class="row" id="formId2">
+					<div class="col-sm-8">
+
+						<h4 class="page-header">You are social authorized user, please provide following information</h4>
+						<form role="form" id="post2">
+							<div class="form-group float-label-control label-bottom">
+								<label for="">First Name</label> <input type="email" name="fistName"
+									class="form-control" placeholder="First Name">
+							</div>
+							<div class="form-group float-label-control label-bottom" name="lastName">
+								<label for="">Last Name</label> <input type="email"
+									class="form-control" placeholder="Last Name">
+							</div>
+							<div class="form-group float-label-control label-bottom" name="nickName">
+								<label for="">Nickname</label> <input type="email"
+									class="form-control" placeholder="Nickname">
+							</div>
+							<div class="panel-footer" style="margin-bottom: -14px;">
+								<input type="submit" class="btn btn-success" value="Submit" />
+								<input type="reset" class="btn btn-danger" value="Clear" />
+								<label id="response"></label>
+							</div>
+						</form>
+					</div>
+					<div class="col-sm-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Note</h3>
+							</div>
+							<div class="panel-body">
+								<ul>
+									<li>Google authorized user can not change basic
+										information</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="tab-pane" id="account2">
+				
 			</div>
 		</div>
 
