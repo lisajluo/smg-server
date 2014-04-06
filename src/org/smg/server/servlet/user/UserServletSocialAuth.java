@@ -35,51 +35,36 @@ public class UserServletSocialAuth extends HttpServlet{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	  @Override
 	  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-	    CORSUtil.addCORSHeader(resp);
-	    Set<String> supportedSocialAuth = new HashSet<String> ();
-	    supportedSocialAuth.add(GOOGLE);
-	    Map user = new HashMap();
-	    long userId = -1;
-	    PrintWriter writer = resp.getWriter();
-	    JSONObject json = new JSONObject();
-	    String socialAuthType = req.getPathInfo().substring(1);
-	    if (supportedSocialAuth.contains(socialAuthType)==false)
-	    {
-	    	 UserUtil.jsonPut(json, ERROR, UNSUPPORTED_SOCIAL_AUTH);
-	    	 try
-	    	 {
-	    		 json.write(writer);
-	    		 return;
-	    	 }
-	    	 catch(Exception e)
-	    	 {
-	    		 e.printStackTrace();
-	    	 }
-	    }
-	    Map<String,String> userInfo = getInfoFromSocialAuth(socialAuthType);
-	    //TODO : Maybe need to add sth here when the user doesn't have a correct account on the socialAuth side
-	    String emailAddress =  userInfo.get(EMAIL);
-	    List<Entity> userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
-				emailAddress);
-	    if (userAsList==null||userAsList.size()==0)
-	    {
-	    	//TODO : EMAIL DOESN'T EXIST, CREATE NEW ENTRY FOR THIS USER
-	    	
-	    }
-	    else
-	    {
-			if (userAsList.get(0).getProperty(SOCIAL_AUTH) == null) {
-				UserUtil.jsonPut(json, ERROR, EMAIL_HAS_BEEN_REGISTERED);
-				try {
-					json.write(writer);
-					return;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		CORSUtil.addCORSHeader(resp);
+		Set<String> supportedSocialAuth = new HashSet<String>();
+		supportedSocialAuth.add(GOOGLE);
+		Map user = new HashMap();
+		long userId = -1;
+		PrintWriter writer = resp.getWriter();
+		JSONObject json = new JSONObject();
+		String socialAuthType = req.getPathInfo().substring(1);
+		if (supportedSocialAuth.contains(socialAuthType) == false) {
+			UserUtil.jsonPut(json, ERROR, UNSUPPORTED_SOCIAL_AUTH);
+			try {
+				json.write(writer);
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-	    	//TODO : EMAIL EXISTS, IF THE USER ALREADY HAVE AN ACCOUNT, DENY THE REQUEST
-	    }
+		}
+		switch (socialAuthType) {
+		case (GOOGLE): {
+			resp.sendRedirect(GOOGLE_SOCIAL_AUTH + "scope=" + EMAIL_SCOPE + " "
+					+ PROFILE_SCOPE + "&state=%2Fprofile" + "&redirect_uri="
+					+ APPURI + "&response_type=code" + "&client_id="
+					+ CLIENT_ID + "&approval_prompt=force");
+			return;
+		}
+		default:
+			break;
+		}
 		
-	
+		
+	}
 
 }
