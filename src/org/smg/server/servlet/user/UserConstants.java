@@ -49,13 +49,16 @@ public class UserConstants {
 	public static final String EMAIL_SCOPE = "email";
 	public static final String PROFILE_SCOPE = "profile";
 	public static final String APPURI = "https://1-dot-huan-kang.appspot.com/socialAuthCallBack";
-	                                      
+	
+	public static final String DOMAIN = "http://1-dot-huan-kang.appspot.com/";	
+	public static final String MAIN_PAGE = DOMAIN+"login-page/mainPage.html?";
 	public static final String CLIENT_ID = "396475935415.apps.googleusercontent.com";
 	public static final String CLIENT_SECRET = "aUtPbyjufvWCJknuC_gW5Dkq";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
 	public static final String RETRIEVE_URL = "http://1-dot-huan-kang.appspot.com/passWordReset.html?";                                                 
 	public static final String POST = "POST";
 	public static final String GET = "GET";
+	public static final String LOG_OUT ="LOG_OUT";
 	public static final String CONTENT_TYPE = "Content-Type";
 	public static final String URL_ENCODED = "application/x-www-form-urlencoded";
 	public static final String CHAR_SET =   "charset";
