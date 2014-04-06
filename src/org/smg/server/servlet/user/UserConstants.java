@@ -14,7 +14,7 @@ public class UserConstants {
 	public static final String USER_ID = "userId";
 	public static final String USER = NamespaceUtil.VERSION + "User";
 	public static final String ADMIN_EMAIL = "hk1642@nyu.edu";
-	public static final String ADMIN_NAME = "huan-kang";
+	public static final String ADMIN_NAME = "smg-server";
 	public static final String SOCIAL_AUTH = "socialAuth";
 	public static final String MAIL_SUBJECT = "Please Reset Your Password";
     public static final String GOOGLE = "google";
@@ -53,7 +53,7 @@ public class UserConstants {
 	public static final String CLIENT_ID = "396475935415.apps.googleusercontent.com";
 	public static final String CLIENT_SECRET = "aUtPbyjufvWCJknuC_gW5Dkq";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	                                                 
+	public static final String RETRIEVE_URL = "http://1-dot-huan-kang.appspot.com/passWordReset.html?";                                                 
 	public static final String POST = "POST";
 	public static final String GET = "GET";
 	public static final String CONTENT_TYPE = "Content-Type";
@@ -69,7 +69,7 @@ public class UserConstants {
 	public static final String NAME ="name";
 	public static final String FAMILY_NAME = "familyName";
 	public static final String GIVEN_NAME = "givenName";
-	
+	public static final String GREETINGS = "Please Reset Your Password At The FOLLOWING LINK:\n";
 }
 
 

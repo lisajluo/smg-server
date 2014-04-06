@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Servlet Test</title>
+  <script type="text/javascript" src="resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="resources/json2.js"></script>
+</head>
+<body>
+<h3>Demo Page - Developer</h3>
+
+
+<script type="text/javascript">
+
+// Simple jsonify - doesn't handle nesting
+function jsonify(array) {
+  var json = {};
+  for (var i = 0; i < array.length; i++) {
+    var obj = array[i];
+    if (obj.value) {
+      
+        json[obj.name] = obj.value;
+      
+    }
+  }
+  return json;
+}
+
+
+$(document).ready(function() {
+
+  var domain = "1-dot-huan-kang.appspot.com";
+ // var domain = "localhost:8888";
+  
+  $("#get1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    $.ajax({
+      url: "http://" + domain + "/user/" +"?password=" + formValues.password+ "&email=" + formValues.email, 
+      dataType: "json",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
+  
+  $("#post1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    var jsonObj = { "email": formValues.email, 
+      "password": formValues.password,
+      "firstName": formValues.firstName,
+      "lastName": formValues.lastName
+    };
+
+    $.ajax({
+      url: "http://" + domain + "/user", 
+      dataType: "json",
+      type: "POST",
+      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
+  
+  $("#delete1").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+
+    var formValues = jsonify($(this).serializeArray());
+    
+    $.ajax({
+      url: "http://" + domain + "/user/" + formValues.developerId + "?accessSignature=" + formValues.accessSignature,
+      dataType: "json",
+      type: "DELETE",
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#getinfo").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    console.log(formValues);
+    $.ajax({
+      url: "http://" + domain + "/userinfo/" + formValues.developerId + "?accessSignature=" + formValues.accessSignature,
+      dataType: "json",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+      console.log(data);
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#update").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    var jsonObj = { 
+      "accessSignature": formValues.accessSignature,
+      "email": formValues.email, 
+      "password": formValues.password,
+      "firstName": formValues.firstName,
+      "middleName": formValues.middleName,
+      "nickName": formValues.nickName,
+      "lastName": formValues.lastName
+    };
+
+    $.ajax({
+      url: "http://" + domain + "/userinfo/" + formValues.developerId, 
+      dataType: "json",
+      type: "PUT",
+      data: JSON.stringify(jsonObj),
+      success: function(data, textStatus, jqXHR) {
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  });
+});
+</script>
+<table width="100%" cellspacing="0" cellpadding="0"><tr valign="top"><td width="20%">
+<h4>Insert Developer</h4>
+<form id="post1"></form>
+<table>
+<tr>
+<tr><td>E-mail:<td><input type="text" name="email" form="post1" value="foobar12323@1337.com">
+<tr><td>Password:</td><td><input type="text" name="password" form="post1" value="mysupersecurepassword"></td></tr>
+<tr><td>First Name:</td><td><input type="text" name="firstName" form="post1" value="Ninja"></td></tr>
+<tr><td>Last Name:</td><td><input type="text" name="lastName" form="post1" value="Turtle"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Insert" form="post1"></td></tr>
+</table>
+
+<h4>Login Developer</h4>
+<form id="get1"></form>
+<table>
+<tr>
+<tr><td>EMAIL:<td><input type="text" name="email" form="get1">
+<tr><td>Password:</td><td><input type="text" name="password" form="get1"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Login" form="get1"></td></tr>
+</table>
+
+<h4>Delete Developer</h4>
+<form id="delete1"></form>
+<table>
+<tr>
+<tr><td>Developer ID:<td><input type="text" name="developerId" form="delete1">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="delete1"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Delete" form="delete1"></td></tr>
+</table>
+
+<h4>Get Developer Info</h4>
+<form id="getinfo"></form>
+<table>
+<tr>
+<tr><td>Developer ID:<td><input type="text" name="developerId" form="getinfo">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="getinfo"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Get info" form="getinfo"></td></tr>
+</table>
+
+
+</td><td>
+
+<h4>Update Developer</h4>
+<form id="update"></form>
+<table>
+<tr>
+<tr><td>Developer ID:<td><input type="text" name="developerId" form="update">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="update"></td></tr>
+<tr><td>E-mail:<td><input type="text" name="email" form="update" value="foobar@1337.com">
+<tr><td>Password:</td><td><input type="text" name="password" form="update" value="mysuperawesomepassword"></td></tr>
+<tr><td>First Name:</td><td><input type="text" name="firstName" form="update" value="Ninja"></td></tr>
+<tr><td>Middle Name:</td><td><input type="text" name="middleName" form="update" value="M"></td></tr>
+<tr><td>Last Name:</td><td><input type="text" name="lastName" form="update" value="Turtle"></td></tr>
+<tr><td>Nickname:</td><td><input type="text" name="nickName" form="update" value="Leonardo"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Update developer" form="update"></td></tr>
+</table>
+
+<h4>Response</h4>
+<div id="response"></div>
+</td></tr></table>
+</body>
+</html>
