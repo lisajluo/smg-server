@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js">
+    </script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
     <link href="css/login-page.css" rel="stylesheet">
   </head>
 <body>
@@ -34,6 +37,20 @@ function jsonify(array) {
   return json;
 }
 
+toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "positionClass": "toast-top-right",
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+};
 
 $(document).ready(function() {
   
@@ -43,7 +60,8 @@ $(document).ready(function() {
 
     var formValues = jsonify($(this).serializeArray());
     if (formValues.password != formValues.confirm) {
-      document.getElementById("response").innerHTML="Please enter the same password";
+      //document.getElementById("response").innerHTML="Please enter the same password";
+      toastr["error"]("Please enter the same password", "ERROR");
       return;
     } else {
       document.getElementById("response").innerHTML="";
@@ -63,9 +81,12 @@ $(document).ready(function() {
       success: function(data, textStatus, jqXHR) {
         //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
         if (data["error"] == undefined) {
-           window.location.replace("login.html");
+          toastr["success"]("Account Creation", "SUCCESS");
+          window.setTimeout(function(){
+            window.location.replace("login.html")},2000);
         } else {
-          document.getElementById("response").innerHTML=data["error"].toString();
+          //document.getElementById("response").innerHTML=data["error"].toString();
+          toastr["error"](data["error"].toString(), "ERROR");
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {

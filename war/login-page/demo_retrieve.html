@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Retrueve Password
+    </title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js">
+    </script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+    </script>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js">
+    </script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
+    <link href="css/login-page.css" rel="stylesheet">
+  </head>
+  <body>
+    
+    <script type="text/javascript">
+      
+      // Simple jsonify - doesn't handle nesting
+      function jsonify(array) {
+        var json = {};
+        for (var i = 0; i < array.length; i++) {
+          var obj = array[i];
+          if (obj.value) {
+            json[obj.name] = obj.value;
+          }
+        }
+        return json;
+      }
+      
+      toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "positionClass": "toast-top-right",
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      };
+      
+      $(document).ready(function() {
+        
+        var domain = "1-dot-huan-kang.appspot.com";
+        //var domain = "localhost:8888";
+        
+        $("#get1").submit(function(e) {
+          // Prevent all default form submission
+          e.preventDefault();
+          
+          var formValues = jsonify($(this).serializeArray());
+          $.ajax({
+            url: "http://" + domain + "/userinforetrieve/" + formValues.email, 
+            dataType: "json",
+            type: "GET",
+            success: function(data, textStatus, jqXHR) {
+              console.log(data);
+              if (data["error"] == undefined) {
+                toastr["success"]("An email has been sent to your mailbox.", "Email Sent");
+              } else {
+                toastr["error"](data["error"].toString(), "ERROR");
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              alert("ERROR: " + textStatus + " " + errorThrown);
+            }
+          }); 
+        });
+      });
+    </script>
+    <div class="modal-body" style="width:50%;margin:0 auto;">
+      
+      <div class="well">
+        <h4>
+          Retrieve Your Password Via Your Email Address
+        </h4>
+        <form role="form" class="form-signup" id="get1">
+          <input type="email" class="form-control" placeholder="Email address" name="email" form="get1">
+            <button type="submit" class="btn btn-primary" value="Retrieve" form="get1" form="get1">
+              Retrieve
+            </button>
+    </form>
+    
+        </div>
+    </div>
+  </body>
+</html>
