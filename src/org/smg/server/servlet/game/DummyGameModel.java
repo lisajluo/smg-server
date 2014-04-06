@@ -29,7 +29,7 @@ public class DummyGameModel {
 	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	@SuppressWarnings({ "unchecked", "rawtypes" })
   static public void updateStats() {
-		//System.out.println("I am here");
+
 		Map ScoreInfo = new HashMap();
 		long virtualId = 1234;
 		ScoreInfo.put(virtualId,1000);
@@ -68,7 +68,7 @@ public class DummyGameModel {
 	  }
 	@SuppressWarnings({ "rawtypes", "unchecked" })
   public static void  insertMatchEntity() throws JSONException {
-		System.out.println("I am here");
+		
 		JSONObject match = new JSONObject();
 		List playerIdList = new ArrayList();
 		playerIdList.add("4785074604081152");
@@ -84,7 +84,7 @@ public class DummyGameModel {
 	        null);
 	    entity.setProperty(ContainerConstants.GAME_OVER_REASON, 
 	    		ContainerConstants.NOT_OVER);
-	    System.out.println("finished");
+	   
 	    datastore.put(entity);
 	  }
 	public static void updateMatch() throws IOException {
@@ -137,7 +137,7 @@ public class DummyGameModel {
 
 	    long matchId = 5559130790035456L;
 	    if (ContainerDatabaseDriver.updateMatchEntity(matchId, match)) {
-	      System.out.println("SUCCESS");
+	      
 	    }
 	  }
 

@@ -168,7 +168,7 @@ public class GameDatabaseDriver {
 					if (developerInfo.get(NICKNAME)!=null)
 						filteredDeveloperInfo.put(NICKNAME, (String)developerInfo.get(NICKNAME));
 					currentDeveloper = new JSONObject(filteredDeveloperInfo);
-					System.out.println(currentDeveloper);
+					
 					result.add(currentDeveloper);
 				} catch (Exception e) {
 					return null;
@@ -242,7 +242,7 @@ public class GameDatabaseDriver {
       Entity statistics = datastore.get(key);
       
       if (statistics.hasProperty(HIGH_SCORE)) {
-        System.out.println("HERE");
+        
         Map highScore = JSONUtil.parse((String) statistics.getProperty(HIGH_SCORE));
         List finishedGames = JSONUtil.parseList(
             ((Text)statistics.getProperty(FINISHED_GAMES)).getValue());

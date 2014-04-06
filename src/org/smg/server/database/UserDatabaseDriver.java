@@ -1,5 +1,6 @@
 package org.smg.server.database;
 
+import static org.smg.server.servlet.user.UserConstants.*;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.EMAIL;
 import static org.smg.server.servlet.developer.DeveloperConstants.PASSWORD;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import static org.smg.server.servlet.user.UserConstants.*;
 
+import org.smg.server.servlet.container.ContainerConstants;
 import org.smg.server.util.AccessSignatureUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -54,6 +56,20 @@ public class UserDatabaseDriver {
 	      return false;
 	    }  
 	  }
+	public static void updateUserAccessSignature(long userId, String accessSignature) throws Exception
+	{
+		Key key = KeyFactory.createKey(USER, userId);
+		Transaction txn = datastore.beginTransaction();
+		try {
+			Entity entity = datastore.get(key);
+			entity.setProperty(ACCESS_SIGNATURE, accessSignature);
+			datastore.put(entity);
+			txn.commit();
+		} catch (Exception e) {
+			throw new Exception();
+
+		}
+	}
 	public static long insertUser(Map<Object, Object> properties) throws Exception {
 	    long key;
 	    Transaction txn = datastore.beginTransaction();

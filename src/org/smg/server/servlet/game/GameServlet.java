@@ -189,7 +189,7 @@ public class GameServlet extends HttpServlet {
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
       }
-      System.out.println(buffer.toString());
+     
       Map<Object, Object> parameterMap = deleteInvalid(
           (Map) JSONUtil.parse(buffer.toString()), validParams);
       if (parsePathForPost(pathInfo) == false) {
