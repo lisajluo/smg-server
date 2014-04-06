@@ -15,7 +15,8 @@ public class UserConstants {
 	public static final String ADMIN_EMAIL = "hk1642@nyu.edu";
 	public static final String ADMIN_NAME = "huan-kang";
 	public static final String MAIL_SUBJECT = "Please Reset Your Password";
-
+    public static final String GOOGLE = "google";
+	
 	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
 	public static final String ERROR = "error";
 	public static final String MISSING_INFO = "MISSING_INFO";
@@ -27,7 +28,7 @@ public class UserConstants {
 	public static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
 	public static final int INVALID = -1;
 	public static final String  PASSWORD_TOO_SHORT = "PASSWORD_TOO_SHORT";
-	
+	public static final String UNSUPPORTED_SOCIAL_AUTH = "UNSUPPORTED_SOCIAL_AUTH";
 	
 	public static final String SUCCESS = "success";
 	public static final String DELETED_USER = "DELETED_USER";
