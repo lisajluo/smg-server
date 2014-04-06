@@ -68,47 +68,18 @@ public class UserServletSocialAuth extends HttpServlet{
 	    }
 	    else
 	    {
-	    	//TODO : EMAIL EXISTS, IF THE USER ALREADY HAVE AN ACCOUNT, DENY THE REQUEST
-	    }
-		if (req.getParameter(EMAIL) != null) {
-			List<Entity> userAsList = null;
-			userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
-					req.getParameter(EMAIL));
-			if (userAsList == null || userAsList.size() == 0) {
+			if (userAsList.get(0).getProperty(SOCIAL_AUTH) == null) {
+				UserUtil.jsonPut(json, ERROR, EMAIL_HAS_BEEN_REGISTERED);
 				try {
-					UserUtil.jsonPut(json, ERROR, WRONG_EMAIL);
-					json.write(resp.getWriter());
+					json.write(writer);
 					return;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-
-			userId = userAsList.get(0).getKey().getId();
-		}
-		try {
-			if (userId == -1) {
-				userId = Long.parseLong(req.getPathInfo().substring(1));
-			}
-			user = UserDatabaseDriver.getUserMap(userId);
-			if (user.get(PASSWORD).equals(AccessSignatureUtil.getHashedPassword(req.getParameter(PASSWORD)))) {
-				user.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(userId));
-				user.put(PASSWORD, req.getParameter(PASSWORD));
-				UserDatabaseDriver.updateUser(userId, user);
-				json = new JSONObject(user);
-			} else {
-				UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
-			}
-		} catch (Exception e) {
-			UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
-		}
-	    try {
-	      json.write(writer);
-	    } 
-	    catch (JSONException e) {
-	      e.printStackTrace();
+	    	//TODO : EMAIL EXISTS, IF THE USER ALREADY HAVE AN ACCOUNT, DENY THE REQUEST
 	    }
-	  }
+		
 	
 
 }
