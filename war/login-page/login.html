@@ -30,6 +30,7 @@
     <script type="text/javascript">
     $(document).ready(function() {
       
+      //var domain = "localhost:8888";
       var domain = "localhost:8888";
       
     	function jsonify(array) {
@@ -70,7 +71,7 @@
 		      success: function(data, textStatus, jqXHR) {
 		      	console.log(data);
 		      	if(data["error"] == undefined) {
-		      		window.location = "http://" + domain + "/mainpage.html?playerId=" + data["playerId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
+		      		window.location = "http://" + domain + "/mainpage.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
 		      	} else {
               toastr["error"]("Login failed. Please check your email and password.", "ERROR");
 		      	}
