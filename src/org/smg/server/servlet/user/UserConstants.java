@@ -51,10 +51,10 @@ public class UserConstants {
 	public static final String APPURI = "http://smg-server.appspot.com/socialAuthCallBack";
 	public static final String CLIENT_ID = "558267404896.apps.googleusercontent.com";
 	public static final String CLIENT_SECRET = "nlg2URIHD3UY5icICwoyyT-N";
-	public static final String DOMAIN = "http://1-dot-huan-kang.appspot.com/";	
+	public static final String DOMAIN = "http://smg-server.appspot.com/";	
 	public static final String MAIN_PAGE = DOMAIN+"login-page/mainPage.html?";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	public static final String RETRIEVE_URL = "http://1-dot-huan-kang.appspot.com/passWordReset.html?";                                                 
+	public static final String RETRIEVE_URL = "http://smg-server.appspot.com/passWordReset.html?";                                                 
 	public static final String POST = "POST";
 	public static final String GET = "GET";
 	public static final String CONTENT_TYPE = "Content-Type";
