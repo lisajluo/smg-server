@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@SuppressWarnings("serial")
 public class UserInfoServlet extends HttpServlet{
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -37,7 +38,6 @@ public class UserInfoServlet extends HttpServlet{
 	      long userId = Long.parseLong(req.getPathInfo().substring(1));
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-	        UserDatabaseDriver.updateUser(userId, user);
 	        json = new JSONObject(user);
 	        json.remove(ACCESS_SIGNATURE);
 	        json.remove(PASSWORD);
