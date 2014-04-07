@@ -150,7 +150,7 @@ public class GameInfoServlet extends HttpServlet {
         buffer.append(line);
       }
       parameterMap = (Map) JSONUtil.parse(buffer.toString());
-      String gameIdStr = req.getParameter(GAME_ID);
+      String gameIdStr = (String)parameterMap.get(GAME_ID);
       if (GameDatabaseDriver.checkGameIdExists(Long.parseLong(gameIdStr)) == false) {
         put(jObj, ERROR, WRONG_GAME_ID, resp);
         return;
