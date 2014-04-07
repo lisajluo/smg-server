@@ -143,7 +143,7 @@ public class GameInfoServlet extends HttpServlet {
     StringBuffer buffer = new StringBuffer();
     Map<Object, Object> parameterMap = new HashMap<Object, Object>();
     try {
-      if (req.getPathInfo().equals(RATING) == false)
+      if (req.getPathInfo().substring(1).equals(RATING) == false)
         throw new IOException();
       BufferedReader reader = req.getReader();
       while ((line = reader.readLine()) != null) {
