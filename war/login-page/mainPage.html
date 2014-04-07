@@ -30,8 +30,8 @@
 		    if (r!=null) return unescape(r[2]); return null; 
 		}
 		//var domain = "3-dot-smg-server.appspot.com";
-		//var domain = "localhost:8888";
-		var domain = "smg-server.appspot.com";
+		var domain = "localhost:8888";
+		//var domain = "smg-server.appspot.com";
 		var isSocial = getUrlParam("isSocial");
 		var userId = getUrlParam("userId");
 		var accessSignature = getUrlParam("accessSignature");
@@ -96,23 +96,23 @@
 						alert("ERROR: " + textStatus + " " + errorThrown);
 					}
 				});
-				
-				$.ajax({
-					url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
-					dataType : "json",
-					type : "GET",
-					success : function(data, textStatus, jqXHR) {
-						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
-						if (data["error"] == undefined) {
-							$("#greeting").text("Hi, " + data['firstName']);
-						} else {
-							$("#greeting").text(data["error"]);
-						}
-					},
-					error : function(jqXHR, textStatus, errorThrown) {
-						alert("ERROR: " + textStatus + " " + errorThrown);
+			});
+
+			$.ajax({
+				url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
+				dataType : "json",
+				type : "GET",
+				success : function(data, textStatus, jqXHR) {
+					//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
+					if (data["error"] == undefined) {
+						$("#greeting").text(" Hi, " + data['firstName']);
+					} else {
+						$("#greeting").text(data["error"]);
 					}
-				});
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					alert("ERROR: " + textStatus + " " + errorThrown);
+				}
 			});
 			$("#post2").submit(function(e) {
 				// Prevent all default form submission
@@ -228,7 +228,7 @@
 				</div>
 				</div>
 			</li>
-			<li class="pull-right"><a href="#play" data-toggle="tab" id="greeting"><span class="glyphicon glyphicon-cog"></span></a></li>
+			<li class="pull-right"><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-cog" id="greeting"></span></a></li>
 		</ul>
 		<div id="my-tab-content" class="tab-content">
 			<div class="tab-pane active" id="play">
