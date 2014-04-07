@@ -113,6 +113,7 @@ public class UserServlet extends HttpServlet{
 			}
 
 			userId = userAsList.get(0).getKey().getId();
+
 		}
 		try {
 			if (userId == -1) {
@@ -131,6 +132,7 @@ public class UserServlet extends HttpServlet{
 					user.put(PASSWORD, req.getParameter(PASSWORD));
 					UserDatabaseDriver.updateUser(userId, user);
 					user.remove(PASSWORD);
+					user.put(USER_ID, userId);
 					json = new JSONObject(user);
 				} else {
 					UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);

@@ -17,7 +17,7 @@ public class UserConstants {
 	public static final String ADMIN_NAME = "smg-server";
 	public static final String SOCIAL_AUTH = "socialAuth";
 	public static final String MAIL_SUBJECT = "Please Reset Your Password";
-    public static final String GOOGLE = "google";
+  public static final String GOOGLE = "google";
 	
 	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
 	public static final String ERROR = "error";
@@ -42,7 +42,6 @@ public class UserConstants {
 	public static final String UPDATED_USER = "UPDATED_USER";
 	public static final String EMAIL_SENT = "EMAIL_SENT";
 	
-	
 	public static final String GOOGLE_SOCIAL_AUTH = "https://accounts.google.com/o/oauth2/auth?";
 	public static final String GOOGLE_TOKEN = "https://accounts.google.com/o/oauth2/token";
 	                                            
@@ -50,9 +49,10 @@ public class UserConstants {
 	public static final String EMAIL_SCOPE = "email";
 	public static final String PROFILE_SCOPE = "profile";
 	public static final String APPURI = "http://smg-server.appspot.com/socialAuthCallBack";
-	                                      
 	public static final String CLIENT_ID = "558267404896.apps.googleusercontent.com";
 	public static final String CLIENT_SECRET = "nlg2URIHD3UY5icICwoyyT-N";
+	public static final String DOMAIN = "http://1-dot-huan-kang.appspot.com/";	
+	public static final String MAIN_PAGE = DOMAIN+"login-page/mainPage.html?";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
 	public static final String RETRIEVE_URL = "http://1-dot-huan-kang.appspot.com/passWordReset.html?";                                                 
 	public static final String POST = "POST";

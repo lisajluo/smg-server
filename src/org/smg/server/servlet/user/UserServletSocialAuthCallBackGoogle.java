@@ -178,6 +178,7 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 	          UserDatabaseDriver.updateUser(userId, infoMap);
 	          UserUtil.jsonPut(json, USER_ID, Long.toString(userId));
 	          UserUtil.jsonPut(json, ACCESS_SIGNATURE, accessSignature);
+	          resp.sendRedirect(MAIN_PAGE+"userId="+Long.toString(userId)+"&accessSignature="+accessSignature);
 			}
 			catch (Exception e)
 			{
@@ -195,6 +196,7 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 							AccessSignatureUtil.generate(userId));
 					UserDatabaseDriver.updateUser(userId, user);
 					json = new JSONObject(user);
+					resp.sendRedirect(MAIN_PAGE+"userId="+Long.toString(userId)+"&accessSignature="+user.get(ACCESS_SIGNATURE));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
