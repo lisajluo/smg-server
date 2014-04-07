@@ -52,6 +52,8 @@
 
 		$(document).ready( function() {
 			$("#logouturl").prop('href', "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
+			$("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
+			$("#developerpage").prop('src', "http://www.w3schools.com")
 			if(isSocial == true) {
 				$("#formId1").hide();
 			} else {
@@ -130,40 +132,25 @@
 	</script>
 	<div class="container">
 		<ul id="tabs" class="nav nav-pills">
-			<li><a href="#play" data-toggle="tab">Play</a></li>
-			<li><a href="#dev" data-toggle="tab">Game Developer</a></li>
-			<li><a href="#account" data-toggle="tab">Account Management</a>
-			</li>
-			<li class="dropdown pull-right" id="logoutDeopdown"><a
-				class="dropdown-toggle" data-toggle="dropdown" >Logout <b
-					class="caret"></b>
-			</a>
+			<li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span> Play</a></li>
+			<li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span> Game Developer</a></li>
+			<li class="dropdown pull-right" id="logoutDropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" ><span class="glyphicon glyphicon-log-out"></span> Logout 
+					<b class="caret"></b>
+				</a>
 				<ul class="dropdown-menu">
 					<li><a href="#" id="logouturl">Logout</a></li>
-				</ul></li>
-		</ul>
-		<div id="my-tab-content" class="tab-content">
-			<div class="tab-pane active" id="play">
-				<div class="page-header">Enjoy your game</div>
-				<div>
-					<iframe src="http://www.w3school.com" width="100%" height="1000">
-					</iframe>
-				</div>
-			</div>
-			
-			<div class="tab-pane" id="dev">
-				<div class="page-header">Deploy your game</div>
-				<div>
-					<iframe src="http://www.w3school.com" width="100%" height="1000">
-					</iframe>
-				</div>
-			</div>
-			
-			<div class="tab-pane" id="account">
-				<div class="row" id="formId1">
-					<div class="col-sm-8">
+				</ul>
+			</li>
+			<li class="dropdown pull-right" id="accountManageDropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account Management
+					<b class="caret"></b>
+				</a>
+				<div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px; width: 300px; padding-left: 1cm; padding-right: 1cm">
+					<div class="row" id="formId1">
+					<div>
 
-						<h4 class="page-header">Basic Information</h4>
+						<h4 class="page-header">You may update your information here</h4>
 						<form role="form" id="post1">
 							<div class="form-group float-label-control">
 								<label for="">Email</label> <input type="email" name="email"
@@ -178,15 +165,15 @@
 									class="form-control" placeholder="Password">
 							</div>
 							<div class="form-group float-label-control label-bottom">
-								<label for="">First Name</label> <input type="text" name="firstName"
+								<label for="">First Name</label><input type="text" name="firstName"
 									class="form-control" placeholder="First Name">
 							</div>
 							<div class="form-group float-label-control label-bottom">
-								<label for="">Last Name</label> <input type="text" name="lastName"
+								<label for="">Last Name</label><input type="text" name="lastName"
 									class="form-control" placeholder="Last Name">
 							</div>
 							<div class="form-group float-label-control label-bottom">
-								<label for="">Nickname</label> <input type="text" name="nickName"
+								<label for="">Nickname</label><input type="text" name="nickName"
 									class="form-control" placeholder="Nickname">
 							</div>
 							<div class="panel-footer" style="margin-bottom: -14px;">
@@ -195,26 +182,10 @@
 								<label id="response"></label>
 							</div>
 						</form>
-
-
-
-					</div>
-					<div class="col-sm-4">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">Note</h3>
-							</div>
-							<div class="panel-body">
-								<ul>
-									<li>Google authorized user can not change basic
-										information</li>
-								</ul>
-							</div>
-						</div>
 					</div>
 				</div>
 				<div class="row" id="formId2">
-					<div class="col-sm-8">
+					<div>
 
 						<h4 class="page-header">You are social authorized user, please provide following information</h4>
 						<form role="form" id="post2">
@@ -237,24 +208,25 @@
 							</div>
 						</form>
 					</div>
-					<div class="col-sm-4">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">Note</h3>
-							</div>
-							<div class="panel-body">
-								<ul>
-									<li>Google authorized user can not change basic
-										information</li>
-								</ul>
-							</div>
-						</div>
-					</div>
+				</div>
+				</div>
+			</li>
+		</ul>
+		<div id="my-tab-content" class="tab-content">
+			<div class="tab-pane active" id="play">
+				<div class="page-header">Enjoy your game</div>
+				<div>
+					<iframe width="100%" height="1000" id="playerpage">
+					</iframe>
 				</div>
 			</div>
 			
-			<div class="tab-pane" id="account2">
-				
+			<div class="tab-pane" id="dev">
+				<div class="page-header">Deploy your game</div>
+				<div>
+					<iframe width="100%" height="1000" id="developerpage">
+					</iframe>
+				</div>
 			</div>
 		</div>
 
