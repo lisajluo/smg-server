@@ -14,15 +14,14 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import com.google.appengine.api.datastore.Text;
 
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Transaction;
-
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -32,6 +31,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
+
 import org.smg.server.util.JSONUtil;
 
 public class GameDatabaseDriver {
@@ -203,7 +203,15 @@ public class GameDatabaseDriver {
         Map<String, Object> gameInfo = new HashMap<String, Object>(result.getProperties());
 				for (String key : gameInfo.keySet()) {
 					if (key.equals(DEVELOPER_ID) == false) {
-						currentQueryResult.put(key, gameInfo.get(key));
+						if (key.equals(PICS)) {
+
+							Text picText = (Text) result.getProperty(PICS);
+							JSONObject picMap = new JSONObject(
+									picText.getValue());
+							currentQueryResult.put(PICS, picMap);
+						} else {
+							currentQueryResult.put(key, gameInfo.get(key));
+						}
 					}
 				}
         queryResult.add(currentQueryResult);
