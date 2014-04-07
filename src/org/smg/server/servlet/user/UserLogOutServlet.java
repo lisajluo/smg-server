@@ -43,11 +43,12 @@ public class UserLogOutServlet extends HttpServlet{
 		} catch (Exception e) {
 			UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
 		}
-	    try {
-	      json.write(writer);
-	    } 
-	    catch (JSONException e) {
-	      e.printStackTrace();
-	    }
+//	    try {
+//	      //json.write(writer);
+//	    } 
+//	    catch (JSONException e) {
+//	      e.printStackTrace();
+//	    }
+    resp.sendRedirect("../login-page/login.html");
 	  }
 }
