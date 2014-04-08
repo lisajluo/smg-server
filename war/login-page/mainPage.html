@@ -128,7 +128,7 @@
 
 				console.log("2");
 				$.ajax({
-					url : "http://" + domain + "/userinfo",
+					url : "http://" + domain + "/userinfo/" + userId,
 					dataType : "json",
 					type : "PUT",
 					data : JSON.stringify(jsonObj),
