@@ -12,8 +12,8 @@ public class ELORankingUtil {
   
   public static double expectScore(long rankOp, long rankSelf) {
     double result = 1.0;
-    double exp = 1.0 * (rankSelf-rankOp)/400;
-    result /= (1 + Math.pow(10.0, exp));
+    double exp = 1.0 * (rankOp-rankSelf)/400;
+    result = 1.0 / (1 + Math.pow(10.0, exp));
     return result;
   }
   

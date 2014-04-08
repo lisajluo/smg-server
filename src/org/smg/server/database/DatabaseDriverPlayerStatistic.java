@@ -86,7 +86,7 @@ public class DatabaseDriverPlayerStatistic {
         psDB.setProperty(StatisticProperty.WIN.toString(), "0");
         psDB.setProperty(StatisticProperty.LOST.toString(), "0");
         psDB.setProperty(StatisticProperty.DRAW.toString(), "0");
-        psDB.setProperty(StatisticProperty.RANK.toString(), "1500");
+        psDB.setProperty(StatisticProperty.RANK.toString(), String.valueOf(ph.getRank()));
         psDB.setProperty(ph.getMatchResult().toString(), "1");
         psDB.setProperty(StatisticProperty.HIGHSCORE.toString(), String.valueOf(ph.getScore()));
         psDB.setProperty(StatisticProperty.TOKEN.toString(), String.valueOf(ph.getTokenChange()));
