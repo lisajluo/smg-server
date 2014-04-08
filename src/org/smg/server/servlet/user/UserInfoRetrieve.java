@@ -53,13 +53,26 @@ public class UserInfoRetrieve extends HttpServlet{
 			return;
 
 		}
+		if (userAsList.get(0).getProperty(SOCIAL_AUTH) != null) {
+			UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
+			try {
+				json.write(writer);
+			} catch (Exception t) {
+				t.printStackTrace();
+			}
+			return;
+		}
 		long userId = userAsList.get(0).getKey().getId();
 		String accessSignature = (String) userAsList.get(0).getProperty(
 				ACCESS_SIGNATURE);
 		String firstName = (String) userAsList.get(0).getProperty(FIRST_NAME);
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
-		String msgBody = String.valueOf(userId) + accessSignature;
+		StringBuffer msgBodyBuffer = new StringBuffer();
+		msgBodyBuffer.append("Hello "+ firstName+ ":\n");
+		msgBodyBuffer.append(GREETINGS);
+		msgBodyBuffer.append(RETRIEVE_URL+"userId="+String.valueOf(userId) +"&accessSignature="+accessSignature);
+		String msgBody = msgBodyBuffer.toString();		
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(ADMIN_EMAIL, ADMIN_NAME));

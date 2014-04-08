@@ -105,7 +105,7 @@ public class GameUtil {
 		    	  jsonArray.put(jObj.get(i));
 		      }			  
               resp.setContentType("text/plain");
-              System.out.println(jsonArray);
+              
               jsonArray.write(resp.getWriter());
 		}
 		catch (Exception e)

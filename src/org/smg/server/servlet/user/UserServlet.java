@@ -113,19 +113,30 @@ public class UserServlet extends HttpServlet{
 			}
 
 			userId = userAsList.get(0).getKey().getId();
+
 		}
 		try {
 			if (userId == -1) {
 				userId = Long.parseLong(req.getPathInfo().substring(1));
 			}
 			user = UserDatabaseDriver.getUserMap(userId);
-			if (user.get(PASSWORD).equals(AccessSignatureUtil.getHashedPassword(req.getParameter(PASSWORD)))) {
-				user.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(userId));
-				user.put(PASSWORD, req.getParameter(PASSWORD));
-				UserDatabaseDriver.updateUser(userId, user);
-				json = new JSONObject(user);
+			if (user.get(SOCIAL_AUTH) != null) {
+				UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
+
 			} else {
-				UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
+				if (user.get(PASSWORD).equals(
+						AccessSignatureUtil.getHashedPassword(req
+								.getParameter(PASSWORD)))) {
+					user.put(ACCESS_SIGNATURE,
+							AccessSignatureUtil.generate(userId));
+					user.put(PASSWORD, req.getParameter(PASSWORD));
+					UserDatabaseDriver.updateUser(userId, user);
+					user.remove(PASSWORD);
+					user.put(USER_ID, userId);
+					json = new JSONObject(user);
+				} else {
+					UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
+				}
 			}
 		} catch (Exception e) {
 			UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);

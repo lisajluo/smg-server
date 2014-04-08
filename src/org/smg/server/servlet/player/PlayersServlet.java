@@ -195,7 +195,8 @@ public class PlayersServlet extends HttpServlet {
 
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+  @Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 	  CORSUtil.addCORSHeader(resp);
@@ -279,7 +280,7 @@ public class PlayersServlet extends HttpServlet {
     while ((line = br.readLine()) != null)
       buffer.append(line);
     json = buffer.toString();
-    System.out.println("json"+json);
+    
     JSONObject returnValue = new JSONObject();
     Player player = JSONUtil.jSON2Player(json);
     String playerId = null;
