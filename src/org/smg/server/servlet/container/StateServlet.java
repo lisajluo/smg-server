@@ -122,7 +122,8 @@ public class StateServlet extends HttpServlet {
           ContainerConstants.LAST_MOVE,
           Message.listToMessage(GameStateHelper.getOperationsListForPlayer(
               GameStateHelper.messageToOperationList(lastMove),
-              state.getVisibleTo(), String.valueOf(playerId))));
+//              state.getVisibleTo(), 
+              String.valueOf(playerId))));
     } catch (JSONException e1) {
     }
     try {
