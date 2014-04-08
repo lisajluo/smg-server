@@ -229,6 +229,7 @@ function ajaxCallDelPlayer(url) {
     url: url, 
     type: "DELETE",
     crossDomain: true,
+    dataType: 'json',
     async: false,
     success: function(data, textStatus, jqXHR) {
       $("#response").append("<br>" + JSON.stringify(data));
@@ -243,6 +244,7 @@ function ajaxCallDelPlayer2(url) {
     url: url, 
     type: "DELETE",
     crossDomain: true,
+    dataType: 'json',
     async: false,
     success: function(data, textStatus, jqXHR) {
       $("#response").append("<br>" + JSON.stringify(data));
@@ -282,6 +284,7 @@ function ajaxCallDelDeveloper(url) {
     type: "DELETE",
     crossDomain: true,
     async: false,
+    dataType: 'json',
     success: function(data, textStatus, jqXHR) {
       $("#response").append("<br>" + JSON.stringify(data));
     },
@@ -324,6 +327,7 @@ function ajaxCallDelGame(url) {
     url: url, 
     type: "DELETE",
     crossDomain: true,
+    dataType: 'json',
     async: false,
     success: function(data, textStatus, jqXHR) {
       $("#response").append("<br>" + JSON.stringify(data));
