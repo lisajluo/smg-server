@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.smg.server.servlet.user.UserConstants.*;
 
+import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 import org.smg.server.database.DeveloperDatabaseDriver;
@@ -22,6 +23,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@SuppressWarnings("serial")
 public class UserInfoServlet extends HttpServlet{
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -36,7 +38,6 @@ public class UserInfoServlet extends HttpServlet{
 	      long userId = Long.parseLong(req.getPathInfo().substring(1));
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-	        UserDatabaseDriver.updateUser(userId, user);
 	        json = new JSONObject(user);
 	        json.remove(ACCESS_SIGNATURE);
 	        json.remove(PASSWORD);
@@ -85,6 +86,10 @@ public class UserInfoServlet extends HttpServlet{
 	      {
 	    	  if (parameterMapOriginal.get(key)!=null)
 	    		  parameterMap.put(key,parameterMapOriginal.get(key));
+	      }
+	      if (parameterMap.containsKey(PASSWORD))
+	      {
+	    	  parameterMap.put(PASSWORD, AccessSignatureUtil.getHashedPassword((String)parameterMap.get(PASSWORD)));
 	      }
 	      long userId = Long.parseLong(req.getPathInfo().substring(1));
 	      Map user = UserDatabaseDriver.getUserMap(userId);

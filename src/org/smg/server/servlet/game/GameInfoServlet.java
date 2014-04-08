@@ -143,14 +143,14 @@ public class GameInfoServlet extends HttpServlet {
     StringBuffer buffer = new StringBuffer();
     Map<Object, Object> parameterMap = new HashMap<Object, Object>();
     try {
-      if (req.getPathInfo().equals(RATING) == false)
+      if (req.getPathInfo().substring(1).equals(RATING) == false)
         throw new IOException();
       BufferedReader reader = req.getReader();
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
       }
       parameterMap = (Map) JSONUtil.parse(buffer.toString());
-      String gameIdStr = req.getParameter(GAME_ID);
+      String gameIdStr = (String)parameterMap.get(GAME_ID);
       if (GameDatabaseDriver.checkGameIdExists(Long.parseLong(gameIdStr)) == false) {
         put(jObj, ERROR, WRONG_GAME_ID, resp);
         return;

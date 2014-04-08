@@ -72,7 +72,7 @@ public class DeveloperServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    String password =AccessSignatureUtil.getHashedPassword(req.getParameter(PASSWORD));
+    String password = AccessSignatureUtil.getHashedPassword(req.getParameter(PASSWORD));
     
     try {
       long developerId = Long.parseLong(req.getPathInfo().substring(1));
@@ -80,7 +80,6 @@ public class DeveloperServlet extends HttpServlet {
       
       if (developer.get(PASSWORD).equals(password)) {
         developer.put(ACCESS_SIGNATURE, AccessSignatureUtil.generate(developerId));
-        developer.put(PASSWORD, req.getParameter(PASSWORD));
         DeveloperDatabaseDriver.updateDeveloper(developerId, developer);
         json = new JSONObject(developer);
         json.remove(PASSWORD);

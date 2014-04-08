@@ -43,7 +43,6 @@ public class DeveloperInfoServlet extends HttpServlet {
       Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
       
       if (developer.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-        DeveloperDatabaseDriver.updateDeveloper(developerId, developer);
         json = new JSONObject(developer);
         json.remove(ACCESS_SIGNATURE);
         json.remove(PASSWORD);

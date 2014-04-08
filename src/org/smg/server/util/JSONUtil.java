@@ -14,8 +14,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JSONUtil {
+  private static final String LOWER_FIRST_NAME = "firstname";
+  private static final String LOWER_LAST_NAME = "lastname";
+  private static final String LOWER_NICKNAME = "nickname";
+  
 	public static Player jSON2Player(String json) throws IOException{
 		Map<String, Object> jsonMap = JSONUtil.parse(json);
+		
+		/* Case change to ensure backwards compatibility with V2 API calls */
+		if (jsonMap.containsKey(LOWER_FIRST_NAME)) {
+		  jsonMap.put(PlayerProperty.firstName.name(), jsonMap.get(LOWER_FIRST_NAME));
+		  jsonMap.remove(LOWER_FIRST_NAME);
+		}
+		if (jsonMap.containsKey(LOWER_NICKNAME)) {
+		  jsonMap.put(PlayerProperty.nickName.name(), jsonMap.get(LOWER_NICKNAME));
+		  jsonMap.remove(LOWER_NICKNAME);
+		}
+		if (jsonMap.containsKey(LOWER_LAST_NAME)) {
+		  jsonMap.put(PlayerProperty.lastName.name(), jsonMap.get(LOWER_LAST_NAME));
+		  jsonMap.remove(LOWER_LAST_NAME);
+		}
+		
 		Player player = new Player();
 		for(String key : jsonMap.keySet())
 		{

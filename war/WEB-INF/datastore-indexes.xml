@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes
   autoGenerate="true">
-    <datastore-index kind="Queue" ancestor="false">
+    <datastore-index kind="Queue" ancestor="false" source="manual">
         <property name="gameId" direction="asc"/>
         <property name="enqueueTime" direction="asc"/>
     </datastore-index>
-    <datastore-index kind="3Queue" ancestor="false">
+    <datastore-index kind="3Queue" ancestor="false" source="manual">
         <property name="gameId" direction="asc"/>
         <property name="enqueueTime" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="3PLAYERHISTORY" ancestor="false" source="manual">
+        <property name="GAMEID" direction="asc"/>
+        <property name="PLAYERID" direction="asc"/>
+        <property name="DATE" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="PLAYERHISTORY" ancestor="false" source="manual">
+        <property name="GAMEID" direction="asc"/>
+        <property name="PLAYERID" direction="asc"/>
+        <property name="DATE" direction="desc"/>
     </datastore-index>
 </datastore-indexes>

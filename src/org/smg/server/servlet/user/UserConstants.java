@@ -70,7 +70,7 @@ public class UserConstants {
 	public static final String NAME ="name";
 	public static final String FAMILY_NAME = "familyName";
 	public static final String GIVEN_NAME = "givenName";
-	public static final String GREETINGS = "Please Reset Your Password At The FOLLOWING LINK:\n";
+	public static final String GREETINGS = "Please reset your password at the following link:\n";
 }
 
 
