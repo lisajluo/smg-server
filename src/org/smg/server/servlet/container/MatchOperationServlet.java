@@ -291,7 +291,7 @@ public class MatchOperationServlet extends HttpServlet {
         returnValue.put(
             ContainerConstants.LAST_MOVE,
             Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
-                newState.getVisibleTo(),
+    //            newState.getVisibleTo(),
                 String.valueOf(currentPlayerId))));
 
         // Write back to Database.
@@ -312,7 +312,7 @@ public class MatchOperationServlet extends HttpServlet {
             returnValueChannel.put(
                 ContainerConstants.LAST_MOVE,
                 Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
-                    newState.getVisibleTo(),
+ //                   newState.getVisibleTo(),
                     String.valueOf(pid))));
           } catch (JSONException e1) {
           }
