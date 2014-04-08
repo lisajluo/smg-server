@@ -1,9 +1,12 @@
 package org.smg.server.servlet.player;
 
+import static org.smg.server.servlet.container.ContainerConstants.GAME_OVER_SCORES;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +20,7 @@ import org.smg.server.database.DatabaseDriverPlayerStatistic;
 import org.smg.server.database.models.PlayerHistory;
 import org.smg.server.database.models.PlayerHistory.MatchResult;
 import org.smg.server.util.CORSUtil;
+import org.smg.server.util.ELORankingUtil;
 import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.labs.repackaged.org.json.JSONException;
@@ -78,6 +82,20 @@ public class DevelopPlayerInsertHistory extends HttpServlet {
     for (String id:ids) {
       ph.addOpponentId(Long.parseLong(id));
     }
+    Map<Long,Integer> winInfo = new HashMap<Long,Integer>();
+    Map<Long, Integer> scoreMap = winInfo;
+    if (map.get("result").equals("WIN")) {
+      scoreMap.put(playerId, 1);
+    } else {
+      scoreMap.put(playerId, 0);
+    }
+    if (map.get("result").equals("LOST")) {
+      scoreMap.put(Long.parseLong(ids.get(0)), 1);
+    } else {
+      scoreMap.put(Long.parseLong(ids.get(0)), 0);
+    }
+    Map<Long, Long> rankMap = ELORankingUtil.getRankingMap(scoreMap,gameId);
+    ph.setRank(rankMap.get(playerId));
     DatabaseDriverPlayerHistory.savePlayerHistory(ph);
     DatabaseDriverPlayerStatistic.savePlayerStatisticFromHistory(ph);
     try {
