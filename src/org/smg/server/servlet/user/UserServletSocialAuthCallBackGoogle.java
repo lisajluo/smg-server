@@ -114,7 +114,7 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 		}
 		infoMap.put(EMAIL, email);
 		infoMap.put(FIRST_NAME, givenName);
-		infoMap.put(LAST_NAME, givenName);
+		infoMap.put(LAST_NAME, familyName);
 		return infoMap;
 		
 	}
