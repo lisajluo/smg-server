@@ -100,7 +100,7 @@ public class PlayersServlet extends HttpServlet {
       }
       return;
     }
-		Map<String, Object> map = req.getParameterMap();
+		Map<String, String[]> map = req.getParameterMap();
 		if (!map.containsKey("password")){
 		  try {
         returnValue.put("error", "WRONG_PASSWORD");
@@ -195,7 +195,8 @@ public class PlayersServlet extends HttpServlet {
 
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+  @Override
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 	  CORSUtil.addCORSHeader(resp);
@@ -226,8 +227,7 @@ public class PlayersServlet extends HttpServlet {
       }
       return;
     }
-    @SuppressWarnings("unchecked")
-    Map<String, Object> map = req.getParameterMap();
+    Map<String, String[]> map = req.getParameterMap();
     if (!map.containsKey("accessSignature")){
       try {
         returnValue.put("error", "WRONG_ACCESS_SIGNATURE");

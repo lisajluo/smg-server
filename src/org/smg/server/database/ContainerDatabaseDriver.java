@@ -283,6 +283,32 @@ public class ContainerDatabaseDriver {
     }
     return result;
   }
+  /**
+   * Get unfinished match by playerId, only allow one player has one unfinished game
+   * @param playerId
+   * @return entity or null if not found
+   */
+  public static Entity getUnfinishedMatchByPlayerId(long playerId) {
+    Filter filter = new FilterPredicate(
+        ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
+    Query q = new Query(ContainerConstants.MATCH).setFilter(filter);
+    List<Entity> raw = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    for (Entity entity: raw) {
+      List<Long> playerIds = new ArrayList<Long>();
+      try {
+        playerIds = JSONUtil.parseDSPlayerIds(
+            (String)entity.getProperty(ContainerConstants.PLAYER_IDS));
+      } catch (Exception e) {
+      }
+      for (long id : playerIds) {
+        if (id == playerId) {
+          return entity;
+        }
+      }
+    }
+    return null;
+  }
   
   /**
    * Insert a player to queue: need a map<String,Object> contains following fields:

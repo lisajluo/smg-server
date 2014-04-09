@@ -12,7 +12,10 @@
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
-
+  <!-- Enable Channel -->
+  <inbound-services>
+   <service>channel_presence</service>
+  </inbound-services>
   <!--
     HTTP Sessions are disabled by default. To enable HTTP sessions specify:
 

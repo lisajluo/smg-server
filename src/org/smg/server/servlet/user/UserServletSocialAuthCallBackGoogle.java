@@ -118,7 +118,8 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 		return infoMap;
 		
 	}
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	@SuppressWarnings("unchecked")
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		Map<String, String[]> map = req.getParameterMap();
@@ -177,6 +178,7 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 	          UserDatabaseDriver.updateUser(userId, infoMap);
 	          UserUtil.jsonPut(json, USER_ID, Long.toString(userId));
 	          UserUtil.jsonPut(json, ACCESS_SIGNATURE, accessSignature);
+	          resp.sendRedirect(MAIN_PAGE+"userId="+Long.toString(userId)+"&accessSignature="+accessSignature);
 			}
 			catch (Exception e)
 			{
@@ -194,6 +196,7 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 							AccessSignatureUtil.generate(userId));
 					UserDatabaseDriver.updateUser(userId, user);
 					json = new JSONObject(user);
+					resp.sendRedirect(MAIN_PAGE+"userId="+Long.toString(userId)+"&accessSignature="+user.get(ACCESS_SIGNATURE));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -215,10 +218,4 @@ public class UserServletSocialAuthCallBackGoogle extends HttpServlet{
 		}
        
 	}
-
-	
-
-	
-	
-
 }

@@ -32,7 +32,7 @@ public class UserServletSocialAuth extends HttpServlet{
 		return null;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	  @Override
 	  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		CORSUtil.addCORSHeader(resp);

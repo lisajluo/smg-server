@@ -91,7 +91,8 @@
 
 
 <script type="text/javascript">
-var url = "http://2-dot-smg-server.appspot.com";
+var url = "http://3-dot-smg-server.appspot.com";
+//var url = "http://localhost:8888";
 $(document).ready(function() {
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -127,11 +128,11 @@ $(document).ready(function() {
 });
 
 function ajaxCallInsert(url){
-    var jsonObj = {'firstname': 'Allen',
-                   'lastname': 'Sa',
-                   'nickname': 'demo'};
-    jsonObj["firstname"] = $("#firstNameInput").val();
-    jsonObj["lastname"] = $("#lastNameInput").val();
+    var jsonObj = {'firstName': 'Allen',
+                   'lastName': 'Sa',
+                   'nickName': 'demo'};
+    jsonObj["firstName"] = $("#firstNameInput").val();
+    jsonObj["lastName"] = $("#lastNameInput").val();
     jsonObj["email"] = $("#emailInput").val();
     jsonObj["password"] = $("#passwordInput").val();
     var jsonString = JSON.stringify(jsonObj);
@@ -313,8 +314,8 @@ function ajaxCallUpdate(url){
     url = url + $("#playerIdInput").val();
     var jsonObj = {};
     jsonObj["accessSignature"] = $("#accessSignatureInput").val();
-    jsonObj["firstname"] = $("#firstNameInput").val();
-    jsonObj["lastname"] = $("#lastNameInput").val();
+    jsonObj["firstName"] = $("#firstNameInput").val();
+    jsonObj["lastName"] = $("#lastNameInput").val();
     jsonObj["email"] = $("#emailInput").val();
     jsonObj["password"] = $("#passwordInput").val();
     var jsonString = JSON.stringify(jsonObj);
