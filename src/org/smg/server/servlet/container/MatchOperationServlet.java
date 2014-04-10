@@ -235,8 +235,10 @@ public class MatchOperationServlet extends HttpServlet {
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
 
-        // TODO These need to be modified at first place?
+        // Modified at first place.
         mi.setPlayerThatHasTurn(nextMovePlayerId);
+        mi.setPlayerThatHasLastTurn(currentPlayerId);
+
         if (attemptChangeTokens != null) {
           Map<Long, Long> newTokensInPot = Maps.newHashMap();
           Map<String, Integer> oldTokensInPot = attemptChangeTokens
@@ -284,14 +286,16 @@ public class MatchOperationServlet extends HttpServlet {
         // Write back to Database.
         ContainerDatabaseDriver.updateMatchEntity(matchId, Utils.toMap(new JSONObject(rtnJsn)));
 
-        // Response
-        returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+        // Response through POST.
+        returnValue
+            .put(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN,
+                String.valueOf(mi.getPlayerThatHasLastTurn()));
+        returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(mi.getMatchId()));
         returnValue.put(ContainerConstants.STATE, newState
             .getStateForPlayerId(String.valueOf(currentPlayerId)));
         returnValue.put(
             ContainerConstants.LAST_MOVE,
             Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
-    //            newState.getVisibleTo(),
                 String.valueOf(currentPlayerId))));
 
         // Write back to Database.
@@ -306,13 +310,14 @@ public class MatchOperationServlet extends HttpServlet {
           String clientId = String.valueOf(pid);
           JSONObject returnValueChannel = new JSONObject();
           try {
-            returnValueChannel.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+            returnValueChannel.put(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN,
+                String.valueOf(mi.getPlayerThatHasLastTurn()));
+            returnValueChannel.put(ContainerConstants.MATCH_ID, String.valueOf(mi.getMatchId()));
             returnValueChannel.put(ContainerConstants.STATE, newState
                 .getStateForPlayerId(String.valueOf(pid)));
             returnValueChannel.put(
                 ContainerConstants.LAST_MOVE,
                 Message.listToMessage(GameStateHelper.getOperationsListForPlayer(operationsOps,
- //                   newState.getVisibleTo(),
                     String.valueOf(pid))));
           } catch (JSONException e1) {
           }

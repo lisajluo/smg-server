@@ -27,7 +27,7 @@ public class StateServlet extends HttpServlet {
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
   }
-  
+
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
@@ -109,20 +109,22 @@ public class StateServlet extends HttpServlet {
       state = new GameState();
       lastMove = Lists.newArrayList();
     } else {
-      int lastIndex = mi.getHistory().size()-1;
+      int lastIndex = mi.getHistory().size() - 1;
       state = mi.getHistory().get(lastIndex).getGameState();
       lastMove = mi.getHistory().get(lastIndex).getLastMove();
     }
 
     try {
-      returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(matchId));
+      returnValue
+          .put(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN,
+              String.valueOf(mi.getPlayerThatHasLastTurn()));
+      returnValue.put(ContainerConstants.MATCH_ID, String.valueOf(mi.getMatchId()));
       returnValue
           .put(ContainerConstants.STATE, state.getStateForPlayerId(String.valueOf(playerId)));
       returnValue.put(
           ContainerConstants.LAST_MOVE,
           Message.listToMessage(GameStateHelper.getOperationsListForPlayer(
               GameStateHelper.messageToOperationList(lastMove),
-//              state.getVisibleTo(), 
               String.valueOf(playerId))));
     } catch (JSONException e1) {
     }

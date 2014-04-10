@@ -19,6 +19,7 @@ public class MatchInfo {
   private long gameId;
   private List<Long> playerIds;
   private long playerThatHasTurn;
+  private long playerThatHasLastTurn;
   private Map<Long, Integer> gameOverScores;
   private String gameOverReason;
   private List<GameStateHistoryItem> history;
@@ -114,5 +115,13 @@ public class MatchInfo {
 
   public final void setPlayerIdToNumberOfTokensInPot(Map<Long, Long> playerIdToNumberOfTokensInPot) {
     this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
+  }
+
+  public long getPlayerThatHasLastTurn() {
+    return playerThatHasLastTurn;
+  }
+
+  public void setPlayerThatHasLastTurn(long playerThatHasLastTurn) {
+    this.playerThatHasLastTurn = playerThatHasLastTurn;
   }
 }

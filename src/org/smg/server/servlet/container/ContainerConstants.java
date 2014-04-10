@@ -15,6 +15,7 @@ public final class ContainerConstants {
  public static final String PLAYER_IDS = "playerIds";
  public static final String GAME_ID = "gameId";
  public static final String PLAYER_THAT_HAS_TURN = "playerThatHasTurn";
+ public static final String PLAYER_THAT_HAS_LAST_TURN = "playerThatHasLastTurn";
  public static final String GAME_OVER_SCORES = "gameOverScores";
  public static final String GAME_OVER_REASON = "gameOverReason";
  public static final String PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT = "playerIdToNumberOfTokensInPot";
