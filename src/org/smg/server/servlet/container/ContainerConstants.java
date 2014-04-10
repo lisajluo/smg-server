@@ -42,6 +42,7 @@ public final class ContainerConstants {
  public static final String ACCESS_SIGNATURE = "accessSignature";
  
  // Error messages
+ public static final String MESSAGE = "message";
  public static final String ERROR = "error";
  public static final String NO_DATA_RECEIVED = "NO_DATA_RECEIVED";
  public static final String MISSING_INFO = "MISSING_INFO";
@@ -53,6 +54,7 @@ public final class ContainerConstants {
  public static final String BUILD_CHANNEL_FIALED = "BUILD_CHANNEL_FAILED";
  public static final String JSON_PARSE_ERROR = "JSON_PARSE_ERROR";
  public static final String ENQUEUE_FAILED = "ENQUEUE_FAILED";
+ public static final String OPPONENTS_LOST_CONNECTION = "OPPONENTS_LOST_CONNECTION";
  
  // Success message
  public static final String SUCCESS = "success";
