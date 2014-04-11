@@ -84,7 +84,6 @@ $(document).ready(function() {
         //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
         if (data["error"] == undefined) {
           toastr["success"]("Account Creation", "SUCCESS");
-          alert(url);
           var url = "mainPage.html?userId="
               + data["userId"] + "&accessSignature=" + data["accessSignature"];
           window.setTimeout(function(){
