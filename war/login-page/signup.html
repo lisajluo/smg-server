@@ -85,7 +85,7 @@ $(document).ready(function() {
         if (data["error"] == undefined) {
           toastr["success"]("Account Creation", "SUCCESS");
           var url = "mainPage.html?userId="
-              + data["userId"] + "&accessSignature=" + data["accessSignature"];
+              + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
           window.setTimeout(function(){
             window.location.replace(url)},2000);
         } else {

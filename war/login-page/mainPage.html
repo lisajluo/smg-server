@@ -102,6 +102,7 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
+							$("#greeting").text(" Hi, " + jsonObj['firstName']);
 						} else {
 							document.getElementById("response").innerHTML = data["error"].toString();
 						}
