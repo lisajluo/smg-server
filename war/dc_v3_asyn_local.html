@@ -145,17 +145,16 @@ $(document).ready(function() {
   });
 
   $("#EndGame").on("click", function(event) {
-      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":123,\""+playerId2+"\":234},\"type\":\"EndGame\"}]}";
-      var jsonObj =  {
-          "accessSignature":accessSignature,
-          "playerIds":playerIds,
-          "operations":[{"type":"SetTurn","playerId":playerId2,"numberOfSecondsForTurn":0},{"type":"Set","key":"W","value":[0,13,16,17,9,5,6,49,35,47,38,22,12,25,15,34,32,27,31,2,4,42,43,33,40,10,21,36,44,50,29,20,18,11,23,45,46,26,37,3,1,19,14,30,39,48,7,8,24,28,51,41],"visibleToPlayerIds":"ALL"},{"type":"Set","key":"M","value":[],"visibleToPlayerIds":"ALL"},{"type":"EndGame","playerIdToScore":{playerId:1}}]}
+      var playerIds = [];
+      playerIds.push(playerId);
+      playerIds.push(playerId2);
+      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":1},\"type\":\"EndGame\"}],\"gameOverReason\":\"Time Out\"}";
       console.log(jsonString);
       $.ajax({
         url: domainUrl+"/matches/"+matchId, 
         type: "POST",
         dataType: 'json',
-        data: JSON.stringify(jsonObj),
+        data: jsonString,
         success: function(data, textStatus, jqXHR) {
           $("#response").append("<br>" + JSON.stringify(data));
         },

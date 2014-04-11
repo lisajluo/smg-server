@@ -233,7 +233,14 @@ public class MatchOperationServlet extends HttpServlet {
 
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
-
+        
+        // if matched is already ended, return error
+        if (!mi.getGameOverReason().equals(ContainerConstants.NOT_OVER)) {
+          ContainerVerification.sendErrorMessage(
+              resp, returnValue, ContainerConstants.MATCH_ENDED);
+          return;
+        }
+        
         // TODO These need to be modified at first place?
         mi.setPlayerThatHasTurn(nextMovePlayerId);
         if (attemptChangeTokens != null) {
@@ -249,16 +256,28 @@ public class MatchOperationServlet extends HttpServlet {
         // Attention! This will also update MatchInfo.
         GameState newState = updateMatchInfoByOperations(mi, operations);
 
+        // End game info update
         if (endGame != null) {
           // Only update GameOverReason here.
-          mi.setGameOverReason(ContainerConstants.OVER);
+          // EndGame move but no game over reason
+          if (!jsonMap.containsKey(ContainerConstants.GAME_OVER_REASON)) {
+            ContainerVerification.sendErrorMessage(
+                resp, returnValue, ContainerConstants.MISSING_INFO);
+            return;
+          }
+          String gameOverReason = String.valueOf(jsonMap.get(ContainerConstants.GAME_OVER_REASON));
+          mi.setGameOverReason(gameOverReason);
 
           // Update gameOverScores.
           Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
           Map<Long, Integer> newPlayerIdToScoreMap = Maps.newHashMap();
-          //TODO 0 for not list
-          for (String key : playerIdToScoreMap.keySet()) {
-            newPlayerIdToScoreMap.put(Long.parseLong(key), playerIdToScoreMap.get(key));
+          //every player has a score
+          for (long pId: playerIds) {
+            if (playerIdToScoreMap.containsKey(IDUtil.longToString(pId))) {
+              newPlayerIdToScoreMap.put(pId, playerIdToScoreMap.get(IDUtil.longToString(pId)));
+            } else {
+              newPlayerIdToScoreMap.put(pId,0);
+            }
           }
           mi.setGameOverScores(newPlayerIdToScoreMap);
 
@@ -274,7 +293,7 @@ public class MatchOperationServlet extends HttpServlet {
           }
           winInfo.put(ContainerConstants.MATCH_ID, matchId);
 
-//          EndGameDatabaseDriver.updateStats(winInfo);
+          EndGameDatabaseDriver.updateStats(winInfo);
 
         }
 

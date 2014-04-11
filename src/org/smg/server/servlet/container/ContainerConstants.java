@@ -56,6 +56,7 @@ public final class ContainerConstants {
  public static final String BUILD_CHANNEL_FIALED = "BUILD_CHANNEL_FAILED";
  public static final String JSON_PARSE_ERROR = "JSON_PARSE_ERROR";
  public static final String ENQUEUE_FAILED = "ENQUEUE_FAILED";
+ public static final String MATCH_ENDED = "MATCH_ENDED";
  
  // Success message
  public static final String SUCCESS = "success";
