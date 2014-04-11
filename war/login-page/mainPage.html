@@ -59,6 +59,20 @@
 			} else {
 				$("#formId2").hide();
 			}
+			$.ajax({
+          url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
+          dataType : "json",
+          type : "GET",
+          success : function(data, textStatus, jqXHR) {
+            $("input[name=email]").val(data["email"]);
+            $("input[name=firstName]").val(data["firstName"]);
+            $("input[name=lastName]").val(data["lastName"]);
+            $("input[name=nickName]").val(data["nickName"]);
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            alert("ERROR: " + textStatus + " " + errorThrown);
+          }
+        });
 			$("#post1").submit(function(e) {
 				// Prevent all default form submission
 				e.preventDefault();
