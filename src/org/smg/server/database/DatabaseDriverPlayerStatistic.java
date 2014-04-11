@@ -202,6 +202,7 @@ public class DatabaseDriverPlayerStatistic {
     Query q = new Query(PLAYERSTATISTIC).setFilter(playerIdFilter);
     PreparedQuery pq = datastore.prepare(q);
     for (Entity e: pq.asIterable()) {
+      PlayerStatistic ps = fromEntitytoStatistic(e);
       result.add(fromEntitytoStatistic(e));
     }
     return result;

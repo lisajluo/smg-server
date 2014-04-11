@@ -61,6 +61,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <url-pattern>/playerGame</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>playerAllGame</servlet-name>
+    <servlet-class>org.smg.server.servlet.player.PlayerAllGameServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>playerAllGame</servlet-name>
+    <url-pattern>/playerAllGame</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>playerHistory</servlet-name>
     <servlet-class>org.smg.server.servlet.player.PlayerHistoryServlet</servlet-class>
   </servlet>
