@@ -84,8 +84,11 @@ $(document).ready(function() {
         //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
         if (data["error"] == undefined) {
           toastr["success"]("Account Creation", "SUCCESS");
+          alert(url);
+          var url = "mainPage.html?userId="
+              + data["userId"] + "&accessSignature=" + data["accessSignature"];
           window.setTimeout(function(){
-            window.location.replace("login.html")},2000);
+            window.location.replace(url)},2000);
         } else {
           //document.getElementById("response").innerHTML=data["error"].toString();
           toastr["error"](data["error"].toString(), "ERROR");

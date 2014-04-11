@@ -51,7 +51,7 @@
 		}
 
 		$(document).ready( function() {
-			$("#logouturl").prop('href', "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
+			$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
 			$("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
 			$("#developerpage").prop('src', "http://www.w3schools.com")
 			if(isSocial == true) {
