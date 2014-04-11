@@ -33,7 +33,7 @@
       <br><a href = "#" id = "EndGame">player1 EndGame</a>
       <!-- <br><a href = "#" id = "MakeMove2">player2 Make A Move2</a> !-->
       <br>
-      <br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
+     <!-- <br><a href = "#" id = "GetMatchInfo">Get Match Info</a> -->
       <br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
     </div>
     <div id="response" class="right" style="width:500px">Response</div>
@@ -41,8 +41,8 @@
 
 <script type="text/javascript">
 
-var domainUrl = "http://3-dot-smg-server-container.appspot.com";
-//var domainUrl = "http://3-dot-smg-server.appspot.com";
+var domainUrl = "http://4-dot-smg-server-container.appspot.com";
+//var domainUrl = "http://4-dot-smg-server.appspot.com";
 //var domainUrl = "http://localhost:8888";
 var playerId = "";
 var accessSignature ="";
@@ -99,7 +99,7 @@ $(document).ready(function() {
   });
   
   $("#EndGame").on("click", function(event) {
-      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":123,\""+playerId2+"\":234},\"type\":\"EndGame\"}]}";
+      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":1},\"type\":\"EndGame\"}],\"gameOverReason\":\"Quit\"}";
       console.log(jsonString);
       $.ajax({
         url: domainUrl+"/matches/"+matchId, 
@@ -289,7 +289,7 @@ function ajaxCallEnqueue2(url) {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"containterV3_API_111@gmail.com",
+      "email":"containterV2_API_111@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -314,7 +314,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"containterV3_API_222@gmail.com",
+      "email":"containterV2_API_222@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -366,7 +366,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "containterV3_API_333@gmail.com", 
+  var jsonObj =  { "email": "containterV2_API_333@gmail.com", 
       "password": "soldkfjlaskdf",
       "nickName": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -409,7 +409,7 @@ function ajaxCallNewGame(url) {
     url: url, 
     type: "POST",
     data: JSON.stringify({
-        "gameName": "TEST GAME for container V33333",
+        "gameName": "TEST GAME for container V2222",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,

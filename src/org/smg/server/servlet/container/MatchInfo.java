@@ -19,6 +19,7 @@ public class MatchInfo {
   private long gameId;
   private List<Long> playerIds;
   private long playerThatHasTurn;
+  private long playerThatHasLastTurn;
   private Map<Long, Integer> gameOverScores;
   private String gameOverReason;
   private List<GameStateHistoryItem> history;
@@ -30,6 +31,7 @@ public class MatchInfo {
     ObjectMapper mapper = new ObjectMapper();
     JSONObject jsnObj = new JSONObject(propsMap);
 
+    jsnObj.put(ContainerConstants.MATCH_ID, e.getKey().getId());
     // Makeup for "history"
     // TODO Delete this!
     String hstryStr = ((Text) jsnObj.get(ContainerConstants.HISTORY)).getValue();
@@ -114,5 +116,13 @@ public class MatchInfo {
 
   public final void setPlayerIdToNumberOfTokensInPot(Map<Long, Long> playerIdToNumberOfTokensInPot) {
     this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
+  }
+
+  public long getPlayerThatHasLastTurn() {
+    return playerThatHasLastTurn;
+  }
+
+  public void setPlayerThatHasLastTurn(long playerThatHasLastTurn) {
+    this.playerThatHasLastTurn = playerThatHasLastTurn;
   }
 }
