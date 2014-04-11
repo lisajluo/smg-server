@@ -139,6 +139,8 @@ public class ContainerDatabaseDriver {
         match.getJSONArray(ContainerConstants.PLAYER_IDS).toString());
     entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
         match.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+    entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN, 
+        match.getLong(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN));
     entity.setUnindexedProperty(ContainerConstants.GAME_OVER_SCORES, 
         match.getJSONObject(ContainerConstants.GAME_OVER_SCORES).toString());
     entity.setProperty(ContainerConstants.GAME_OVER_REASON, 
@@ -168,7 +170,8 @@ public class ContainerDatabaseDriver {
     Transaction txn = datastore.beginTransaction();
     // TODO playerIdToNumberOfTokensInPot field optional or not
     if (!match.containsKey(ContainerConstants.HISTORY)
-        || !match.containsKey(ContainerConstants.PLAYER_THAT_HAS_TURN)) {
+        || !match.containsKey(ContainerConstants.PLAYER_THAT_HAS_TURN)
+        || !match.containsKey(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN)) {
       return false;
     }
     String json = new JSONObject(match).toString();
@@ -183,9 +186,11 @@ public class ContainerDatabaseDriver {
       return false;
     }
     try {
-      //Currently make move affects two properties change 
+      //Currently make move affects three properties change 
       entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_TURN, 
           jsonObj.getLong(ContainerConstants.PLAYER_THAT_HAS_TURN));
+      entity.setProperty(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN, 
+          jsonObj.getLong(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN));
       @SuppressWarnings("unchecked")
       ArrayList<Object> list = (ArrayList<Object>)jsonObj.get(ContainerConstants.HISTORY);
       JSONArray jsonArray = new JSONArray(list.toArray()); 

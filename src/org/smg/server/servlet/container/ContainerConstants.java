@@ -20,10 +20,13 @@ public final class ContainerConstants {
  public static final String PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT = "playerIdToNumberOfTokensInPot";
  public static final String HISTORY = "history";
  
+ public static final String PLAYER_THAT_HAS_LAST_TURN = "playerThatHasLastTurn";
  // GameOverReason
  public static final String NOT_OVER = "Not Over";
+ // Normal Over
  public static final String OVER = "Over";
- public static final String TERMINATED = "Terminated";
+ public static final String TIME_OUT = "Time Out";
+ public static final String QUIT = "Quit";
  
  // Various properties in Queue: queueId, gameId, playerId, channelToken, enqueueTime
  public static final String QUEUE_ID = "queueId";
@@ -53,8 +56,13 @@ public final class ContainerConstants {
  public static final String BUILD_CHANNEL_FIALED = "BUILD_CHANNEL_FAILED";
  public static final String JSON_PARSE_ERROR = "JSON_PARSE_ERROR";
  public static final String ENQUEUE_FAILED = "ENQUEUE_FAILED";
+ public static final String MATCH_ENDED = "MATCH_ENDED";
  
  // Success message
  public static final String SUCCESS = "success";
  public static final String BUILD_CHANNEL_SUCCESS = "BUILD_CHANNEL_SUCCESS";
+ 
+ // Message
+ public static final String MESSAGE = "message";
+ public static final String OPPONENTS_LOST_CONNECTION = "OPPONENTS_LOST_CONNECTION";
 }

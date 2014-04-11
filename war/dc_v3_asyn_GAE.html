@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>dc_v3_asyn_GAE</title>
+  <title>dc_v3_asyn_local</title>
   <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="../resources/json2.js"></script>
 </head>
@@ -33,7 +33,7 @@
       <br>
       <br><a href = "#" id = "EndGame">player1 EndGame</a>
       <br>
-      <br><a href = "#" id = "GetMatchInfo">Get Match Info</a>
+     <!-- <br><a href = "#" id = "GetMatchInfo">Get Match Info</a> -->
       <br><a href = "#" id = "Clear">Delete Players/Game/Developer</a>
     </div>
     <div id="response" class="right" style="width:500px">Response</div>
@@ -41,8 +41,8 @@
 
 <script type="text/javascript">
 
-var domainUrl = "http://3-dot-smg-server-container.appspot.com";
-//var domainUrl = "http://3-dot-smg-server.appspot.com";
+var domainUrl = "http://4-dot-smg-server-container.appspot.com";
+//var domainUrl = "http://4-dot-smg-server.appspot.com";
 //var domainUrl = "http://localhost:8888";
 var playerId = "";
 var accessSignature ="";
@@ -145,7 +145,10 @@ $(document).ready(function() {
   });
 
   $("#EndGame").on("click", function(event) {
-      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":123,\""+playerId2+"\":234},\"type\":\"EndGame\"}]}";
+      var playerIds = [];
+      playerIds.push(playerId);
+      playerIds.push(playerId2);
+      var jsonString = "{\"accessSignature\":\""+accessSignature+"\",\"playerIds\":[\""+playerId+"\",\""+playerId2+"\"],\"operations\":[{\"type\":\"SetTurn\",\"playerId\":\""+playerId2+"\",\"numberOfSecondsForTurn\":0},{\"playerIdToScore\":{\""+playerId+"\":1},\"type\":\"EndGame\"}],\"gameOverReason\":\"Time Out\"}";
       console.log(jsonString);
       $.ajax({
         url: domainUrl+"/matches/"+matchId, 
@@ -166,7 +169,7 @@ $(document).ready(function() {
         type: "GET",
         success: function(data, textStatus, jqXHR) {
           var jsonObj = $.parseJSON(data);
-        	$("#response").append("<br>" + JSON.stringify(jsonObj));
+          $("#response").append("<br>" + JSON.stringify(jsonObj));
         },
         error: function(jqXHR, textStatus, errorThrown) {
           alert("ERROR: " + textStatus + " " + errorThrown);
@@ -176,7 +179,7 @@ $(document).ready(function() {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"forcontainertest_V3_11@gmail.com",
+      "email":"forcontainertestNEW@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -201,7 +204,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"forcontainertest_V3_p2222@gmail.com",
+      "email":"forcontainertestNEW2@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -253,7 +256,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "forcontainertest_V3_d1111@bladsfah.com", 
+  var jsonObj =  { "email": "forcontainertestNEW3@bladsfah.com", 
       "password": "soldkfjlaskdf",
       "nickName": "blahb lah blah",
       "whatever": "some thing should be deleted"
@@ -292,7 +295,7 @@ function ajaxCallDelDeveloper(url) {
 
 function ajaxCallNewGame(url) {
   var jsonObj = {
-        "gameName": "TEST GAME for container_V3_11",
+        "gameName": "TEST GAME for container",
         "url" : "www.foo.com",
         "description": "This game is actually quite self-explanatory",
         "width" : 50,

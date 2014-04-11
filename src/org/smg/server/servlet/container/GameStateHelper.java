@@ -52,7 +52,6 @@ public class GameStateHelper {
     for (Operation op : ops) {
       if (op instanceof Set) {
         Set set = (Set) op;
-        String key = set.getKey();
         String visibleTo = String.valueOf(set.getVisibleToPlayerIds());
         if (!visibleTo.equals("ALL")) {
            List<String> visibleToList = null;

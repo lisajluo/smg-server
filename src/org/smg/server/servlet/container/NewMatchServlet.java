@@ -127,7 +127,8 @@ public class NewMatchServlet extends HttpServlet {
         match.put(ContainerConstants.GAME_ID, gameId);
         JSONArray jaPlayerIds = new JSONArray(playerIds);
         match.put(ContainerConstants.PLAYER_IDS, jaPlayerIds);
-        match.put(ContainerConstants.PLAYER_THAT_HAS_TURN, -1);        
+        match.put(ContainerConstants.PLAYER_THAT_HAS_TURN, -1);
+        match.put(ContainerConstants.PLAYER_THAT_HAS_LAST_TURN, -1);
         match.put(ContainerConstants.GAME_OVER_SCORES, new JSONObject());
         match.put(ContainerConstants.GAME_OVER_REASON, ContainerConstants.NOT_OVER);
         match.put(ContainerConstants.PLAYER_ID_TO_NUMBER_OF_TOKENS_IN_POT, new JSONObject());
