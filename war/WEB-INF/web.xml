@@ -159,15 +159,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   </servlet-mapping>
   
   <servlet>
-	<servlet-name>userSocialAuthCallbackTwitter</servlet-name>
-	<servlet-class>org.smg.server.servlet.user.UserServletSocialAuthTwitter</servlet-class>
-  </servlet>
-  <servlet-mapping>
-	<servlet-name>userSocialAuthCallbackTwitter</servlet-name>
-	<url-pattern>/socialAuthCallbackTwitter/*</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
     <servlet-name>state</servlet-name>
     <servlet-class>org.smg.server.servlet.container.StateServlet</servlet-class>
   </servlet>
