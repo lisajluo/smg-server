@@ -53,6 +53,7 @@ public class adminCensor extends HttpServlet {
 
       } else {
         msgBodyBuffer.append(disapprove(gameName));
+        if (Text!=null)
         msgBodyBuffer.append(Text);
       }
 
@@ -140,7 +141,6 @@ public class adminCensor extends HttpServlet {
     } catch (Exception e)
     {
       put(jObj, ERROR, WRONG_GAME_ID, resp);
-      e.printStackTrace();
       return;
     }
 

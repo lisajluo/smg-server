@@ -21,16 +21,17 @@ public class adminConstants {
 	public static final String ADMIN_FINISHED = "ADMIN_FINISHED";
 	public static final String TEXT = "TEXT";
 	public static final String FIRST_NAME = "firstName";
-	public static final String ADMIN_EMAIL = "lisa.j.luo@gmail.com";
+	//public static final String ADMIN_EMAIL = "lisa.j.luo@gmail.com";
+	public static final String ADMIN_EMAIL = "hk1642@nyu.edu"; 
 	public static final String ADMIN_NAME = "smg-server";
     public static final String EMAIL = "email";
     public static final String MAIL_SUBJECT = "Notification On Your Game Approval";
 	public static final String approve(String gameName)
 	{
-		return new String("WE ARE HAPPY TO INFORM YOU THAT YOUR GAME "+gameName+ "HAS BEEN APPROVED BY OUR ADMIN\n");
+		return new String("WE ARE HAPPY TO INFORM YOU THAT YOUR GAME "+gameName+ " HAS BEEN APPROVED BY OUR ADMIN\n");
 	}
 	public static final String disapprove(String gameName)
 	{
-		return new String ("YOUR GAME "+gameName+"NEED SOME MODIFICATIONS IN THE BELOW ASPECTS, PLEASE UPDATE YOUR GAME AND RESUBMIT\n");
+		return new String ("YOUR GAME "+gameName+" NEED SOME MODIFICATIONS IN THE BELOW ASPECTS, PLEASE UPDATE YOUR GAME AND RESUBMIT\n");
 	}
 }
