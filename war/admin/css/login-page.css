@@ -10,10 +10,6 @@
   margin: 30px 0;
 }
 
-form * {
-    margin-bottom: 10px;
-}
-
 .btn-twitter-style {
     background-color: hsl(216, 89%, 32%) !important;
     background-repeat: repeat-x;
