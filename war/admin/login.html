@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      Login to Strategic Homeland Intervention Enforcement Logistics Division Management System
+    </title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+    </script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js">
+    </script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+    </script>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js">
+    </script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
+    <link href="css/login-page.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+			  padding-top: 40px;
+			  padding-bottom: 40px;
+			  background-color: #eee;
+			}
+
+      .xxxx {
+        max-width: 300px;
+        padding: 15px;
+        margin: 0 auto;
+      }
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        function jsonify(array) {
+            var json = {};
+            for (var i = 0; i < array.length; i++) {
+                var obj = array[i];
+                if (obj.value) {
+
+                    json[obj.name] = obj.value;
+
+                }
+            }
+            return json;
+        }
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        $("#post_form").submit(function (e) {
+            e.preventDefault();
+            var formValues = jsonify($(this).serializeArray());
+            $.ajax({
+                url: "../admin_login/" + "?password=" + formValues.password + "&adminId=" + formValues.adminId,
+                dataType: "json",
+                type: "GET",
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                    if (data["error"] == undefined) {
+                        window.location = "./game_manager.html?token="+data["success"];
+                    } else {
+                        toastr["error"]("Login failed. Please check your email and password.", "ERROR");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+        });
+    });
+    </script>
+  </head>
+  <body>
+    <div class="xxxx">
+      <form class="form-signin" role="form" id="post_form">
+        <div class="row">
+          <div class="col-lg col-centered">
+            <img src="./img/shield.png" class="img-responsive" alt="Responsive image">
+          </div>
+          <div class="col-lg col-centered text-center">
+            <h3><b>
+              Welcome to Level 6
+            </b></h3>
+          </div>
+          <div class="span1">
+            <input type="name" name="adminId" class="form-control" placeholder="ID of Agent" required autofocus/>
+          </div>
+          <div class="span2">
+            <input type="password" name="password" class="form-control" placeholder="Password" required/>
+          </div>
+          <div class="col-lg col-centered text-center">
+            <button class="btn btn-lg btn-danger btn-block" type="submit">
+              Login to Shield
+            </button>
+          </div>
+        </div>
+      </form>
+  </body>
+</html>

@@ -28,7 +28,7 @@ public class adminServlet extends HttpServlet{
 	    	if (adminId.equals(UNIQUE_ADMIN)==false||passWord.equals(UNIQUE_PASSWORD)==false)
 	    		throw new Exception();
 	    	String adminToken = AccessSignatureUtil.getHashedPassword(PASS_WORD);
-	    	UserUtil.jsonPut(json,SUCCESS,DIRECT_PAGE+"adminToken="+adminToken);
+	    	UserUtil.jsonPut(json,SUCCESS,adminToken);
 	    }
 	    catch (Exception e)
 	    {
