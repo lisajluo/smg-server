@@ -350,7 +350,7 @@ public class GameServlet extends HttpServlet {
           put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
           return;
         }
-
+        parameterMap.put(UPDATED, true);
         GameDatabaseDriver.updateGame(longId, parameterMap);
 
         put(jObj, SUCCESS, UPDATED_GAME, resp);

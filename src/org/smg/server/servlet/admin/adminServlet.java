@@ -17,6 +17,8 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class adminServlet extends HttpServlet{
 	
+	
+	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		PrintWriter writer = resp.getWriter();
