@@ -34,7 +34,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class adminCensor extends HttpServlet {
 
   private String[] validParams = {
-    PASS_CENSOR
+    PASS_CENSOR,TEXT
   };
 
   private void sendEmailHelper(String gameName, long developerId, boolean pass, String Text)
@@ -58,7 +58,6 @@ public class adminCensor extends HttpServlet {
       }
 
       String msgBody = msgBodyBuffer.toString();
-
       Message msg = new MimeMessage(session);
       msg.setFrom(new InternetAddress(ADMIN_EMAIL, ADMIN_NAME));
       msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
@@ -118,11 +117,9 @@ public class adminCensor extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     JSONObject jObj = new JSONObject();
     String gameId = req.getPathInfo().substring(1);
-    System.out.println(gameId);
     try
     {
       String buffer = Utils.getBody(req);
-      System.out.println(buffer);
       Map<Object, Object> parameterMap = deleteInvalid(
           (Map) JSONUtil.parse(buffer), validParams);
       if (parameterMap.containsKey(PASS_CENSOR) == false)

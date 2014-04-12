@@ -21,8 +21,8 @@ public class adminConstants {
 	public static final String ADMIN_FINISHED = "ADMIN_FINISHED";
 	public static final String TEXT = "TEXT";
 	public static final String FIRST_NAME = "firstName";
-	//public static final String ADMIN_EMAIL = "lisa.j.luo@gmail.com";
-	public static final String ADMIN_EMAIL = "hk1642@nyu.edu"; 
+	public static final String ADMIN_EMAIL = "lisa.j.luo@gmail.com";
+	//public static final String ADMIN_EMAIL = "hk1642@nyu.edu"; 
 	public static final String ADMIN_NAME = "smg-server";
     public static final String EMAIL = "email";
     public static final String MAIL_SUBJECT = "Notification On Your Game Approval";

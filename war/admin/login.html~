@@ -52,8 +52,7 @@
             return json;
         }
        // var domain = "http://localhost:8888";
-       // var domain = "http://1-dot-huan-kang.appspot.com";
-          var domain = "smg-server.appspot.com";
+        var domain = "http://1-dot-huan-kang.appspot.com";
         toastr.options = {
             "closeButton": true,
             "debug": false,
