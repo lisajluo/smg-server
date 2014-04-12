@@ -24,22 +24,21 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
-public class UserServletSocialAuth extends HttpServlet{
-	
-	private Map<String,String> getInfoFromSocialAuth(String SocialAuth)
-	{
-		//TODO implement social Auth
+public class UserServletSocialAuth extends HttpServlet {
+
+	private Map<String, String> getInfoFromSocialAuth(String SocialAuth) {
+		// TODO implement social Auth
 		return null;
 	}
-	
+
 	@SuppressWarnings({ "rawtypes" })
-	  @Override
-	  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		Set<String> supportedSocialAuth = new HashSet<String>();
 		supportedSocialAuth.add(GOOGLE);
-		Map user = new HashMap();
-		long userId = -1;
+		supportedSocialAuth.add(FACEBOOK);
 		PrintWriter writer = resp.getWriter();
 		JSONObject json = new JSONObject();
 		String socialAuthType = req.getPathInfo().substring(1);
@@ -56,15 +55,20 @@ public class UserServletSocialAuth extends HttpServlet{
 		case (GOOGLE): {
 			resp.sendRedirect(GOOGLE_SOCIAL_AUTH + "scope=" + EMAIL_SCOPE + " "
 					+ PROFILE_SCOPE + "&state=%2Fprofile" + "&redirect_uri="
-					+ APPURI + "&response_type=code" + "&client_id="
-					+ CLIENT_ID + "&approval_prompt=force");
+					+ GOOGLE_CALLBACK + "&response_type=code" + "&client_id="
+					+ GOOGLE_CLIENT_ID + "&approval_prompt=force");
+			return;
+		}
+		case (FACEBOOK): {
+			resp.sendRedirect("https://www.facebook.com/dialog/oauth?"
+					+ "client_id=" + FACEBOOK_APP_ID + "&redirect_uri="
+					+ FACEBOOK_REDIRECT_URI + FACEBOOK_SCOPE);
 			return;
 		}
 		default:
 			break;
 		}
-		
-		
+
 	}
 
 }
