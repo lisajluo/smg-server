@@ -34,11 +34,72 @@
       }
     </style>
     <script type="text/javascript">
+      var domain = "localhost:8888";
+
+      function jsonify(array) {
+        var json = {};
+        for (var i = 0; i < array.length; i++) {
+          var obj = array[i];
+          if (obj.value) {
+            json[obj.name] = obj.value;
+          }
+        }
+        return json;
+      }
+
       function acceptGame(gameId){
-        $('#myModal').modal({keyboard: false});
+        $.ajax({
+          url: "http://" + domain + "/adminCensor/" + gameId, 
+          dataType: "json",
+          type: "POST",
+          data: JSON.stringify({
+              "pass_censor": true,
+              "TEXT": ""
+            }),
+          success: function(data, textStatus, jqXHR) {
+            console.log(data);
+            if(data["error"] == undefined) {
+              toastr["success"]("Update Success", "SUCCESS");
+              window.setTimeout(function(){
+                window.location.replace(window.location)},1000);
+            } else {
+              toastr["error"]("There is an error updating database.", "ERROR");
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            toastr["error"](textStatus, "ERROR");
+          }
+        });  
       };
 
       function blockGame(gameId){
+        $('#myModal').modal({keyboard: false});
+        $("#blockReasonForm").submit(function(e) {
+          e.preventDefault();
+          var formValues = jsonify($(this).serializeArray());
+          $.ajax({
+            url: "http://" + domain + "/adminCensor/" + gameId, 
+            dataType: "json",
+            type: "POST",
+            data: JSON.stringify({
+              "pass_censor": false,
+              "TEXT": formValues.reason_text
+            }),
+            success: function(data, textStatus, jqXHR) {
+              console.log(data);
+              if(data["error"] == undefined) {
+                toastr["success"]("Update Success", "SUCCESS");
+                window.setTimeout(function(){
+                  window.location.replace(window.location)},1000);
+              } else {
+                toastr["error"]("There is an error updating database.", "ERROR");
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              toastr["error"](textStatus, "ERROR");
+            }
+          });  
+        });
       };
 
     $(document).ready(function() {
@@ -54,17 +115,6 @@
       }
 
       var token = getUrlParam("token");
-
-    	function jsonify(array) {
-			  var json = {};
-			  for (var i = 0; i < array.length; i++) {
-			    var obj = array[i];
-			    if (obj.value) {
-            json[obj.name] = obj.value;
-			    }
-			  }
-			  return json;
-			}
 
 			toastr.options = {
 			  "closeButton": true,
@@ -84,7 +134,7 @@
       var updateTableItem = function(html, entity, isPassed) {
         var okIconStr = '<span class="glyphicon glyphicon-ok"></span>';
         var removeIconStr = '<span class="glyphicon glyphicon-remove"></span>';
-        var btnGroupStr = '<div class="btn-group">' + (isPassed?'':'<a type="button" onclick="javascript:acceptGame('+entity['gameId']+');" class="btn btn-md">'+okIconStr+'</a>') + (isPassed?'<a type="button" onclick="javascript:blockGame('+entity['gameId']+');" class="btn btn-md">'+removeIconStr+'</a></div>':'');
+        var btnGroupStr = '<div class="btn-group">' + (isPassed?'':'<a type="button" onclick="javascript:acceptGame('+entity['gameId']+');" class="btn btn-sm">'+okIconStr+'</a>') + (isPassed?'<a type="button" onclick="javascript:blockGame('+entity['gameId']+');" class="btn btn-sm">'+removeIconStr+'</a></div>':'');
         var str = "<tr><td>" + (entity["updated"]==true?'<span class="glyphicon glyphicon-star"></span>':"") + "</td><td>" + entity["gameName"] + "</td><td>"+entity["gameId"]+"</td><td>"+entity["url"]+"</td><td>"+btnGroupStr+"</td></tr>";
         if(entity["updated"]==true) {
           html.prepend(str);
@@ -141,7 +191,7 @@
 		      	}
 		      },
 		      error: function(jqXHR, textStatus, errorThrown) {
-		        alert("ERROR: " + textStatus + " " + errorThrown);
+		        toastr["error"](textStatus, "ERROR");
 		      }
 		    });  
 		  });
@@ -193,15 +243,15 @@
           <div class="modal-header">
             <h4>Reason of Block</h4>
           </div>
+          <form class="form" role="form" id="blockReasonForm">
           <div class="modal-body">
-            <form class="form-signin" role="form" id="post_form">
-              <textarea class="form-control"></textarea>
-            </form>
+            <textarea class="form-control" name="reason_text"></textarea>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
           </div>
+          </form>
         </div>
       </div>
     </div>
