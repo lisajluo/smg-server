@@ -5,8 +5,8 @@ public class adminConstants {
 	public static final String ADMIN_ID = "adminId";
 	public static final String PASS_WORD = "password";
 	public static final String WRONG_ADMIN_INFO = "WRONG_ADMIN_INFO";
-	public static final String UNIQUE_ADMIN = "smg-server";
-	public static final String UNIQUE_PASSWORD = "password";
+	public static final String UNIQUE_ADMIN = "SuperAdmin";
+	public static final String UNIQUE_PASSWORD = "SuperAdminPassword3938";
 	public static final String ERROR = "error";
 	public static final String SUCCESS = "success";
 	public static final String PASSED_LIST = "PASSED_LIST";

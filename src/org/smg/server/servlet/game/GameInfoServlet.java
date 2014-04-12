@@ -89,7 +89,7 @@ public class GameInfoServlet extends HttpServlet {
     if (developerIdStr == null) {
       
       //List<JSONObject> queryResult = returnAllGameInfo();
-    	List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
+      List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
         put(queryResult, resp);
       return;
     } else {

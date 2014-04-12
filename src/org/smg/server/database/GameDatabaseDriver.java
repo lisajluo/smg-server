@@ -234,12 +234,29 @@ public class GameDatabaseDriver {
 		  throw new Exception();
 	  }
   }
+  public static Map<String, Object> getStatsHelper(long gameId) throws EntityNotFoundException {
+     try
+     {
+    	 Map<String,Object> target= getStats(gameId);
+    	 return target;
+     }
+     catch (Exception e)
+     {
+    	 return null;
+     }
+  }
   private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
   {
 	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
 		try {
 			for (Entity result : entityList) {
 				JSONObject currentQueryResult = new JSONObject();
+				long gameId = result.getKey().getId();
+				//Map
+				Map<String,Object> statsInfo = getStatsHelper(gameId);
+				if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
+					currentQueryResult.put(RATING, statsInfo.get(RATING));
+				
 				List<String> developerIdList = (List<String>) (result
 						.getProperty(DEVELOPER_ID));
 				currentQueryResult.put(GAME_ID,
@@ -289,6 +306,11 @@ public class GameDatabaseDriver {
       List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
+        long gameId = result.getKey().getId();
+		Map<String,Object> statsInfo = getStatsHelper(gameId);
+		if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
+			currentQueryResult.put(RATING, statsInfo.get(RATING));
+		
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
         currentQueryResult.put(GAME_ID, Long.toString(result.getKey().getId()));
         if (developerQuery == true && !developerIdList.contains(developerIdStr)) {

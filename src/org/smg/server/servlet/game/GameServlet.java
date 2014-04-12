@@ -152,7 +152,12 @@ public class GameServlet extends HttpServlet {
 
     Entity targetEntity;
     try {
+		
+		
       targetEntity = GameDatabaseDriver.getGame(gameName);
+      Map<String,Object> statsInfo = GameDatabaseDriver.getStatsHelper(targetEntity.getKey().getId());
+      if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
+    			metainfo.put(RATING, statsInfo.get(RATING));
       metainfo.put(GAME_NAME, targetEntity.getProperty(GAME_NAME));
       metainfo.put(HAS_TOKENS, targetEntity.getProperty(HAS_TOKENS));
       metainfo.put(URL, targetEntity.getProperty(URL));
