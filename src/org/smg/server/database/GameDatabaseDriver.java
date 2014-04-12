@@ -257,8 +257,8 @@ public class GameDatabaseDriver {
       {
     	  entityList.add(result);
       }
-      List<JSONObject> queryResult = parseEntityToJSON(entityList);
-      /*List<JSONObject> queryResult = new ArrayList<JSONObject>();
+      //List<JSONObject> queryResult = parseEntityToJSON(entityList);
+      List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
@@ -283,7 +283,7 @@ public class GameDatabaseDriver {
 					}
 				}
         queryResult.add(currentQueryResult);
-      }*/
+      }
       return queryResult;
     } catch (Exception e) {
       return null;
