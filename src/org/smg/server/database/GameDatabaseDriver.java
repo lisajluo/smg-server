@@ -206,6 +206,34 @@ public class GameDatabaseDriver {
 	 return jsonList;	 
 	 
   }
+  public static List<String> getDeveloperList (long gameId) throws Exception
+  {
+	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
+	  try
+	  {
+	    Entity game = datastore.get(gameKey);
+	    List<String> DeveloperList = (List<String>)game.getProperty(DEVELOPER_ID);
+	    return DeveloperList;
+	  }
+	  catch(Exception e)
+	  {
+		  throw new Exception();
+	  }
+	  
+  }
+  public static String getGameName (long gameId) throws Exception
+  {
+	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
+	  try
+	  {
+	    Entity game = datastore.get(gameKey);
+	    return (String)game.getProperty(GAME_NAME);
+	  }
+	  catch(Exception e)
+	  {
+		  throw new Exception();
+	  }
+  }
   private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
   {
 	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
