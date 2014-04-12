@@ -96,7 +96,8 @@ public class GameDatabaseDriver {
     	}
       }
     }
-
+    game.setProperty(PASS_CENSOR, false);
+    game.setProperty(UPDATED, true);
     List<String> developerList = new ArrayList<String>();
     developerList.add((String) parameterMap.get(DEVELOPER_ID));
     game.setProperty(DEVELOPER_ID, developerList);
@@ -180,7 +181,68 @@ public class GameDatabaseDriver {
       return null;
     }
   }
+  @SuppressWarnings("unchecked")
+  private static List<Entity> getGameInfoAsList(boolean censored) {
+      
+		try {
+			Filter censoredFilter = new FilterPredicate(PASS_CENSOR,
+					FilterOperator.EQUAL, censored);
+			Query q = new Query(GAME_META_INFO).setFilter(censoredFilter);
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = new ArrayList<Entity>();
+			for (Entity entity : pq.asIterable()) {
+				result.add(entity);
+			}
+			return result;
+		} catch (Exception e) {
+			return null;
+		}
+  }
+  
+  public static List<JSONObject> getGameInfoAsJSON(boolean censored)
+  {
+	 List<Entity> resultAsEntity= getGameInfoAsList(censored);
+	 List<JSONObject> jsonList = parseEntityToJSON(resultAsEntity);
+	 return jsonList;	 
+	 
+  }
+  private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
+  {
+	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
+		try {
+			for (Entity result : entityList) {
+				JSONObject currentQueryResult = new JSONObject();
+				List<String> developerIdList = (List<String>) (result
+						.getProperty(DEVELOPER_ID));
+				currentQueryResult.put(GAME_ID,
+						Long.toString(result.getKey().getId()));
 
+				List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
+				currentQueryResult.put(DEVELOPER_LOWER, developerListInfo);
+				Map<String, Object> gameInfo = new HashMap<String, Object>(
+						result.getProperties());
+				for (String key : gameInfo.keySet()) {
+					if (key.equals(DEVELOPER_ID) == false) {
+						if (key.equals(PICS)) {
+
+							Text picText = (Text) result.getProperty(PICS);
+							JSONObject picMap = new JSONObject(
+									picText.getValue());
+							currentQueryResult.put(PICS, picMap);
+						} else {
+							currentQueryResult.put(key, gameInfo.get(key));
+						}
+					}
+				}
+				queryResult.add(currentQueryResult);
+			}
+			return queryResult;
+		}
+	  catch (Exception e)
+	  {
+		  return null;
+	  }
+  }
   @SuppressWarnings("unchecked")
   public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
     try {
@@ -190,7 +252,13 @@ public class GameDatabaseDriver {
       }
       Query gameQuery = new Query(GAME_META_INFO);
       PreparedQuery pq = datastore.prepare(gameQuery);
-      List<JSONObject> queryResult = new ArrayList<JSONObject>();
+      List<Entity> entityList = new ArrayList<Entity>();
+      for (Entity result: pq.asIterable())
+      {
+    	  entityList.add(result);
+      }
+      List<JSONObject> queryResult = parseEntityToJSON(entityList);
+      /*List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
@@ -215,7 +283,7 @@ public class GameDatabaseDriver {
 					}
 				}
         queryResult.add(currentQueryResult);
-      }
+      }*/
       return queryResult;
     } catch (Exception e) {
       return null;
