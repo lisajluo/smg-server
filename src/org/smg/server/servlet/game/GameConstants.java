@@ -1,5 +1,7 @@
 package org.smg.server.servlet.game;
 
+import org.smg.server.util.NamespaceUtil;
+
 public final class GameConstants {
 	  private GameConstants() { }  // Prevent instantiation/subclassing
 	
@@ -16,7 +18,7 @@ public final class GameConstants {
 	  public static final String HAS_TOKENS = "hasTokens";
 	  public static final String POST_DATE = "postDate";
 	  public static final String PLAYER_ID = "playerId";
-	  public static final String GAME_META_INFO = "gameMetaInfo";
+	  public static final String GAME_META_INFO = NamespaceUtil.VERSION+"gameMetaInfo";
 	  
 	  // Error messages
 	  static final String ERROR = "error";
