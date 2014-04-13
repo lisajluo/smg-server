@@ -221,9 +221,9 @@
 				var formValues = jsonify($(this).serializeArray());
 
 				var jsonObj = {
-					"firstname" : formValues.firstName,
-					"lastname" : formValues.lastName,
-					"nickname" : formValues.nickName
+					"firstName" : formValues.firstName,
+					"lastName" : formValues.lastName,
+					"nickName" : formValues.nickName
 				};
 
 				$.ajax({
@@ -235,7 +235,7 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
-                                                         updateFields();
+                                                        updateFields();
                                                        
  
 						} else {
