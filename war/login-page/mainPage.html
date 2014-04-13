@@ -25,6 +25,13 @@
 <body>
 	<script type="text/javascript">
 	var imageUploadUrl = "";
+        var domain = "smg-server.appspot.com";
+	var isSocial = getUrlParam("isSocial");
+	var userId = getUrlParam("userId");
+	var accessSignature = getUrlParam("accessSignature");
+      //var domain = "localhost:8888";				
+	if(isSocial == undefined)
+	   isSocial = true;
   function getImage() {
   
    $.ajax({
@@ -65,7 +72,26 @@
       }
     }); 
   }
-  
+  function updateFields() {
+          $.ajax({
+          url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
+          dataType : "json",
+          type : "GET",
+          success : function(data, textStatus, jqXHR) {
+            if (data["error"] == undefined) {
+            $("#greeting").text(" Hi, " + data['firstName']);
+            $("input[name=email]").val(data["email"]);
+            $("input[name=firstName]").val(data["firstName"]);
+            $("input[name=lastName]").val(data["lastName"]);
+            $("input[name=nickName]").val(data["nickName"]);
+            $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
+            } 
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            alert("ERROR: " + textStatus + " " + errorThrown);
+          }
+        });
+  }
   function resetAvatar() {
    $.ajax({
       url: "http://" + domain + "/resetavatar/" + userId,
@@ -91,14 +117,8 @@
 		    var r = window.location.search.substr(1).match(reg);  
 		    if (r!=null) return unescape(r[2]); return null; 
 		}
-		//var domain = "localhost:8888";
-		var domain = "smg-server.appspot.com";
-		var isSocial = getUrlParam("isSocial");
-		var userId = getUrlParam("userId");
-		var accessSignature = getUrlParam("accessSignature");
-				
-		if(isSocial == undefined)
-			isSocial = true;
+		
+		
 		// Simple jsonify - doesn't handle nesting
 		function jsonify(array) {
 			var json = {};
@@ -152,24 +172,7 @@
                               
 				$("#formId2").hide();
 			}
-			$.ajax({
-          url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
-          dataType : "json",
-          type : "GET",
-          success : function(data, textStatus, jqXHR) {
-            if (data["error"] == undefined) {
-            $("#greeting").text(" Hi, " + data['firstName']);
-            $("input[name=email]").val(data["email"]);
-            $("input[name=firstName]").val(data["firstName"]);
-            $("input[name=lastName]").val(data["lastName"]);
-            $("input[name=nickName]").val(data["nickName"]);
-            $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
-            } 
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
+			updateFields();
 			$("#post1").submit(function(e) {
 				// Prevent all default form submission
 				e.preventDefault();
@@ -199,9 +202,8 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
-							window.setTimeout(function () {
-                                                        window.location="http://" + domain + "/login-page/mainPage.html?userId="+userId+"&accessSignature="+accessSignature+"&isSocial=false";
-                                                        }, 300);
+                                                        updateFields();
+							
 						} else {
 							document.getElementById("response").innerHTML = data["error"].toString();
 						}
@@ -233,9 +235,7 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
-                                                        window.setTimeout(function () {
-                                                        window.location="http://" + domain + "/login-page/mainPage.html?userId="+userId+"&accessSignature="+accessSignature+"&isSocial=true";
-                                                        }, 300);
+                                                         updateFields();
                                                        
  
 						} else {
