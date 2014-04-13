@@ -95,5 +95,6 @@ public class UserConstants {
 	public static final String URL = "url";
 	public static final String IMAGE = "image";
 	public static final String IMAGEURL = "imageURL";
+	public static final String BLOBKEY = "blobKey";
 	public static final String FRIEND_LIST = "friendList";
 }

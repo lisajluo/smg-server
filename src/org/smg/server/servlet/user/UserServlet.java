@@ -1,6 +1,5 @@
 package org.smg.server.servlet.user;
 
-
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import java.io.BufferedReader;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.UserDatabaseDriver;
+import org.smg.server.servlet.image.ImageUtil;
 import org.smg.server.servlet.user.UserUtil;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
@@ -59,6 +59,10 @@ public class UserServlet extends HttpServlet{
 	        UserUtil.jsonPut(json, ERROR, MISSING_INFO);
 	      }
 	      else {
+	        // Pick random avatar
+	        String imageUrl = DOMAIN + ImageUtil.getAvatarURL();
+	        parameterMap.put(UserConstants.IMAGEURL, imageUrl);
+	        
 	        // Add to database
 	        long userId = UserDatabaseDriver.insertUser(parameterMap);
 	        

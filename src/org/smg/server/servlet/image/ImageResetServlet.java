@@ -1,13 +1,9 @@
 package org.smg.server.servlet.image;
 
-import static org.smg.server.servlet.developer.DeveloperConstants.ERROR;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,38 +19,45 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 @SuppressWarnings("serial")
-public class ImageUploadServlet extends HttpServlet {
+public class ImageResetServlet extends HttpServlet {
   private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
-    String urlPrefix = req.getRequestURL().toString().replace(IMAGE_UPLOAD_URL, IMAGES_PATH);
-
-    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(req);
+    
     try {
-      BlobKey blobKey = blobs.get("profile_pic").get(0);
-      String imageUrl = urlPrefix + blobKey.getKeyString();
-      
-      Long userId = Long.parseLong(req.getParameter("userId"));
+      long userId = Long.parseLong(req.getPathInfo().substring(1));
       Map user = UserDatabaseDriver.getUserMap(userId);
       
       // Remove old blob from blobstore
       if (user.containsKey(UserConstants.BLOBKEY)) {
         blobstoreService.delete((BlobKey) user.get(UserConstants.BLOBKEY));
-      }
+        user.remove(UserConstants.BLOBKEY);
+      } 
       
+      // Randomly pick one of avatars
+      String hostname = req.getScheme() + "://" + req.getServerName();
+      
+      // Local debugging
+      /*
+      int serverPort = req.getServerPort(); 
+      if (serverPort != 80 && serverPort != 443) {
+        hostname += ":" + serverPort;
+      }
+      */
+      
+      String imageUrl = hostname + ImageUtil.getAvatarURL();
       user.put(UserConstants.IMAGEURL, imageUrl);
-      user.put(UserConstants.BLOBKEY, blobKey);
       UserDatabaseDriver.updateUserWithoutPassWord(userId, user);
       
       ImageUtil.jsonPut(json, UserConstants.IMAGEURL, imageUrl);
     }
     catch (Exception e) {
       e.printStackTrace();
-      ImageUtil.jsonPut(json, ERROR, IMAGE_UPLOAD_ERROR);
+      ImageUtil.jsonPut(json, ERROR, IMAGE_DELETE_ERROR);
     }
     
     try {
