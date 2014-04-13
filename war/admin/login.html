@@ -52,8 +52,7 @@
             return json;
         }
        // var domain = "http://localhost:8888";
-       // var domain = "http://1-dot-huan-kang.appspot.com";
-          var domain = "smg-server.appspot.com";
+          var domain = "http://smg-server.appspot.com";
         toastr.options = {
             "closeButton": true,
             "debug": false,
@@ -73,7 +72,7 @@
             e.preventDefault();
             var formValues = jsonify($(this).serializeArray());
             $.ajax({
-                url: domain+"/admin_login/" + "?password=" + formValues.password + "&adminId=" + formValues.adminId,
+                url: domain + "/admin_login/" + "?password=" + formValues.password + "&adminId=" + formValues.adminId,
                 dataType: "json",
                 type: "GET",
                 success: function (data, textStatus, jqXHR) {
