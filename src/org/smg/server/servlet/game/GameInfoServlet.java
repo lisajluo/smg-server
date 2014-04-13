@@ -87,8 +87,10 @@ public class GameInfoServlet extends HttpServlet {
     String developerIdStr = req.getParameter(DEVELOPER_ID);
     JSONObject jObj = new JSONObject();
     if (developerIdStr == null) {
-      List<JSONObject> queryResult = returnAllGameInfo();
-      put(queryResult, resp);
+      
+      //List<JSONObject> queryResult = returnAllGameInfo();
+      List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
+        put(queryResult, resp);
       return;
     } else {
       long developerId = Long.parseLong(developerIdStr);

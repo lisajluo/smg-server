@@ -29,10 +29,8 @@
 		    var r = window.location.search.substr(1).match(reg);  
 		    if (r!=null) return unescape(r[2]); return null; 
 		}
-		//var domain = "3-dot-smg-server.appspot.com";
 		//var domain = "localhost:8888";
-		//var domain = "smg-server.appspot.com";
-		var domain = "3-dot-apt-momentum-547.appspot.com";
+		var domain = "smg-server.appspot.com";
 		var isSocial = getUrlParam("isSocial");
 		var userId = getUrlParam("userId");
 		var accessSignature = getUrlParam("accessSignature");
@@ -50,14 +48,45 @@
 			}
 			return json;
 		}
+                function Delete()
+                {
+                       var r=confirm("Are you sure you are going to delete this account?");
+                       if (r==true){
+                            $.ajax({
+                              url : "http://" + domain + "/user/"+userId+"?accessSignature="+accessSignature,
+                              dataType : "json",
+                              type: "DELETE",
+                              success : function (data,textStatus,jqXHR) {
+                                if (data["error"] == undefined) {
+		                      document.getElementById("response").innerHTML = "Delete success";
+				      window.setTimeout(function () {
+                                      window.location.replace("http://" + domain + "/login-page/login.html");
+                                                        }, 1000);
+						} 
+                                       else {
+							document.getElementById("response").innerHTML = data["error"].toString();
+						}
+                              },
+                             error : function(jqXHR, textStatus, errorThrown) {
+						alert("ERROR: " + textStatus + " " + errorThrown);
+					}
+                            });
+                       }
+                       
+                       
+ 
+                }
+
 
 		$(document).ready( function() {
 			$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
 			$("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
 			$("#developerpage").prop('src', "http://www.w3schools.com")
+                        
 			if(isSocial == true) {
 				$("#formId1").hide();
 			} else {
+                              
 				$("#formId2").hide();
 			}
 			$.ajax({
@@ -65,10 +94,13 @@
           dataType : "json",
           type : "GET",
           success : function(data, textStatus, jqXHR) {
+            if (data["error"] == undefined) {
+            $("#greeting").text(" Hi, " + data['firstName']);
             $("input[name=email]").val(data["email"]);
             $("input[name=firstName]").val(data["firstName"]);
             $("input[name=lastName]").val(data["lastName"]);
             $("input[name=nickName]").val(data["nickName"]);
+            } 
           },
           error : function(jqXHR, textStatus, errorThrown) {
             alert("ERROR: " + textStatus + " " + errorThrown);
@@ -103,7 +135,9 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
-							$("#greeting").text(" Hi, " + jsonObj['firstName']);
+							window.setTimeout(function () {
+                                                        window.location="http://" + domain + "/login-page/mainPage.html?userId="+userId+"&accessSignature="+accessSignature+"&isSocial=false";
+                                                        }, 300);
 						} else {
 							document.getElementById("response").innerHTML = data["error"].toString();
 						}
@@ -114,22 +148,6 @@
 				});
 			});
 
-			$.ajax({
-				url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
-				dataType : "json",
-				type : "GET",
-				success : function(data, textStatus, jqXHR) {
-					//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
-					if (data["error"] == undefined) {
-						$("#greeting").text(" Hi, " + data['firstName']);
-					} else {
-						$("#greeting").text(data["error"]);
-					}
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert("ERROR: " + textStatus + " " + errorThrown);
-				}
-			});
 			$("#post2").submit(function(e) {
 				// Prevent all default form submission
 				e.preventDefault();
@@ -142,7 +160,6 @@
 					"nickname" : formValues.nickName
 				};
 
-				console.log("2");
 				$.ajax({
 					url : "http://" + domain + "/userinfo/" + userId,
 					dataType : "json",
@@ -152,6 +169,11 @@
 						//$("#response").append("<p>" + JSON.stringify(data) + "</p>");
 						if (data["error"] == undefined) {
 							document.getElementById("response").innerHTML = "Update success";
+                                                        window.setTimeout(function () {
+                                                        window.location="http://" + domain + "/login-page/mainPage.html?userId="+userId+"&accessSignature="+accessSignature+"&isSocial=true";
+                                                        }, 300);
+                                                       
+ 
 						} else {
 							document.getElementById("response").innerHTML = data["error"].toString();
 						}
@@ -215,15 +237,19 @@
 								<label id="response"></label>
 							</div>
 						</form>
+                                                <div class="panel-footer" style= "margin-bottom: -14px;">
+                                                                 <button class="btn btn-danger" onclick="Delete()">Delete</button>
+                                                </div>
+                                                
 					</div>
 				</div>
-				<div class="row" id="formId2">
+				        <div class="row" id="formId2">
 					<div>
 
-						<h4 class="page-header">You are social authorized user, please provide following information</h4>
+					        <h4 class="page-header">You are social authorized user, please provide following information</h4>
 						<form role="form" id="post2">
 							<div class="form-group float-label-control label-bottom">
-								<label for="">First Name</label> <input type="text" name="fistName"
+								<label for="">First Name</label> <input type="text" name="firstName"
 									class="form-control" placeholder="First Name">
 							</div>
 							<div class="form-group float-label-control label-bottom" name="lastName">
@@ -240,6 +266,9 @@
 								<label id="response"></label>
 							</div>
 						</form>
+                                                <div class="panel-footer" style= "margin-bottom: -14px;">
+                                                                 <button class="btn btn-danger" onclick="Delete()">Delete</button>
+                                                </div>
 					</div>
 				</div>
 				</div>

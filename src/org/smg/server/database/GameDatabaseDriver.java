@@ -96,7 +96,8 @@ public class GameDatabaseDriver {
     	}
       }
     }
-
+    game.setProperty(PASS_CENSOR, false);
+    game.setProperty(UPDATED, true);
     List<String> developerList = new ArrayList<String>();
     developerList.add((String) parameterMap.get(DEVELOPER_ID));
     game.setProperty(DEVELOPER_ID, developerList);
@@ -180,7 +181,113 @@ public class GameDatabaseDriver {
       return null;
     }
   }
+  @SuppressWarnings("unchecked")
+  private static List<Entity> getGameInfoAsList(boolean censored) {
+      
+		try {
+			Filter censoredFilter = new FilterPredicate(PASS_CENSOR,
+					FilterOperator.EQUAL, censored);
+			Query q = new Query(GAME_META_INFO).setFilter(censoredFilter);
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = new ArrayList<Entity>();
+			for (Entity entity : pq.asIterable()) {
+				result.add(entity);
+			}
+			return result;
+		} catch (Exception e) {
+			return null;
+		}
+  }
+  
+  public static List<JSONObject> getGameInfoAsJSON(boolean censored)
+  {
+	 List<Entity> resultAsEntity= getGameInfoAsList(censored);
+	 List<JSONObject> jsonList = parseEntityToJSON(resultAsEntity);
+	 return jsonList;	 
+	 
+  }
+  public static List<String> getDeveloperList (long gameId) throws Exception
+  {
+	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
+	  try
+	  {
+	    Entity game = datastore.get(gameKey);
+	    List<String> DeveloperList = (List<String>)game.getProperty(DEVELOPER_ID);
+	    return DeveloperList;
+	  }
+	  catch(Exception e)
+	  {
+		  throw new Exception();
+	  }
+	  
+  }
+  public static String getGameName (long gameId) throws Exception
+  {
+	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
+	  try
+	  {
+	    Entity game = datastore.get(gameKey);
+	    return (String)game.getProperty(GAME_NAME);
+	  }
+	  catch(Exception e)
+	  {
+		  throw new Exception();
+	  }
+  }
+  public static Map<String, Object> getStatsHelper(long gameId) throws EntityNotFoundException {
+     try
+     {
+    	 Map<String,Object> target= getStats(gameId);
+    	 return target;
+     }
+     catch (Exception e)
+     {
+    	 return null;
+     }
+  }
+  private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
+  {
+	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
+		try {
+			for (Entity result : entityList) {
+				JSONObject currentQueryResult = new JSONObject();
+				long gameId = result.getKey().getId();
+				//Map
+				Map<String,Object> statsInfo = getStatsHelper(gameId);
+				if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
+					currentQueryResult.put(RATING, statsInfo.get(RATING));
+				
+				List<String> developerIdList = (List<String>) (result
+						.getProperty(DEVELOPER_ID));
+				currentQueryResult.put(GAME_ID,
+						Long.toString(result.getKey().getId()));
 
+				List<JSONObject> developerListInfo = getDeveloperListInfo(developerIdList);
+				currentQueryResult.put(DEVELOPER_LOWER, developerListInfo);
+				Map<String, Object> gameInfo = new HashMap<String, Object>(
+						result.getProperties());
+				for (String key : gameInfo.keySet()) {
+					if (key.equals(DEVELOPER_ID) == false) {
+						if (key.equals(PICS)) {
+
+							Text picText = (Text) result.getProperty(PICS);
+							JSONObject picMap = new JSONObject(
+									picText.getValue());
+							currentQueryResult.put(PICS, picMap);
+						} else {
+							currentQueryResult.put(key, gameInfo.get(key));
+						}
+					}
+				}
+				queryResult.add(currentQueryResult);
+			}
+			return queryResult;
+		}
+	  catch (Exception e)
+	  {
+		  return null;
+	  }
+  }
   @SuppressWarnings("unchecked")
   public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
     try {
@@ -190,9 +297,20 @@ public class GameDatabaseDriver {
       }
       Query gameQuery = new Query(GAME_META_INFO);
       PreparedQuery pq = datastore.prepare(gameQuery);
+      List<Entity> entityList = new ArrayList<Entity>();
+      for (Entity result: pq.asIterable())
+      {
+    	  entityList.add(result);
+      }
+      //List<JSONObject> queryResult = parseEntityToJSON(entityList);
       List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
+        long gameId = result.getKey().getId();
+		Map<String,Object> statsInfo = getStatsHelper(gameId);
+		if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
+			currentQueryResult.put(RATING, statsInfo.get(RATING));
+		
         List<String> developerIdList = (List<String>) (result.getProperty(DEVELOPER_ID));
         currentQueryResult.put(GAME_ID, Long.toString(result.getKey().getId()));
         if (developerQuery == true && !developerIdList.contains(developerIdStr)) {

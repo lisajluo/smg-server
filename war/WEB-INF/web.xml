@@ -117,6 +117,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<url-pattern>/userinfo/*</url-pattern>
   </servlet-mapping>
   <servlet>
+  <servlet-name>admin</servlet-name>
+  <servlet-class>org.smg.server.servlet.admin.adminServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  <servlet-name>admin</servlet-name>
+  <url-pattern>/admin_login/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
 	<servlet-name>userinforetrieve</servlet-name>
 	<servlet-class>org.smg.server.servlet.user.UserInfoRetrieve</servlet-class>
   </servlet>
@@ -206,6 +214,22 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-name>userLogOut</servlet-name>
 	<url-pattern>/userLogOut/*</url-pattern>
   </servlet-mapping>    
+  <servlet>
+  <servlet-name>getAdminList</servlet-name>
+  <servlet-class>org.smg.server.servlet.admin.adminInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  <servlet-name>getAdminList</servlet-name>
+  <url-pattern>/adminList</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  <servlet-name>adminCensor</servlet-name>
+  <servlet-class>org.smg.server.servlet.admin.adminCensor</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  <servlet-name>adminCensor</servlet-name>
+  <url-pattern>/adminCensor/*</url-pattern>
+  </servlet-mapping> 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

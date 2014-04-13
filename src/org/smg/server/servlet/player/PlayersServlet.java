@@ -1,8 +1,22 @@
 package org.smg.server.servlet.player;
 
+import static org.smg.server.servlet.user.UserConstants.ACCESS_SIGNATURE;
+import static org.smg.server.servlet.user.UserConstants.EMAIL;
+import static org.smg.server.servlet.user.UserConstants.ERROR;
+import static org.smg.server.servlet.user.UserConstants.PASSWORD;
+import static org.smg.server.servlet.user.UserConstants.SOCIAL_AUTH;
+import static org.smg.server.servlet.user.UserConstants.SOCIAL_AUTH_ACCOUNT;
+import static org.smg.server.servlet.user.UserConstants.USER_ID;
+import static org.smg.server.servlet.user.UserConstants.WRONG_EMAIL;
+import static org.smg.server.servlet.user.UserConstants.WRONG_PASSWORD;
+import static org.smg.server.servlet.user.UserConstants.WRONG_USER_ID;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -11,11 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DatabaseDriverPlayer;
+import org.smg.server.database.UserDatabaseDriver;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.servlet.user.UserUtil;
+import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -73,72 +91,59 @@ public class PlayersServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
-		resp.setContentType("text/plain");
-		JSONObject returnValue = new JSONObject();
-		String playerId = null;
-		if (req.getPathInfo() != null && req.getPathInfo().length() > 0 ) {
-			playerId = req.getPathInfo().substring(1);
+	    Map user = new HashMap();
+	    long userId = -1;
+	    PrintWriter writer = resp.getWriter();
+	    JSONObject json = new JSONObject();
+		if (req.getParameter(EMAIL) != null) {
+			List<Entity> userAsList = null;
+			userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
+					req.getParameter(EMAIL));
+			if (userAsList == null || userAsList.size() == 0) {
+				try {
+					UserUtil.jsonPut(json, ERROR, WRONG_EMAIL);
+					json.write(resp.getWriter());
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			userId = userAsList.get(0).getKey().getId();
+
 		}
-		else {
-		  try {
-        returnValue.put("error", "WRONG_PLAYER_ID");
-        returnValue.write(resp.getWriter());
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      return;
-		}
-		long playerIdLong;
 		try {
-      playerIdLong = Long.parseLong(playerId);
-    } catch (NumberFormatException e) {
-      try {
-        returnValue.put("error", "WRONG_PLAYER_ID");
-        returnValue.write(resp.getWriter());
-      } catch (JSONException e2) {
-        e2.printStackTrace();
-      }
-      return;
-    }
-		Map<String, String[]> map = req.getParameterMap();
-		if (!map.containsKey("password")){
-		  try {
-        returnValue.put("error", "WRONG_PASSWORD");
-        returnValue.write(resp.getWriter());
-      } catch (JSONException e2) {
-        e2.printStackTrace();
-      }
-      return;
+			if (userId == -1) {
+				userId = Long.parseLong(req.getPathInfo().substring(1));
+			}
+			user = UserDatabaseDriver.getUserMap(userId);
+			if (user.get(SOCIAL_AUTH) != null) {
+				UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
+
+			} else {
+				if (user.get(PASSWORD).equals(
+						AccessSignatureUtil.getHashedPassword(req
+								.getParameter(PASSWORD)))) {
+					user.put(ACCESS_SIGNATURE,
+							AccessSignatureUtil.generate(userId));
+					user.put(PASSWORD, req.getParameter(PASSWORD));
+					UserDatabaseDriver.updateUser(userId, user);
+					user.remove(PASSWORD);
+					user.put(USER_ID, userId);
+					json = new JSONObject(user);
+				} else {
+					UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
+				}
+			}
+		} catch (Exception e) {
+			UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
 		}
-		String originalPassword = req.getParameter("password");
-		try {
-      String[] result = DatabaseDriverPlayer.loginPlayer(playerIdLong, originalPassword);
-      if (result[0].equals("WRONG_PASSWORD")){
-        try {
-          returnValue.put("error", "WRONG_PASSWORD");
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e2) {
-          e2.printStackTrace();
-        }
-      } else {
-        try {
-          returnValue.put("email", result[0]);
-          returnValue.put("accessSignature", result[1]);
-          returnValue.write(resp.getWriter());
-        } catch (JSONException e2) {
-          e2.printStackTrace();
-        }
-      }
-      return;
-    } catch (EntityNotFoundException e) {
-      try {
-        returnValue.put("error", "WRONG_PLAYER_ID");
-        returnValue.write(resp.getWriter());
-      } catch (JSONException e2) {
-        e2.printStackTrace();
-      }
-      return;
-    }
+	    try {
+	      json.write(writer);
+	    } 
+	    catch (JSONException e) {
+	      e.printStackTrace();
+	    }
 	}
 
 	@Override
