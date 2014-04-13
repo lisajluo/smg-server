@@ -149,13 +149,23 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<url-pattern>/userSocialAuth/*</url-pattern>
   </servlet-mapping>
   <servlet>
-	<servlet-name>userSocialAuthCallBack</servlet-name>
-	<servlet-class>org.smg.server.servlet.user.UserServletSocialAuthCallBackGoogle</servlet-class>
+	<servlet-name>userSocialAuthCallbackGoogle</servlet-name>
+	<servlet-class>org.smg.server.servlet.user.UserServletSocialAuthCallbackGoogle</servlet-class>
   </servlet>
   <servlet-mapping>
-	<servlet-name>userSocialAuthCallBack</servlet-name>
-	<url-pattern>/socialAuthCallBack/*</url-pattern>
+	<servlet-name>userSocialAuthCallbackGoogle</servlet-name>
+	<url-pattern>/socialAuthCallbackGoogle/*</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+	<servlet-name>userSocialAuthCallbackFacebook</servlet-name>
+	<servlet-class>org.smg.server.servlet.user.UserServletSocialAuthCallbackFacebook</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>userSocialAuthCallbackFacebook</servlet-name>
+	<url-pattern>/socialAuthCallbackFacebook/*</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <servlet-name>state</servlet-name>
     <servlet-class>org.smg.server.servlet.container.StateServlet</servlet-class>
