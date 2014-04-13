@@ -24,6 +24,68 @@
 </head>
 <body>
 	<script type="text/javascript">
+	var imageUploadUrl = "";
+  function getImage() {
+  
+   $.ajax({
+      url: "http://" + domain + "/uploadurl",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+        imageUploadUrl = data;
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+    document.getElementById("image_upload").click();
+  }
+  
+  function upload() {
+    var form = document.getElementById('upload_form');
+    var formData = new FormData(form);
+
+    $.ajax({
+      url: imageUploadUrl,
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      type: "POST",
+      success: function(data, textStatus, jqXHR) {
+        if (data.imageURL) {
+          $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+        }
+        else { 
+          alert ("Image upload error");
+        }
+        
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        //alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+  }
+  
+  function resetAvatar() {
+   $.ajax({
+      url: "http://" + domain + "/resetavatar/" + userId,
+      type: "DELETE",
+      dataType: "json",
+      success: function(data, textStatus, jqXHR) {
+        if (data.imageURL) {
+          $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+          document.getElementById("response").innerHTML = "";
+        }
+        else { 
+          alert ("Image upload error");
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        //alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+  }
+	
 		function getUrlParam(name) {
 		    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); 
 		    var r = window.location.search.substr(1).match(reg);  
@@ -82,6 +144,7 @@
 			$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
 			$("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
 			$("#developerpage").prop('src', "http://www.w3schools.com")
+      $("#userId").val(userId);
                         
 			if(isSocial == true) {
 				$("#formId1").hide();
@@ -100,6 +163,7 @@
             $("input[name=firstName]").val(data["firstName"]);
             $("input[name=lastName]").val(data["lastName"]);
             $("input[name=nickName]").val(data["nickName"]);
+            $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
             } 
           },
           error : function(jqXHR, textStatus, errorThrown) {
@@ -185,6 +249,21 @@
 			});
 		});
 	</script>
+	<div class="modal fade" id="confirmResetAvatar" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        
+        <div class="modal-content">
+          <div class="modal-body">
+            Are you sure? This will replace your current avatar with an SMG avatar.
+          </div>
+          <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="resetAvatar()">OK</button>
+		      </div>
+        </div>
+        
+      </div>
+    </div>
 	<div class="container">
 		<ul id="tabs" class="nav nav-pills">
 			<li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span> Play</a></li>
@@ -273,7 +352,18 @@
 				</div>
 				</div>
 			</li>
-			<li class="pull-right"><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-cog" id="greeting"></span></a></li>
+			<li class="pull-right"><a href="#" data-toggle="dropdown"><span id="greeting" style="padding-left: 30px; background-repeat: no-repeat; background-size:contain;"></span></a>
+			 <ul class="dropdown-menu">
+          <li><a href="#" onclick="getImage()">Upload new avatar...</a></li>
+          <li><a href="#" data-toggle="modal" data-target="#confirmResetAvatar">Reset avatar</a></li>
+       </ul>
+			 <form method="post" enctype="multipart/form-data" id="upload_form">
+			 <div style='height: 0px; width:0px; overflow:hidden;'>
+         <input type="hidden" name="userId" id="userId" value="">
+         <input type="file" accept="image/*" name="profile_pic" id="image_upload" onchange="upload()">
+       </div>
+       </form>
+      </li>
 		</ul>
 		<div id="my-tab-content" class="tab-content">
 			<div class="tab-pane active" id="play">
