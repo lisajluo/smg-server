@@ -52,7 +52,7 @@ public class DeveloperServlet extends HttpServlet {
   @SuppressWarnings({ "rawtypes" })
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    //CORSUtil.addCORSHeader(resp);
+    CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
