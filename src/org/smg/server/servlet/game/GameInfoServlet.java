@@ -90,7 +90,14 @@ public class GameInfoServlet extends HttpServlet {
       
       //List<JSONObject> queryResult = returnAllGameInfo();
       List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
-        put(queryResult, resp);
+      for (JSONObject game : queryResult)
+      {
+    	  if (game.has(PASS_CENSOR)==true)
+    		  game.remove(PASS_CENSOR);
+    	  if (game.has(UPDATED)==true)
+    		  game.remove(UPDATED);
+      }
+      put(queryResult, resp);
       return;
     } else {
       long developerId = Long.parseLong(developerIdStr);
