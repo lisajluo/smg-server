@@ -2,6 +2,7 @@ package org.smg.server.servlet.developer;
 
 import static org.smg.server.servlet.developer.DeveloperConstants.*;
 import static org.smg.server.servlet.user.UserConstants.ACCESS_SIGNATURE;
+import static org.smg.server.servlet.user.UserConstants.DOMAIN;
 import static org.smg.server.servlet.user.UserConstants.EMAIL;
 import static org.smg.server.servlet.user.UserConstants.ERROR;
 import static org.smg.server.servlet.user.UserConstants.PASSWORD;
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.UserDatabaseDriver;
+import org.smg.server.servlet.image.ImageUtil;
+import org.smg.server.servlet.user.UserConstants;
 import org.smg.server.servlet.user.UserUtil;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
@@ -49,7 +52,7 @@ public class DeveloperServlet extends HttpServlet {
   @SuppressWarnings({ "rawtypes" })
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    CORSUtil.addCORSHeader(resp);
+    //CORSUtil.addCORSHeader(resp);
     PrintWriter writer = resp.getWriter();
     JSONObject json = new JSONObject();
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
@@ -177,6 +180,10 @@ public class DeveloperServlet extends HttpServlet {
         DeveloperUtil.jsonPut(json, ERROR, MISSING_INFO);
       }
       else {
+        // Pick random avatar
+        String imageUrl = DOMAIN + ImageUtil.getAvatarURL();
+        parameterMap.put(UserConstants.IMAGEURL, imageUrl);
+        
         // Add to database
         long developerId = DeveloperDatabaseDriver.insertDeveloper(parameterMap);
         

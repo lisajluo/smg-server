@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.smg.server.database.DatabaseDriverPlayer;
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.servlet.user.UserConstants;
 import org.smg.server.util.CORSUtil;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -98,6 +99,7 @@ public class PlayerInfoServlet extends HttpServlet {
         try {
           returnValue.put(FIRST_NAME, target.getProperty(PlayerProperty.firstName));
           returnValue.put(NICKNAME, target.getProperty(PlayerProperty.nickName));
+          returnValue.put(UserConstants.IMAGEURL, target.getProperty(PlayerProperty.imageURL));
           returnValue.write(resp.getWriter());
         } catch (JSONException e) {
           e.printStackTrace();

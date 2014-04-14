@@ -24,7 +24,7 @@ public class ImageUtil {
    * Picks one of 4 random avatars (lion, monkey, giraffe, elephant) and returns relative URL.
    */
   public static String getAvatarURL() {
-    String directoryPrefix = "/login-page/image/";
+    String directoryPrefix = "login-page/image/";
     Random rand = new Random(); 
     return directoryPrefix + avatarPics[rand.nextInt(4)];
   }

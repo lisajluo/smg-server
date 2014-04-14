@@ -40,7 +40,7 @@ public final class GameConstants {
 	  static final String CURRENT_GAMES = "currentGames";
 	  
 	  // Statistics table
-	  public static final String GAME_STATISTICS = "GAME_STATISTICS";
+	  public static final String GAME_STATISTICS = NamespaceUtil.VERSION + "GAME_STATISTICS";
 	  // Statistics properties
 	  public static final String PASS_CENSOR = "pass_censor";
 	  public static final String UPDATED = "updated";

@@ -49,7 +49,7 @@ public class ImageResetServlet extends HttpServlet {
       }
       */
       
-      String imageUrl = hostname + ImageUtil.getAvatarURL();
+      String imageUrl = hostname + "/" + ImageUtil.getAvatarURL();
       user.put(UserConstants.IMAGEURL, imageUrl);
       UserDatabaseDriver.updateUserWithoutPassWord(userId, user);
       

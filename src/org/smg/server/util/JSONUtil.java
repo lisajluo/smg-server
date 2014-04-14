@@ -1,5 +1,7 @@
 package org.smg.server.util;
 
+import static org.smg.server.servlet.user.UserConstants.DOMAIN;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +11,8 @@ import java.util.Map;
 
 import org.smg.server.database.models.Player;
 import org.smg.server.database.models.Player.PlayerProperty;
+import org.smg.server.servlet.image.ImageUtil;
+import org.smg.server.servlet.user.UserConstants;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +24,10 @@ public class JSONUtil {
   
 	public static Player jSON2Player(String json) throws IOException{
 		Map<String, Object> jsonMap = JSONUtil.parse(json);
+		
+		// Pick random avatar
+    String imageUrl = DOMAIN + ImageUtil.getAvatarURL();
+    jsonMap.put(UserConstants.IMAGEURL, imageUrl);
 		
 		/* Case change to ensure backwards compatibility with V2 API calls */
 		if (jsonMap.containsKey(LOWER_FIRST_NAME)) {

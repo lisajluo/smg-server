@@ -22,7 +22,7 @@ public class Player {
   public static enum PlayerProperty {
     PLAYERID, password, accessSignature,
     email,
-    firstName, lastName, nickName;
+    firstName, lastName, nickName, imageURL;
     
     /**
      * return PlayerProperty by value.
