@@ -200,6 +200,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>imagedownload</servlet-name>
 		<servlet-class>org.smg.server.servlet.image.ImageDownloadServlet</servlet-class>
 	</servlet>
+	 <servlet-mapping>
+    <servlet-name>imagedownload</servlet-name>
+    <url-pattern>/images/*</url-pattern>
+  </servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>resetavatar</servlet-name>
 		<url-pattern>/resetavatar/*</url-pattern>
@@ -208,10 +212,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>resetavatar</servlet-name>
 		<servlet-class>org.smg.server.servlet.image.ImageResetServlet</servlet-class>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>imagedownload</servlet-name>
-		<url-pattern>/images/*</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>userLogOut</servlet-name>
 		<servlet-class>org.smg.server.servlet.user.UserLogOutServlet</servlet-class>
