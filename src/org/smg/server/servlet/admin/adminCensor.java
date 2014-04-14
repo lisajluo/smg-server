@@ -129,10 +129,12 @@ public class adminCensor extends HttpServlet {
       }
       parameterMap.put(UPDATED, false);
       long longId = Long.parseLong(gameId);
+      String text = (String) parameterMap.get(TEXT);
+      if (parameterMap.containsKey(TEXT)==true)
+    	  parameterMap.remove(TEXT);
       GameDatabaseDriver.updateGame(longId, parameterMap);
       put(jObj, SUCCESS, ADMIN_FINISHED, resp);
       boolean pass = (boolean) parameterMap.get(PASS_CENSOR);
-      String text = (String) parameterMap.get(TEXT);
       sendEmailToDevelopers(longId, pass, text);
       return;
     } catch (Exception e)

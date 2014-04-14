@@ -96,6 +96,8 @@ public class GameDatabaseDriver {
     	}
       }
     }
+    if (game.hasProperty(HAS_TOKENS)==false)
+    	game.setProperty(HAS_TOKENS, false);	
     game.setProperty(PASS_CENSOR, false);
     game.setProperty(UPDATED, true);
     List<String> developerList = new ArrayList<String>();

@@ -110,6 +110,11 @@ public class GameInfoServlet extends HttpServlet {
           return;
         }
         List<JSONObject> queryResult = returnGameInfoByDeveloper(developerId);
+        for (JSONObject game : queryResult)
+        {
+      	  if (game.has(UPDATED)==true)
+      		  game.remove(UPDATED);
+        }
         put(queryResult, resp);
       } catch (Exception e) {
         put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
