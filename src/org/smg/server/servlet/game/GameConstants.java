@@ -42,7 +42,7 @@ public final class GameConstants {
 	  // Statistics table
 	  public static final String GAME_STATISTICS = NamespaceUtil.VERSION + "GAME_STATISTICS";
 	  // Statistics properties
-	  public static final String PASS_CENSOR = "pass_censor";
+	  public static final String AUTHORIZED = "authorized";
 	  public static final String UPDATED = "updated";
 	  public static final String HIGH_SCORE = "highScore";
 	  public static final String SCORE = "score";

@@ -92,8 +92,8 @@ public class GameInfoServlet extends HttpServlet {
       List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
       for (JSONObject game : queryResult)
       {
-    	  if (game.has(PASS_CENSOR)==true)
-    		  game.remove(PASS_CENSOR);
+    	  if (game.has(AUTHORIZED)==true)
+    		  game.remove(AUTHORIZED);
     	  if (game.has(UPDATED)==true)
     		  game.remove(UPDATED);
       }

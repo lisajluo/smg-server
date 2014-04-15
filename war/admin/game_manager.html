@@ -54,7 +54,7 @@
                 dataType: "json",
                 type: "POST",
                 data: JSON.stringify({
-                    "pass_censor": true,
+                    "authorized": true,
                     "TEXT": ""
                 }),
                 success: function (data, textStatus, jqXHR) {
@@ -87,7 +87,7 @@
                     dataType: "json",
                     type: "POST",
                     data: JSON.stringify({
-                        "pass_censor": false,
+                        "authorized": false,
                         "TEXT": formValues.reason_text
                     }),
                     success: function (data, textStatus, jqXHR) {
@@ -173,10 +173,10 @@
                 var blockedTable = $("#blokTable");
 
                 $.each(passedList, function (i, entry) {
-                    updateTableItem(entry["pass_censor"] == true ? passedTable : blockedTable, entry, true);
+                    updateTableItem(entry["authorized"] == true ? passedTable : blockedTable, entry, true);
                 });
                 $.each(blockedList, function (i, entry) {
-                    updateTableItem(entry["pass_censor"] == true ? passedTable : blockedTable, entry, false);
+                    updateTableItem(entry["authorized"] == true ? passedTable : blockedTable, entry, false);
                 });
             };
 

@@ -34,7 +34,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class adminCensor extends HttpServlet {
 
   private String[] validParams = {
-    PASS_CENSOR,TEXT
+    AUTHORIZED,TEXT
   };
 
   private void sendEmailHelper(String gameName, long developerId, boolean pass, String Text)
@@ -122,7 +122,7 @@ public class adminCensor extends HttpServlet {
       String buffer = Utils.getBody(req);
       Map<Object, Object> parameterMap = deleteInvalid(
           (Map) JSONUtil.parse(buffer), validParams);
-      if (parameterMap.containsKey(PASS_CENSOR) == false)
+      if (parameterMap.containsKey(AUTHORIZED) == false)
       {
         put(jObj, ERROR, MISSING_INFO, resp);
         return;
@@ -134,7 +134,7 @@ public class adminCensor extends HttpServlet {
     	  parameterMap.remove(TEXT);
       GameDatabaseDriver.updateGame(longId, parameterMap);
       put(jObj, SUCCESS, ADMIN_FINISHED, resp);
-      boolean pass = (boolean) parameterMap.get(PASS_CENSOR);
+      boolean pass = (boolean) parameterMap.get(AUTHORIZED);
       sendEmailToDevelopers(longId, pass, text);
       return;
     } catch (Exception e)
