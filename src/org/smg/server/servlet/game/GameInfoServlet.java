@@ -92,8 +92,8 @@ public class GameInfoServlet extends HttpServlet {
       List<JSONObject> queryResult = GameDatabaseDriver.getGameInfoAsJSON(true);
       for (JSONObject game : queryResult)
       {
-    	  if (game.has(PASS_CENSOR)==true)
-    		  game.remove(PASS_CENSOR);
+    	  if (game.has(AUTHORIZED)==true)
+    		  game.remove(AUTHORIZED);
     	  if (game.has(UPDATED)==true)
     		  game.remove(UPDATED);
       }
@@ -110,6 +110,11 @@ public class GameInfoServlet extends HttpServlet {
           return;
         }
         List<JSONObject> queryResult = returnGameInfoByDeveloper(developerId);
+        for (JSONObject game : queryResult)
+        {
+      	  if (game.has(UPDATED)==true)
+      		  game.remove(UPDATED);
+        }
         put(queryResult, resp);
       } catch (Exception e) {
         put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);

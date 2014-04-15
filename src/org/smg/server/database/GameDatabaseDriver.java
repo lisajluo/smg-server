@@ -96,7 +96,9 @@ public class GameDatabaseDriver {
     	}
       }
     }
-    game.setProperty(PASS_CENSOR, false);
+    if (game.hasProperty(HAS_TOKENS)==false)
+    	game.setProperty(HAS_TOKENS, false);	
+    game.setProperty(AUTHORIZED, false);
     game.setProperty(UPDATED, true);
     List<String> developerList = new ArrayList<String>();
     developerList.add((String) parameterMap.get(DEVELOPER_ID));
@@ -185,7 +187,7 @@ public class GameDatabaseDriver {
   private static List<Entity> getGameInfoAsList(boolean censored) {
       
 		try {
-			Filter censoredFilter = new FilterPredicate(PASS_CENSOR,
+			Filter censoredFilter = new FilterPredicate(AUTHORIZED,
 					FilterOperator.EQUAL, censored);
 			Query q = new Query(GAME_META_INFO).setFilter(censoredFilter);
 			PreparedQuery pq = datastore.prepare(q);

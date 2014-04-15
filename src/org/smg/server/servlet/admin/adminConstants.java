@@ -12,7 +12,7 @@ public class adminConstants {
   public static final String PASSED_LIST = "PASSED_LIST";
   public static final String BLOCKED_LIST = "BLOCKED_LIST";
   public static final String NO_RECORD = "NO_RECORD";
-  public static final String PASS_CENSOR = "pass_censor";
+  public static final String AUTHORIZED = "authorized";
   public static final String MISSING_INFO = "MISSING_INFO";
   public static final String UPDATED = "updated";
   public static final String INVALID_FORMAT = "INVALID_FORMAT";
