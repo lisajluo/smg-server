@@ -25,7 +25,7 @@ public class adminConstants {
   // public static final String ADMIN_EMAIL = "hk1642@nyu.edu";
   public static final String ADMIN_NAME = "smg-server";
   public static final String EMAIL = "email";
-  public static final String MAIL_SUBJECT = "Notification On Your Game Approval";
+  public static final String MAIL_SUBJECT = "Notification on your game approval";
 
   public static final String approve(String gameName) {
     return "We are happy to inform you that your game " + gameName
