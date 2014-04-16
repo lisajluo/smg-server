@@ -31,6 +31,12 @@
             padding: 15px;
             margin: 0 auto;
         }
+        td {
+        	max-width:120px;
+        	word-wrap:break-all;
+        	overflow: hidden;
+  			text-overflow: ellipsis;
+        }
     </style>
     <script type="text/javascript">
         //var domain = "localhost:8888";
@@ -238,7 +244,7 @@
     <div class="xxxx">
         <div class="panel panel-success">
             <div class="panel-heading">Accepted Games</div>
-            <div class="table-responsive">
+            <div class="table table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr id="tableHeader1">
@@ -252,7 +258,7 @@
         </div>
         <div class="panel panel-danger">
             <div class="panel-heading">Blocked Games</div>
-            <div class="table-responsive">
+            <div class="table table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr id="tableHeader2">
