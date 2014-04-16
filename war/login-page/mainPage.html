@@ -79,7 +79,7 @@
           type : "GET",
           success : function(data, textStatus, jqXHR) {
             if (data["error"] == undefined) {
-            $("#greeting").text(" Hi, " + data['firstName']);
+            $("#greeting_text").text(" Hi, " + data['firstName'] + " ");
             $("input[name=email]").val(data["email"]);
             $("input[name=firstName]").val(data["firstName"]);
             $("input[name=lastName]").val(data["lastName"]);
@@ -267,18 +267,17 @@
     </div>
 	<div class="container">
 		<ul id="tabs" class="nav nav-pills">
-			<li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span> Play</a></li>
-			<li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span> Game Developer</a></li>
-			<li class="dropdown pull-right" id="logoutDropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown" ><span class="glyphicon glyphicon-log-out"></span> Logout 
+			<li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span><span class="hidden-xs"> Play</span></a></li>
+			<li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span><span class="hidden-xs"> Game Developer</span></a></li>
+			<li class="pull-right" id="logoutDropdown"><a data-toggle="dropdown" ><span class="glyphicon glyphicon-log-out"></span><span class="hidden-xs"> Logout</span>
 					<b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
 					<li><a href="#" id="logouturl">Logout</a></li>
 				</ul>
 			</li>
-			<li class="dropdown pull-right" id="accountManageDropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Account Management
+			<li class="pull-right" id="accountManageDropdown">
+				<a data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span><span class="hidden-xs"> Account Management</span>
 					<b class="caret"></b>
 				</a>
 				<div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px; width: 300px; padding-left: 1cm; padding-right: 1cm">
@@ -353,7 +352,7 @@
 				</div>
 				</div>
 			</li>
-			<li class="pull-right"><a href="#" data-toggle="dropdown"><span id="greeting" style="padding-left: 30px; background-repeat: no-repeat; background-size:contain;"></span>&nbsp;<b class="caret"></b></a>
+			<li class="pull-right"><a href="#" data-toggle="dropdown"><span id="greeting" style="padding-left: 30px; background-repeat: no-repeat; background-size:contain;"></span><span id="greeting_text" class="hidden-xs"></span><b class="caret"></b></a>
 			 <ul class="dropdown-menu">
           <li><a href="#" onclick="getImage()">Upload new avatar...</a></li>
           <li><a href="#" data-toggle="modal" data-target="#confirmResetAvatar">Reset avatar</a></li>
