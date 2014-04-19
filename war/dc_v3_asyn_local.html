@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>dc_v3_asyn_local</title>
+  <title>dc_v5_asyn_local</title>
   <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="../resources/json2.js"></script>
 </head>
 <body>
-<h3> Demo Page - Container V3</h3>
+<h3> Demo Page - Container V5</h3>
 
 <style type="text/css">
         div.left, div.right {
@@ -22,8 +22,11 @@
       <br><a href = "#" id = "NewDevloper">Insert New Developer</a>
       <br><a href = "#" id = "NewGame">Insert New Game</a>
       <br>
-      <br><a href = "#" id = "NewMatch">player1 Insert Match</a> 
-      <br><a href = "#" id = "GetNewMatch">player2 Get Match</a>
+      <br><a href = "#" id = "Enqueue">player1 Enqueue</a> 
+      <br><a href = "#" id = "Enqueue2">player2 Enqueue</a> 
+      <br>
+      <br><a href = "#" id = "NewMatch">player2 Insert Match</a> 
+      <br><a href = "#" id = "GetNewMatch">player1 Get Match</a>
       <br>
       <br><a href = "#" id = "MakeMove">player1 Make A Move</a> 
       <br><a href = "#" id = "GetState2">player2 Get State</a>
@@ -75,12 +78,20 @@ $(document).ready(function() {
     ajaxCallDelDeveloper( domainUrl+"/developers/"+developerId+"?accessSignature="+developerAS);
   });
 
+  $("#Enqueue").on("click", function(event) {
+    ajaxCallEnqueue( domainUrl+"/queue");
+  });
+
+  $("#Enqueue2").on("click", function(event) {
+    ajaxCallEnqueue2( domainUrl+"/queue");
+  });
+
   $("#NewMatch").on("click", function(event) {
     ajaxCallNewMatch( domainUrl+"/newMatch");
   });
   
   $("#GetNewMatch").on("click", function(event) {
-    ajaxCallGetNewMatch( domainUrl+"/newMatch/"+playerId2+"?accessSignature="+accessSignature2);
+    ajaxCallGetNewMatch( domainUrl+"/newMatch/"+playerId+"?accessSignature="+accessSignature+"&gameId="+gameId);
   });
 
   $("#GetState").on("click", function(event) {
@@ -176,6 +187,85 @@ $(document).ready(function() {
         }});
   });
 });
+
+function ajaxCallEnqueue(url) {
+  var jsonObj = {
+        "accessSignature": accessSignature,
+        "playerId" : playerId,
+        "gameId": gameId
+  };
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        var needSendNewMatch = false;
+        if(data["error"] == undefined) {
+          channel_token = (data)["channelToken"];         
+          if(data["playerIds"]!=undefined) {
+              playerIds = data["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
+              console.log(playerIds);
+              needSendNewMatch = true;
+          }
+          $("#response").append("<br>" + JSON.stringify(data));
+          if(needSendNewMatch) {
+              console.log("herererere");
+              ajaxCallNewMatch( domainUrl+"/newMatch");
+          }
+        } else {
+          $("#response").append("<br>" + JSON.stringify(data));
+        }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+    }});
+}
+
+function ajaxCallEnqueue2(url) {
+  var as = accessSignature2;
+  var pid = playerId2;
+  var gid = gameId;
+  var jsonObj = {
+        "accessSignature": as.toString(),
+        "playerId" : pid.toString(),
+        "gameId": gid.toString()
+    };
+  $.ajax({
+    url: url,
+    type: "POST",
+    dataType: 'json',
+    data: JSON.stringify(jsonObj),
+    success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        var needSendNewMatch = false;
+        if(data["error"] == undefined) {
+          channel_token2 = (data)["channelToken"];
+        
+          if(data["playerIds"]!=undefined) {
+              playerIds = data["playerIds"];
+              playerId = playerIds[0];
+              playerId2 = playerIds[1];
+              console.log(playerIds);
+              needSendNewMatch = true;
+          }
+          $("#response").append("<br>" + JSON.stringify(data));         
+          if(needSendNewMatch) {
+              console.log("herererere");
+              ajaxCallNewMatch( domainUrl+"/newMatch");
+          }
+        }
+        else {
+            $("#response").append("<br>" + JSON.stringify(data));
+         }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+    }});
+}
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
