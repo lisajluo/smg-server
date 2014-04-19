@@ -316,6 +316,36 @@ public class ContainerDatabaseDriver {
   }
   
   /**
+   * Get unfinished match by playerId and gameID, only allow one player has one unfinished
+   * match per game
+   * @param playerId, gameId
+   * @return entity or null if not found
+   */
+  public static Entity getUnfinishedMatchByPlayerIdGameId(long playerId, long gameId) {
+    Filter filter = new FilterPredicate(
+        ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
+    Filter filter2 = new FilterPredicate(
+        ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
+    Query q = new Query(ContainerConstants.MATCH).setFilter(filter).setFilter(filter2);
+    List<Entity> raw = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    for (Entity entity: raw) {
+      List<Long> playerIds = new ArrayList<Long>();
+      try {
+        playerIds = JSONUtil.parseDSPlayerIds(
+            (String)entity.getProperty(ContainerConstants.PLAYER_IDS));
+      } catch (Exception e) {
+      }
+      for (long id : playerIds) {
+        if (id == playerId) {
+          return entity;
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
    * Insert a player to queue: need a map<String,Object> contains following fields:
    * {"gameId":long, "playerId":long, "channelToken": String}
    * @param queueEntity
@@ -328,15 +358,22 @@ public class ContainerDatabaseDriver {
         || !queueEntity.containsKey(ContainerConstants.CHANNEL_TOKEN)) {
       return false;
     }
-    // if a playerId is already in a game waiting queue
+    // if a playerId is already in a game's waiting queue
     long playerId = (long)queueEntity.get(ContainerConstants.PLAYER_ID);
-    if ( getEntityByKey(ContainerConstants.QUEUE,playerId) != null) {
+    long gameId = (long)queueEntity.get(ContainerConstants.GAME_ID);    
+    Filter filter = new FilterPredicate(ContainerConstants.PLAYER_ID, FilterOperator.EQUAL, playerId);
+    Filter filter2 = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
+    Query q = new Query(ContainerConstants.QUEUE).setFilter(filter).setFilter(filter2);
+    List<Entity> result = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    if (result == null) {
       return false;
     }
+    
     Transaction txn = datastore.beginTransaction();
     Entity entity = new Entity(ContainerConstants.QUEUE,playerId);
-//    entity.setProperty(ContainerConstants.PLAYER_ID,
-//        queueEntity.get(ContainerConstants.PLAYER_ID));
+    entity.setProperty(ContainerConstants.PLAYER_ID,
+        queueEntity.get(ContainerConstants.PLAYER_ID));
     entity.setProperty(ContainerConstants.GAME_ID,
         queueEntity.get(ContainerConstants.GAME_ID));
     entity.setProperty(ContainerConstants.CHANNEL_TOKEN,
@@ -373,11 +410,22 @@ public class ContainerDatabaseDriver {
   
   /**
    * Get a player out of waiting queue for one game
-   * @param playerId
+   * @param playerId, gameId
    * @return
    */
-  public static boolean deleteQueueEntity (long playerId) {
-    deleteEntity(ContainerConstants.QUEUE,playerId);
+  public static boolean deleteQueueEntity (long playerId, long gameId) {    
+    Filter filter = new FilterPredicate(ContainerConstants.PLAYER_ID, FilterOperator.EQUAL, playerId);
+    Filter filter2 = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
+    Query q = new Query(ContainerConstants.QUEUE).setFilter(filter).setFilter(filter2);
+    List<Entity> result = datastore.prepare(q).asList(
+        FetchOptions.Builder.withDefaults());
+    if (result == null) {
+      return false;
+    }
+    Transaction txn = datastore.beginTransaction();
+    datastore.delete(result.get(0).getKey());
+    txn.commit();
     return true;
   }
+  
 }
