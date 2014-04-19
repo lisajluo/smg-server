@@ -127,13 +127,14 @@ public class QueueServlet extends HttpServlet {
         List<Entity> playerIdsEntity = ContainerDatabaseDriver.getPlayersInQueue(gameId, 1);
         for (Entity playerEntity : playerIdsEntity) {
           Map<String, Object> props = playerEntity.getProperties();
-          String pid = (String) props.get(ContainerConstants.CHANNEL_TOKEN);
+          String channelId = (String) props.get(ContainerConstants.CHANNEL_TOKEN);
+          String pid = Utils.decodeChannel(channelId)[0];
           playerIdsToBeSent.add(pid);
         }
 
         // Delete the players who has been selected in a Match.
         for (String id : playerIdsToBeSent) {
-          ContainerDatabaseDriver.deleteQueueEntity(Long.parseLong(id), gameId);
+          ContainerDatabaseDriver.deleteQueueEntity(Long.parseLong(Utils.decodeChannel(id)[0]), gameId);
         }
 
         playerIdsToBeSent.add(String.valueOf(playerId));
