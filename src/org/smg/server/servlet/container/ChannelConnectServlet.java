@@ -34,30 +34,28 @@ public class ChannelConnectServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     String urlPath = req.getPathInfo();
-    if (urlPath.indexOf("/connected/") != -1) {
-      ChannelService channelService = ChannelServiceFactory.getChannelService();
-      ChannelPresence presence = channelService.parsePresence(req);
-      String clientId = presence.clientId();
 
+    ChannelService channelService = ChannelServiceFactory.getChannelService();
+    ChannelPresence presence = channelService.parsePresence(req);
+    String[] channelId = Utils.decodeChannel(presence.clientId());
+    String playerIdStr = channelId[0];
+    String gameIdStr = channelId[1];
+    long playerId = Long.parseLong(playerIdStr);
+    long gameId = Long.parseLong(gameIdStr);
+
+    if (urlPath.indexOf("/connected/") != -1) {
       JSONObject returnValue = new JSONObject();
       try {
-        returnValue.put("magic_msg", "Hello " + clientId + "!");
+        returnValue.put("magic_msg", "Hello " + playerId + "!");
       } catch (JSONException e1) {
       }
-      channelService.sendMessage(new ChannelMessage(clientId, returnValue.toString()));
+      channelService.sendMessage(new ChannelMessage(presence.clientId(), returnValue.toString()));
     } else if (urlPath.indexOf("/disconnected/") != -1) {
-      ChannelService channelService = ChannelServiceFactory.getChannelService();
-      ChannelPresence presence = channelService.parsePresence(req);
-      String playerIdStr = presence.clientId();
-      long playerId = Long.parseLong(playerIdStr);
-
-      // No matter if there is a player in queue or not. Try remove it.
-      // TODO Will there be any problem if we allow a player play multiple games
-      // at the same time?
-      ContainerDatabaseDriver.deleteQueueEntity(playerId);
+      ContainerDatabaseDriver.deleteQueueEntity(playerId, gameId);
 
       // Notify other players that this player has disconnected.
-      Entity matchEntity = ContainerDatabaseDriver.getUnfinishedMatchByPlayerId(playerId);
+      Entity matchEntity = ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(playerId,
+          gameId);
       if (matchEntity != null) {
         // add playerIds and matchId
         List<Long> playerIds = JSONUtil.parseDSPlayerIds(
@@ -69,8 +67,8 @@ public class ChannelConnectServlet extends HttpServlet {
         } catch (JSONException e) {
         }
         for (String pId : pIds) {
-          channelService.sendMessage(new ChannelMessage(Utils.getClientId(pId), rtnJson
-              .toString()));
+          channelService.sendMessage(new ChannelMessage(Utils.encodeToChannelId(pId, gameIdStr),
+              rtnJson.toString()));
         }
       }
     }

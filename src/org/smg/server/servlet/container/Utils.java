@@ -80,7 +80,9 @@ public class Utils {
     return toMap(object.getJSONObject(key));
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   public static Map<String, Object> toMap(JSONObject object) throws JSONException {
     Map<String, Object> map = new HashMap();
     Iterator keys = object.keys();
@@ -91,7 +93,9 @@ public class Utils {
     return map;
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
   public static List toList(JSONArray array) throws JSONException {
     List list = new ArrayList();
     for (int i = 0; i < array.length(); i++) {
@@ -112,10 +116,11 @@ public class Utils {
     }
   }
 
-  /*
-   * TODO make sure how to convert playerId to ClientId.
-   */
-  public static String getClientId(String playerId) {
-    return playerId;
+  public static String encodeToChannelId(String playerId, String gameId) {
+    return playerId + "," + gameId;
+  }
+
+  public static String[] decodeChannel(String encodeId) {
+    return encodeId.split(",");
   }
 }

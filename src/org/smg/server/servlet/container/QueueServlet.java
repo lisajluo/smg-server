@@ -108,7 +108,7 @@ public class QueueServlet extends HttpServlet {
       // Token Generating.
       String userId = String.valueOf(playerId);
       ChannelService channelService = ChannelServiceFactory.getChannelService();
-      String channelToken = Utils.getClientId(userId);
+      String channelToken = Utils.encodeToChannelId(userId, String.valueOf(gameId));
       String clientToken = channelService.createChannel(channelToken);
 
       Map<String, Object> entityMap = ImmutableMap.<String, Object> of(
@@ -133,7 +133,7 @@ public class QueueServlet extends HttpServlet {
 
         // Delete the players who has been selected in a Match.
         for (String id : playerIdsToBeSent) {
-          ContainerDatabaseDriver.deleteQueueEntity(Long.parseLong(id));
+          ContainerDatabaseDriver.deleteQueueEntity(Long.parseLong(id), gameId);
         }
 
         playerIdsToBeSent.add(String.valueOf(playerId));
