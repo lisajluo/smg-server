@@ -23,6 +23,10 @@
         <property name="gameId" direction="asc"/>
         <property name="enqueueTime" direction="asc"/>
     </datastore-index>
+        <datastore-index kind="5Queue" ancestor="false" source="manual">
+        <property name="gameId" direction="asc"/>
+        <property name="enqueueTime" direction="asc"/>
+    </datastore-index>
     <datastore-index kind="4PLAYERHISTORY" ancestor="false" source="manual">
         <property name="GAMEID" direction="asc"/>
         <property name="PLAYERID" direction="asc"/>

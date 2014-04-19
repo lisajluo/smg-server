@@ -21,7 +21,7 @@
     <div class="left" style="width:300px">
       <br><a href = "#" id = "NewPlayer2">Insert Player2</a>
       <form id="submitGame"></form>
-          <input type="text" name="gameId" form="submitGame" value="5769928858664960">
+          <input type="text" name="gameId" form="submitGame">
           <input type="submit" value="Assign gameId" form="submitGame">
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a>
       <br>Find another player in waiting queue, insert a new match. Go back to player1 page check server-push info: matchId and playerIds.
@@ -38,8 +38,8 @@
 
 <script type="text/javascript">
 
-//var domainUrl = "http://4-dot-smg-server-rl.appspot.com";
-var domainUrl = "http://4-dot-smg-server.appspot.com";
+//var domainUrl = "http://4-dot-smg-server-container.appspot.com";
+var domainUrl = "http://smg-server.appspot.com";
 //var domainUrl = "http://localhost:8888";
 var playerId = "";
 var accessSignature ="";
@@ -261,7 +261,7 @@ function ajaxCallEnqueue2(url) {
 
 function ajaxCallNewPlayer(url) {
   var jsonObj = { 
-      "email":"containterV4_API_111@gmail.com",
+      "email":"containterV2_API_111@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -286,7 +286,7 @@ function ajaxCallNewPlayer(url) {
 
 function ajaxCallNewPlayer2(url) {
   var jsonObj = { 
-      "email":"containterV4_API_222@gmail.com",
+      "email":"containterV2_API_222@gmail.com",
       "password":"foobar",
       "firstName":"foo",
       "lastName":"bar",
@@ -338,7 +338,7 @@ function ajaxCallDelPlayer2(url) {
 }
 
 function ajaxCallNewDeveloper(url) {
-  var jsonObj =  { "email": "containterV4_API_333@gmail.com", 
+  var jsonObj =  { "email": "containterV2_API_333@gmail.com", 
       "password": "soldkfjlaskdf",
       "nickName": "blahb lah blah",
       "whatever": "some thing should be deleted"

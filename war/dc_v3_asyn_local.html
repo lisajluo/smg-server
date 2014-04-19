@@ -24,8 +24,8 @@
       <br>
       <br><a href = "#" id = "Enqueue">player1 Enqueue</a> 
       <br><a href = "#" id = "Enqueue2">player2 Enqueue</a> 
-      <br>
-      <br><a href = "#" id = "NewMatch">player2 Insert Match</a> 
+      <br>player2 automatically insert a match
+      <!--<br><a href = "#" id = "NewMatch">player2 Insert Match</a> -->
       <br><a href = "#" id = "GetNewMatch">player1 Get Match</a>
       <br>
       <br><a href = "#" id = "MakeMove">player1 Make A Move</a> 
@@ -44,7 +44,7 @@
 
 <script type="text/javascript">
 
-//var domainUrl = "http://4-dot-smg-server-rl.appspot.com";
+//var domainUrl = "http://4-dot-smg-server-container.appspot.com";
 //var domainUrl = "http://4-dot-smg-server.appspot.com";
 var domainUrl = "http://localhost:8888";
 var playerId = "";
@@ -430,7 +430,7 @@ function ajaxCallNewMatch(url) {
   var playerIds = [];
       playerIds.push(playerId);
       playerIds.push(playerId2);
-  var jsonObj = { 'accessSignature': accessSignature,
+  var jsonObj = { 'accessSignature': accessSignature2,
                   'playerIds': playerIds,
                   'gameId': gameId }
   $.ajax({
