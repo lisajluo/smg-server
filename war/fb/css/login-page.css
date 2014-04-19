@@ -185,9 +185,6 @@ body {
     color: #fff;
 }
 
-.header-text h2 {
-    font-size: 40px;
-}
 
 .header-text h2 span {
 	padding: 10px;
@@ -213,4 +210,34 @@ body {
     color: #000;
     background-color: #fff;
     border-color: #fff;
+}
+
+@media(max-width: 465px){
+	h2 {
+		font-size: 20px;
+	}
+	
+	h3 {
+		display: none;
+	}
+}
+
+@media(min-width: 464px) and (max-width: 640px){
+	h2 {
+		font-size: 25px;	
+	}
+	
+	h3 {
+		font-size: 15px;
+	}
+}
+
+@media(min-width: 641px){
+	h2 {
+		font-size: 40px;
+	}
+	
+	h3 {
+		font-size: 30px;
+	}
 }

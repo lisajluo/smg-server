@@ -233,7 +233,7 @@ public class MatchOperationServlet extends HttpServlet {
 
       try {
         MatchInfo mi = MatchInfo.getMatchInfoFromEntity(entity);
-        
+
         // if matched is already ended, return error
         if (!mi.getGameOverReason().equals(ContainerConstants.NOT_OVER)) {
           ContainerVerification.sendErrorMessage(
@@ -272,12 +272,12 @@ public class MatchOperationServlet extends HttpServlet {
           // Update gameOverScores.
           Map<String, Integer> playerIdToScoreMap = endGame.getPlayerIdToScore();
           Map<Long, Integer> newPlayerIdToScoreMap = Maps.newHashMap();
-          //every player has a score
-          for (long pId: playerIds) {
+          // every player has a score
+          for (long pId : playerIds) {
             if (playerIdToScoreMap.containsKey(IDUtil.longToString(pId))) {
               newPlayerIdToScoreMap.put(pId, playerIdToScoreMap.get(IDUtil.longToString(pId)));
             } else {
-              newPlayerIdToScoreMap.put(pId,0);
+              newPlayerIdToScoreMap.put(pId, 0);
             }
           }
           mi.setGameOverScores(newPlayerIdToScoreMap);
