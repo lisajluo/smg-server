@@ -76,6 +76,21 @@ public class NewMatchServlet extends HttpServlet {
             resp, returnValue, ContainerConstants.MISSING_INFO);
         return;
       }
+      // parse gameID and verify gameId existed
+      String gId = String.valueOf(jsonMap.get(ContainerConstants.GAME_ID));
+      long gameId = 0;
+      try {
+        gameId = IDUtil.stringToLong(gId);
+      } catch (Exception e) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+        return;
+      }
+      if (!ContainerVerification.gameIdVerify(gameId)) {
+        ContainerVerification.sendErrorMessage(
+            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+        return;
+      } 
       // verify playerIds      
       ArrayList<String> ids = 
           (ArrayList<String>) jsonMap.get(ContainerConstants.PLAYER_IDS);
@@ -92,7 +107,7 @@ public class NewMatchServlet extends HttpServlet {
             resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
         return;
       }
-      if (!ContainerVerification.insertMatchVerify(playerIds)) {
+      if (!ContainerVerification.insertMatchVerify(playerIds,gameId)) {
         ContainerVerification.sendErrorMessage(
             resp, returnValue, ContainerConstants.WRONG_PLAYER_ID);
         return;
@@ -103,22 +118,7 @@ public class NewMatchServlet extends HttpServlet {
         ContainerVerification.sendErrorMessage(
             resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
         return;
-      }
-      // parse gameID and verify gameId existed
-      String gId = String.valueOf(jsonMap.get(ContainerConstants.GAME_ID));
-      long gameId = 0;
-      try {
-        gameId = IDUtil.stringToLong(gId);
-      } catch (Exception e) {
-        ContainerVerification.sendErrorMessage(
-            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
-        return;
-      }
-      if (!ContainerVerification.gameIdVerify(gameId)) {
-        ContainerVerification.sendErrorMessage(
-            resp, returnValue, ContainerConstants.WRONG_GAME_ID);
-        return;
-      }      
+      }     
       // insert new match
       long matchId = 0;
       JSONObject match = new JSONObject();
@@ -205,8 +205,29 @@ public class NewMatchServlet extends HttpServlet {
           resp, returnValue, ContainerConstants.WRONG_ACCESS_SIGNATURE);
       return;
     }
+    // verify gameId
+    if (!req.getParameterMap().containsKey(ContainerConstants.GAME_ID)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+      return;
+    }
+    String gId = req.getParameter(ContainerConstants.GAME_ID);
+    long gameId = 0;
+    try {
+      gameId = IDUtil.stringToLong(gId);
+    } catch (Exception e2) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+      return;
+    }
+    if (!ContainerVerification.gameIdVerify(gameId)) {
+      ContainerVerification.sendErrorMessage(
+          resp, returnValue, ContainerConstants.WRONG_GAME_ID);
+      return;
+    }
     
-    Entity match = ContainerDatabaseDriver.getUnfinishedMatchByPlayerId(playerId);
+    Entity match = 
+        ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(playerId,gameId);
     if (match == null) {
       ContainerVerification.sendErrorMessage(
           resp, returnValue, ContainerConstants.NO_MATCH_FOUND);

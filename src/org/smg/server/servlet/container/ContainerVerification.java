@@ -91,11 +91,11 @@ public class ContainerVerification {
   /**
    * Verify if a player could insert new match. When he has unfinished match,
    * it is not allowed to insert new match.
-   * @param playerId
+   * @param playerId, gameId
    * @return
    */
-  public static boolean insertMatchVerify(long playerId) {
-    if (ContainerDatabaseDriver.getUnfinishedMatchByPlayerId(playerId) == null) {
+  public static boolean insertMatchVerify(long playerId, long gameId) {
+    if (ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(playerId,gameId) == null) {
       return true;
     }
     return false;
@@ -103,12 +103,12 @@ public class ContainerVerification {
   /**
    *  Verify if all players could insert new match. When he has unfinished match,
    * it is not allowed to insert new match.
-   * @param playerIds
+   * @param playerIds, gameId
    * @return
    */
-  public static boolean insertMatchVerify(List<Long> playerIds) {
+  public static boolean insertMatchVerify(List<Long> playerIds, long gameId) {
     for (long playerId: playerIds) {
-      if (!insertMatchVerify(playerId)) {
+      if (!insertMatchVerify(playerId,gameId)) {
         return false;
       }
     }
