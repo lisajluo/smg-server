@@ -150,7 +150,7 @@ public class NewMatchServlet extends HttpServlet {
       ChannelService channelService = ChannelServiceFactory.getChannelService();
       for (long playerId: playerIds) {
         if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
-          String token = String.valueOf(playerId);
+          String token = Utils.encodeToChannelId(String.valueOf(playerId), String.valueOf(gameId));
           channelService.sendMessage(new ChannelMessage(token, returnValue.toString()));
         }
       }
