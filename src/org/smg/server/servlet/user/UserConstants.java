@@ -52,6 +52,7 @@ public class UserConstants {
 
 //	public static final String DOMAIN = "http://3-dot-apt-momentum-547.appspot.com/";
 	public static final String DOMAIN = "http://smg-server.appspot.com/";
+	public static final String HUANKANG = "http://1-dot-huan-kang.appspot.com/";
 	// public static final String APPURI =
 	// "http://smg-server.appspot.com/socialAuthCallBack";
 	public static final String GOOGLE_CALLBACK = DOMAIN
