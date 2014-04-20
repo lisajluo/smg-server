@@ -45,6 +45,6 @@ public class UserLogOutServlet extends HttpServlet {
     } catch (Exception e) {
       UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
     }
-    resp.sendRedirect("../login-page/login.html");
+    resp.sendRedirect(DOMAIN+"login-page/login.html");
   }
 }
