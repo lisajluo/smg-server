@@ -73,7 +73,7 @@
 		      	console.log(data);
 		      	if(data["error"] == undefined) {
               console.log(data);
-		      		window.location = "./mainPage.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
+		      		window.location = "./index.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
                           
 		      	} else {
               toastr["error"]("Login failed. Please check your email and password.", "ERROR");
@@ -101,7 +101,7 @@
           </div>
           <div class="span2">
             <input type="password" name="password" class="form-control" placeholder="Password" required/>
-            <a href="demo_retrieve.html">
+            <a href="passwordlink.html">
               Forgot password
             </a>
           </div>

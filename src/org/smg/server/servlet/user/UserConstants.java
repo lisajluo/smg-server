@@ -62,11 +62,11 @@ public class UserConstants {
 	// public static final String GOOGLE_CLIENT_SECRET =
 	// "fddHJ5A73LjV8D5K0jnf01Qq";
 	public static final String GOOGLE_CLIENT_SECRET = "nlg2URIHD3UY5icICwoyyT-N";
-	public static final String MAIN_PAGE = DOMAIN + "login-page/mainPage.html?";
+	public static final String MAIN_PAGE = DOMAIN + "index.html?";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	public static final String RETRIEVE_URL = "http://smg-server.appspot.com/passWordReset.html?";
+	public static final String RETRIEVE_URL = "http://smg-server.appspot.com/passwordreset.html?";
 	// public static final String RETRIEVE_URL =
-	// "http://3-dot-apt-momentum-547.appspot.com/passWordReset.html";
+	// "http://3-dot-apt-momentum-547.appspot.com/passwordreset.html";
 	public static final String POST = "POST";
 	public static final String GET = "GET";
 	public static final String CONTENT_TYPE = "Content-Type";
