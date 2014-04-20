@@ -84,13 +84,13 @@ public class UserConstants {
 	public static final String GIVEN_NAME = "givenName";
 	public static final String GREETINGS = "Please reset your password at the following link:\n";
 
-	public static final String FACEBOOK_APP_ID = "643046942410038";
-	// public static final String FACEBOOK_APP_ID = "708188635890698";
+	// public static final String FACEBOOK_APP_ID = "643046942410038";
+	public static final String FACEBOOK_APP_ID = "708188635890698";
 
-	public static final String FACEBOOK_APP_SECRET = "5c0f4887437a71c76df975525b2ee3c2";
 	// public static final String FACEBOOK_APP_SECRET =
-	// "0f2bd5bb2469cbf2dc4d63f02c8ebfbf";
-		
+	// "5c0f4887437a71c76df975525b2ee3c2";
+	public static final String FACEBOOK_APP_SECRET = "0f2bd5bb2469cbf2dc4d63f02c8ebfbf";
+
 	public static final String FACEBOOK_REDIRECT_URI = DOMAIN
 			+ "socialAuthCallbackFacebook";
 	public static final String FACEBOOK_SCOPE = "&scope=email,read_friendlists";
