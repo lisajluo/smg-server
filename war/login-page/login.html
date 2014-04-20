@@ -32,7 +32,7 @@
       
       //var domain = "1-dot-huan-kang.appspot.com";
       //var domain = "localhost:8888";
-       var domain = "smg-server.appspot.com";
+      var domain = "smg-server.appspot.com";
       
     	function jsonify(array) {
 			  var json = {};
@@ -74,6 +74,7 @@
 		      	if(data["error"] == undefined) {
               console.log(data);
 		      		window.location = "./mainPage.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
+                          
 		      	} else {
               toastr["error"]("Login failed. Please check your email and password.", "ERROR");
 		      	}

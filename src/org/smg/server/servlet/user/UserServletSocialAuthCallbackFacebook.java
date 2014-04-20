@@ -230,7 +230,7 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 					jsonStore = new JSONObject(user);
 					resp.sendRedirect(MAIN_PAGE + "userId="
 							+ Long.toString(userId) + "&accessSignature="
-							+ user.get(ACCESS_SIGNATURE));
+							+ user.get(ACCESS_SIGNATURE)+"&accessTokenFB="+token);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

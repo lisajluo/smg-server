@@ -193,8 +193,15 @@
                  var expires = "expires="+d.toGMTString();
                  document.cookie = "userId="+userId+";";
                  document.cookie = "accessSignature=" + accessSignature + ";";
-                 document.cookie = "isSocial=" + isSocial + ";";
-                 document.cookie = "accessTokenFB" + accessTokenFB + ";";
+                 if (isSocial==true)
+                 {
+                   document.cookie = "isSocial=true;";
+                 }
+                 else
+                 {
+                   document.cookie = "isSocial=false;";
+                 }
+                 document.cookie = "accessTokenFB=" + accessTokenFB + ";";
                  document.cookie = expires + ";";
                 
                }
@@ -229,7 +236,7 @@
             }
             
             //$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
-            if (accessTokenFB==null)
+            if (accessTokenFB==null||accessTokenFB=="")
             {
 			  $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
 			  $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId="+userId+"&accessSignature="+accessSignature);
@@ -241,7 +248,7 @@
 			  $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId="+userId+"&accessSignature="+accessSignature+"&accessTokenFB="+accessTokenFB);
 		    }
             $("#userId").val(userId);
-			if(isSocial == true) {
+			if(isSocial == "true") {
 				$("#formId1").hide();
 			} else {
                               
