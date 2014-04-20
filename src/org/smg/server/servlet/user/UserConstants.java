@@ -52,20 +52,21 @@ public class UserConstants {
 
 //	public static final String DOMAIN = "http://3-dot-apt-momentum-547.appspot.com/";
 	public static final String DOMAIN = "http://smg-server.appspot.com/";
-	public static final String HUANKANG = "http://1-dot-huan-kang.appspot.com/";
 	// public static final String APPURI =
 	// "http://smg-server.appspot.com/socialAuthCallBack";
 	public static final String GOOGLE_CALLBACK = DOMAIN
 			+ "socialAuthCallbackGoogle";
-//	public static final String GOOGLE_CLIENT_ID = "1000413534688-h542e5qi0i3l2e3prn9nn7epna5d97hd.apps.googleusercontent.com";
+	// public static final String GOOGLE_CLIENT_ID =
+	// "1000413534688-h542e5qi0i3l2e3prn9nn7epna5d97hd.apps.googleusercontent.com";
 	public static final String GOOGLE_CLIENT_ID = "558267404896.apps.googleusercontent.com";
-//	public static final String GOOGLE_CLIENT_SECRET = "fddHJ5A73LjV8D5K0jnf01Qq";
+	// public static final String GOOGLE_CLIENT_SECRET =
+	// "fddHJ5A73LjV8D5K0jnf01Qq";
 	public static final String GOOGLE_CLIENT_SECRET = "nlg2URIHD3UY5icICwoyyT-N";
 	public static final String MAIN_PAGE = DOMAIN + "login-page/mainPage.html?";
 	public static final String AUTHORIZATION_CODE = "authorization_code";
-	 public static final String RETRIEVE_URL =
-	 "http://smg-server.appspot.com/passWordReset.html?";
-//	public static final String RETRIEVE_URL = "http://3-dot-apt-momentum-547.appspot.com/passWordReset.html";
+	public static final String RETRIEVE_URL = "http://smg-server.appspot.com/passWordReset.html?";
+	// public static final String RETRIEVE_URL =
+	// "http://3-dot-apt-momentum-547.appspot.com/passWordReset.html";
 	public static final String POST = "POST";
 	public static final String GET = "GET";
 	public static final String CONTENT_TYPE = "Content-Type";
@@ -83,19 +84,21 @@ public class UserConstants {
 	public static final String GIVEN_NAME = "givenName";
 	public static final String GREETINGS = "Please reset your password at the following link:\n";
 
-//	public static final String FACEBOOK_APP_ID = "726928317358166";
-	public static final String FACEBOOK_APP_ID = "708188635890698";
-	
-//	public static final String FACEBOOK_APP_SECRET = "5d0b0bb5256df70b6ce6e9f0cfbffdd2";
-	public static final String FACEBOOK_APP_SECRET = "0f2bd5bb2469cbf2dc4d63f02c8ebfbf";
-	
+	public static final String FACEBOOK_APP_ID = "643046942410038";
+	// public static final String FACEBOOK_APP_ID = "708188635890698";
+
+	public static final String FACEBOOK_APP_SECRET = "5c0f4887437a71c76df975525b2ee3c2";
+	// public static final String FACEBOOK_APP_SECRET =
+	// "0f2bd5bb2469cbf2dc4d63f02c8ebfbf";
+		
 	public static final String FACEBOOK_REDIRECT_URI = DOMAIN
 			+ "socialAuthCallbackFacebook";
 	public static final String FACEBOOK_SCOPE = "&scope=email,read_friendlists";
-	
+
 	public static final String URL = "url";
 	public static final String IMAGE = "image";
 	public static final String IMAGEURL = "imageURL";
 	public static final String BLOBKEY = "blobKey";
 	public static final String FRIEND_LIST = "friendList";
+	public static final String FACEBOOKID = "facebookId";
 }
