@@ -213,12 +213,12 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 					if (friendAsList == null || friendAsList.size() == 0)
 						newFriends = newFriends
 								+ ",{\"type\":\"f\",\"socialId\":\""
-								+ friend.getString("id") + ",\"SMGId\":null}";
+								+ friend.getString("id") + "\",\"SMGId\":null}";
 					else {
 						long userId = friendAsList.get(0).getKey().getId();
 						newFriends = newFriends
 								+ ",{\"type\":\"f\",\"socialId\":\""
-								+ friend.getString("id") + ",\"SMGId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":\""
 								+ userId + "\"}";
 					}
 				}

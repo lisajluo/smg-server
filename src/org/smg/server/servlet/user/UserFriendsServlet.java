@@ -34,7 +34,7 @@ public class UserFriendsServlet extends HttpServlet {
   }
 
   /**
-   * Gets a user's list of friends: {"type":"f/g","socialId":316530,"SMGId":null}.
+   * Gets a user's list of friends: {"type":"f/g","socialId":"316530","SMGId":"393933922"}.
    */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
