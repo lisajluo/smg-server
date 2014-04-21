@@ -70,9 +70,7 @@
 		      dataType: "json",
 		      type: "GET",
 		      success: function(data, textStatus, jqXHR) {
-		      	console.log(data);
 		      	if(data["error"] == undefined) {
-              console.log(data);
 		      		window.location = "./index.html?userId=" + data["userId"] + "&accessSignature=" + data["accessSignature"] + "&isSocial=false";
                           
 		      	} else {

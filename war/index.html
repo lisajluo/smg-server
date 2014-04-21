@@ -23,14 +23,15 @@
 <script type="text/javascript">
   var imageUploadUrl = "";
     var domain = "smg-server.appspot.com";
-    //var domain = "1-dot-huan-kang.appspot.com";
+//    var domain = "localhost:8888"; 
   var isSocial = getUrlParam("isSocial");
   var userId = getUrlParam("userId");
   var accessSignature = getUrlParam("accessSignature");
   var accessTokenFB = getUrlParam("accessTokenFB");
-    //var domain = "localhost:8888";        
+           
   if(isSocial == undefined)
      isSocial = true;
+  
      
   function showAccountManagement() {
       if (isSocial == "true") {
@@ -39,9 +40,87 @@
         $('#smgAccount').modal('show');
       }
   }   
-     
-  function getImage() {
   
+  function submitSmgAccountForm() {
+        var formValues = jsonify($("#smgAccountForm").serializeArray());
+        if (formValues.password != formValues.confirm) {
+          document.getElementById("responseSMG").innerHTML = "<br>Please enter the same password";
+          return;
+        } else {
+          document.getElementById("responseSMG").innerHTML = "";
+        }
+
+        var jsonObj = {
+          "email" : formValues.email,
+          "password" : formValues.password,
+          "firstName" : formValues.firstName,
+          "lastName" : formValues.lastName,
+          "nickName" : formValues.nickName,
+          "accessSignature" : accessSignature
+        };
+        $.ajax({
+          url : "http://" + domain + "/userinfo/"+userId,
+          dataType : "json",
+          type : "PUT",
+          data : JSON.stringify(jsonObj),
+          success : function(data, textStatus, jqXHR) {
+            if (data["error"] == undefined) {
+              document.getElementById("responseSMG").innerHTML = "Update success";
+              updateFields();
+              window.setTimeout(function () {
+                 $('#smgAccount').modal('hide');
+              }, 1000);
+            } else {
+              document.getElementById("responseSMG").innerHTML = data["error"].toString();
+            }
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            alert("ERROR: " + textStatus + " " + errorThrown);
+          }
+        });
+      }
+     
+      
+     function submitSocialAccountForm() {
+        var formValues = jsonify($("#socialAccountForm").serializeArray());
+        console.log(formValues);
+
+        var jsonObj = {
+          "firstName" : formValues.firstName,
+          "lastName" : formValues.lastName,
+          "nickName" : formValues.nickName,
+           "accessSignature" : accessSignature
+        };
+
+        $.ajax({
+          url : "http://" + domain + "/userinfo/" + userId,
+          dataType : "json",
+          type : "PUT",
+          data : JSON.stringify(jsonObj),
+          success : function(data, textStatus, jqXHR) {
+            if (data["error"] == undefined) {
+              document.getElementById("responseSocial").innerHTML = "Update success";
+              updateFields();
+              window.setTimeout(function () {
+                 $('#socialAccount').modal('hide');
+              }, 1000);
+            } else {
+              document.getElementById("responseSocial").innerHTML = data["error"].toString();
+            }
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            alert("ERROR: " + textStatus + " " + errorThrown);
+          }
+        });
+      
+      }
+  
+  function logout() {
+      discardCookie();
+      window.location = "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature;
+  }
+  
+  function getImage() {
    $.ajax({
       url: "http://" + domain + "/uploadurl",
       type: "GET",
@@ -76,7 +155,7 @@
         
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        //alert("ERROR: " + textStatus + " " + errorThrown);
+        alert("ERROR: " + textStatus + " " + errorThrown);
       }
     }); 
   }
@@ -96,7 +175,6 @@
             }
             else
             {
-              console.log(data["error"]);
               window.location = "./login.html";
             } 
           },
@@ -113,14 +191,13 @@
       success: function(data, textStatus, jqXHR) {
         if (data.imageURL) {
           $("#greeting").css("background-image", "url('" + data.imageURL + "')");
-          document.getElementById("response").innerHTML = "";
         }
         else { 
           alert ("Image upload error");
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        //alert("ERROR: " + textStatus + " " + errorThrown);
+        alert("ERROR: " + textStatus + " " + errorThrown);
       }
     });
   }
@@ -143,30 +220,31 @@
       }
       return json;
     }
-                function Delete()
-                {
-                       var r=confirm("Are you sure you are going to delete this account?");
-                       if (r==true){
-                            $.ajax({
-                              url : "http://" + domain + "/user/"+userId+"?accessSignature="+accessSignature,
-                              dataType : "json",
-                              type: "DELETE",
-                              success : function (data,textStatus,jqXHR) {
-                                if (data["error"] == undefined) {
-                          document.getElementById("response").innerHTML = "Delete success";
-              window.setTimeout(function () {
-                                      window.location.replace("http://" + domain + "/login.html");
-                                                        }, 1000);
-            } 
-                                       else {
-              document.getElementById("response").innerHTML = data["error"].toString();
-            }
-                              },
-                             error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-                            });
-                       }
+    
+      function deleteAccount()
+      {
+        var divId = isSocial ? "responseSocial" : "responseSMG";
+
+                  $.ajax({
+                    url : "http://" + domain + "/user/"+userId+"?accessSignature="+accessSignature,
+                    dataType : "json",
+                    type: "DELETE",
+                    success : function (data,textStatus,jqXHR) {
+                      if (data["error"] == undefined) {
+                document.getElementById(divId).innerHTML = "Delete success";
+    window.setTimeout(function () {
+                            window.location.replace("http://" + domain + "/login.html");
+                                              }, 1000);
+  } 
+                             else {
+    document.getElementById(divId).innerHTML =  data["error"].toString();
+  }
+                    },
+                   error : function(jqXHR, textStatus, errorThrown) {
+                      alert("ERROR: " + textStatus + " " + errorThrown);
+}
+                  });
+
                        
                        
  
@@ -222,8 +300,7 @@
             {
               if (checkCookie()==false)
               {
-                window.location = "./login.html";
-                
+               // window.location = "./login.html";
               }
               else
               {
@@ -231,14 +308,13 @@
                    accessSignature = getCookie("accessSignature");
                    isSocial = getCookie("isSocial");
                    accessTokenFB = getCookie("accessTokenFB");
-                   updateFields();               
+                   updateFields();   
               } 
             }
             else
             {
-
                setCookie(userId,accessSignature,isSocial,accessTokenFB);
-               window.location = "./login.html";
+               window.location = "./";
             }
             
             //$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
@@ -255,89 +331,9 @@
         }
             $("#userId").val(userId);
 
-      $("#logOut").submit(function(e) {
-        e.preventDefault();
-        discardCookie();
-        window.location = "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature;
-      }); 
-      $("#smgAccountForm").submit(function(e) {
-        // Prevent all default form submission
-        e.preventDefault();
-
-        var formValues = jsonify($(this).serializeArray());
-        if (formValues.password != formValues.confirm) {
-          document.getElementById("response").innerHTML = "Please enter the same password";
-          return;
-        } else {
-          document.getElementById("response").innerHTML = "";
-        }
-
-        var jsonObj = {
-          "email" : formValues.email,
-          "password" : formValues.password,
-          "firstName" : formValues.firstName,
-          "lastName" : formValues.lastName,
-          "nickName" : formValues.nickName,
-          "accessSignature" : accessSignature
-        };
-        $.ajax({
-          url : "http://" + domain + "/userinfo/"+userId,
-          dataType : "json",
-          type : "PUT",
-          data : JSON.stringify(jsonObj),
-          success : function(data, textStatus, jqXHR) {
-            //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
-            if (data["error"] == undefined) {
-              document.getElementById("response").innerHTML = "Update success";
-                                                        updateFields();
-              
-            } else {
-              document.getElementById("response").innerHTML = data["error"].toString();
-            }
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
-      });
-
-      $("#socialAccountForm").submit(function(e) {
-        // Prevent all default form submission
-        e.preventDefault();
-
-        var formValues = jsonify($(this).serializeArray());
-
-        var jsonObj = {
-          "firstName" : formValues.firstName,
-          "lastName" : formValues.lastName,
-          "nickName" : formValues.nickName,
-                                        "accessSignature" : accessSignature
-        };
-
-        $.ajax({
-          url : "http://" + domain + "/userinfo/" + userId,
-          dataType : "json",
-          type : "PUT",
-          data : JSON.stringify(jsonObj),
-          success : function(data, textStatus, jqXHR) {
-            //$("#response").append("<p>" + JSON.stringify(data) + "</p>");
-            if (data["error"] == undefined) {
-              document.getElementById("response").innerHTML = "Update success";
-                                                        updateFields();
-                                                       
- 
-            } else {
-              document.getElementById("response").innerHTML = data["error"].toString();
-            }
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
-      });
+      
     });
   </script>
-
 
 </head>
 <body>
@@ -357,12 +353,26 @@
       </div>
     </div>
     
+    <div class="modal fade" id="confirmDeleteAccount" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-body">
+            Are you sure you want to permanently delete your account?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary btn-danger" data-dismiss="modal" onclick="deleteAccount()">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="modal fade" id="smgAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header"><h4>Account Management</h4></div>
                 <div class="modal-body">
-                        <form role="form" id="smgAccountForm" name="smgAccountForm">
+                        <form role="form" id="smgAccountForm">
                             <div class="form-group float-label-control">
                                 <label for="">Email</label>
                                 <input type="email" name="email" class="form-control" placeholder="Email">
@@ -391,9 +401,11 @@
                      </div>
                      <div class="modal-footer">
 						            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="document.smgAccountForm.submit()">Submit</button>
-						            <button class="btn btn-danger pull-left" onclick="Delete()">Delete account</button>
+						            <button type="button" class="btn btn-primary" onclick="submitSmgAccountForm()">Submit</button>
+						            <button class="btn btn-danger pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
+						            <div id="responseSMG" style="padding-top: 10px"></div>
 					          </div>
+					          
             </div>
         </div>
     </div>
@@ -403,7 +415,7 @@
             <div class="modal-content">
                 <div class="modal-header"><h4>Account Management</h4></div>
                 <div class="modal-body">
-                        <form role="form" id="socialAccountForm" name="socialAccountForm">
+                        <form role="form" id="socialAccountForm">
                             <div class="form-group float-label-control label-bottom">
                                 <label for="">First Name</label>
                                 <input type="text" name="firstName" class="form-control" placeholder="First Name">
@@ -420,8 +432,9 @@
                             </div>
                      <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="document.socialAccountForm.submit()">Submit</button>
-                        <button class="btn btn-danger pull-left" onclick="Delete()">Delete account</button>
+                        <button type="button" class="btn btn-primary" onclick="submitSocialAccountForm()">Submit</button>
+                        <button class="btn btn-danger pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
+                        <div id="responseSocial" style="padding-top: 10px"></div>
                     </div>
             </div>
         </div>
@@ -435,11 +448,9 @@
 			<li class="pull-right" id="logoutDropdown"><a data-toggle="dropdown" ><span class="glyphicon glyphicon-log-out"></span><span class="hidden-xs"> Logout</span>
 					<b class="caret"></b>
 				</a>
-				<form role="form" class="dropdown-menu" id="logOut">
-				  
-					<input type="submit" class="btn btn-success btn-block" value="Log Out" />
-				 
-				</form>
+				<ul class="dropdown-menu">
+           <li><a href="#" id="logouturl" onclick="logout()">Logout</a></li>
+        </ul>
 			</li>
 			<li class="pull-right" id="accountManageDropdown">
 				<a href="#" onClick="showAccountManagement()" role="button" data-toggle="modal"><span class="glyphicon glyphicon-user"></span><span class="hidden-xs"> Account Management</span>
