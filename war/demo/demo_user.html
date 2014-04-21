@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Servlet Test</title>
-  <script type="text/javascript" src="resources/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="resources/json2.js"></script>
+  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../resources/json2.js"></script>
 </head>
 <body>
 <h3>Demo Page - User</h3>
@@ -30,7 +30,7 @@ function jsonify(array) {
 $(document).ready(function() {
 var domain="smg-server.appspot.com";
   //var domain = "1-dot-huan-kang.appspot.com";
- // var domain = "localhost:8888";
+  var domain = "localhost:8888";
   
   $("#get1").submit(function(e) {
     // Prevent all default form submission
@@ -101,9 +101,29 @@ var domain="smg-server.appspot.com";
     e.preventDefault();
     
     var formValues = jsonify($(this).serializeArray());
-    console.log(formValues);
     $.ajax({
       url: "http://" + domain + "/userinfo/" + formValues.developerId + "?accessSignature=" + formValues.accessSignature,
+      dataType: "json",
+      type: "GET",
+      success: function(data, textStatus, jqXHR) {
+      console.log(data);
+        $("#response").append("<p>" + JSON.stringify(data) + "</p>");
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    }); 
+    
+
+  });
+  
+  $("#friendlist").submit(function(e) {
+    // Prevent all default form submission
+    e.preventDefault();
+    
+    var formValues = jsonify($(this).serializeArray());
+    $.ajax({
+      url: "http://" + domain + "/userfriendlist/" + formValues.developerId + "?accessSignature=" + formValues.accessSignature,
       dataType: "json",
       type: "GET",
       success: function(data, textStatus, jqXHR) {
@@ -189,6 +209,15 @@ var domain="smg-server.appspot.com";
 
 
 </td><td>
+
+<h4>Get User Friend List</h4>
+<form id="friendlist"></form>
+<table>
+<tr>
+<tr><td>User ID:<td><input type="text" name="developerId" form="friendlist">
+<tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="friendlist"></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="Get friend list" form="friendlist"></td></tr>
+</table>
 
 <h4>Update User</h4>
 <form id="update"></form>

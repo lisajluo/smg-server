@@ -183,7 +183,7 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		JSONObject friendOb = null;
 		Text friendText = null;
 
-		String newFriends = "{\"data\":[";
+		String newFriends = "[";
 		try {
 			JSONObject graphJson = new JSONObject(graph);
 			JSONArray friendArray = graphJson.getJSONArray("data");
@@ -197,14 +197,14 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 									friend.getString("id"));
 					if (friendAsList == null || friendAsList.size() == 0)
 						newFriends = newFriends
-								+ "{\"type\":\"f\",\"socialId\":"
-								+ friend.getString("id") + ",\"SMGId\":null}";
+								+ "{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":null}";
 					else {
 						long userId = friendAsList.get(0).getKey().getId();
 						newFriends = newFriends
-								+ "{\"type\":\"f\",\"socialId\":"
-								+ friend.getString("id") + ",\"SMGId\":"
-								+ userId + "}";
+								+ "{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":\""
+								+ userId + "\"}";
 					}
 				} else {
 					List<Entity> friendAsList = UserDatabaseDriver
@@ -212,18 +212,18 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 									friend.getString("id"));
 					if (friendAsList == null || friendAsList.size() == 0)
 						newFriends = newFriends
-								+ ",{\"type\":\"f\",\"socialId\":"
+								+ ",{\"type\":\"f\",\"socialId\":\""
 								+ friend.getString("id") + ",\"SMGId\":null}";
 					else {
 						long userId = friendAsList.get(0).getKey().getId();
 						newFriends = newFriends
-								+ ",{\"type\":\"f\",\"socialId\":"
-								+ friend.getString("id") + ",\"SMGId\":"
-								+ userId + "}";
+								+ ",{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + ",\"SMGId\":\""
+								+ userId + "\"}";
 					}
 				}
 			}
-			newFriends = newFriends + "]}";
+			newFriends = newFriends + "]";
 			// resp.getWriter().println(newFriends);
 			friendText = new Text(newFriends);
 			friendOb = new JSONObject(friendText.getValue());
