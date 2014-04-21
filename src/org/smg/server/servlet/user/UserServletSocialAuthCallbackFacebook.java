@@ -224,7 +224,7 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 				}
 			}
 			newFriends = newFriends + "]}";
-			resp.getWriter().println(newFriends);
+			// resp.getWriter().println(newFriends);
 			friendText = new Text(newFriends);
 			friendOb = new JSONObject(friendText.getValue());
 		} catch (JSONException e1) {
@@ -245,7 +245,7 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 			infoMap.put(FACEBOOKID, facebookId);
 			try {
 				long userId = UserDatabaseDriver.insertUser(infoMap);
-				resp.getWriter().println(userId);
+				// resp.getWriter().println(userId);
 				String accessSignature = AccessSignatureUtil.generate(userId);
 				infoMap.put(ACCESS_SIGNATURE, accessSignature);
 				UserDatabaseDriver.updateUser(userId, infoMap);
@@ -266,6 +266,8 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 					Map user = UserDatabaseDriver.getUserMap(userId);
 					user.put(ACCESS_SIGNATURE,
 							AccessSignatureUtil.generate(userId));
+					user.put(FRIEND_LIST, friendText);
+
 					UserDatabaseDriver.updateUser(userId, user);
 					jsonStore = new JSONObject(user);
 					resp.sendRedirect(MAIN_PAGE + "userId="
