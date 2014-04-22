@@ -1,5 +1,6 @@
 package org.smg.server.servlet.user;
 
+import static org.smg.server.servlet.game.GameConstants.PICS;
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import java.io.BufferedReader;
@@ -25,6 +26,7 @@ import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -142,7 +144,6 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 
 		String facebookId = null;
 		String firstName = null;
-
 		String lastName = null;
 		String email = null;
 		try {
@@ -158,12 +159,12 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		graph = processGet(new URL("https://graph.facebook.com/" + facebookId
 				+ "?fields=picture.type(large)"));
 
-		String profileURL = null;
+		String picURL = null;
 		try {
 			JSONObject json = new JSONObject(graph);
 			JSONObject picOb = (JSONObject) json.get("picture");
 			JSONObject dataOb = (JSONObject) picOb.get("data");
-			profileURL = dataOb.getString("url");
+			picURL = dataOb.getString("url");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -171,30 +172,66 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		graph = processGet(new URL("https://graph.facebook.com/me/friends?"
 				+ token));
 
-		String friendNames[] = new String[5];
-		String friendIds[] = new String[5];
-		String friends = "[";
-		try {
-			JSONObject json = new JSONObject(graph);
-			JSONArray friendArray = json.getJSONArray("data");
-			for (int i = 0; i < 5; i++) {
-				String friendStr = "";
-				JSONObject friend = friendArray.getJSONObject(i);
-				friendNames[i] = friend.getString("name");
-				friendIds[i] = friend.getString("id");
-				if (friendIds[i].equals("") && friendIds[i] == null)
-					break;
-				friendStr = "{" + "\"name\":" + friendNames[i] + ",\"id\":"
-						+ friendIds[i] + "}";
-				if (i != 0)
-					friends += ",";
-				friends += friendStr;
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		friends += "]";
+		// resp.getWriter().println(firstName);
+		// resp.getWriter().println(lastName);
+		// resp.getWriter().println(email);
+		// resp.getWriter().println(friends);
+		// resp.getWriter().println(FACEBOOK);
+		// resp.getWriter().println(picURL);
 		// firstName, lastName, email, friends, profileURL
+		String friendData = null;
+		JSONObject friendOb = null;
+		Text friendText = null;
+
+		String newFriends = "[";
+		try {
+			JSONObject graphJson = new JSONObject(graph);
+			JSONArray friendArray = graphJson.getJSONArray("data");
+			friendData = graphJson.getString("data");
+			// resp.getWriter().println(graphJson.getString("data"));
+			for (int i = 0; i < friendArray.length(); i++) {
+				JSONObject friend = friendArray.getJSONObject(i);
+				if (i == 0) {
+					List<Entity> friendAsList = UserDatabaseDriver
+							.queryUserByProperty(FACEBOOKID,
+									friend.getString("id"));
+					if (friendAsList == null || friendAsList.size() == 0)
+						newFriends = newFriends
+								+ "{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":null}";
+					else {
+						long userId = friendAsList.get(0).getKey().getId();
+						newFriends = newFriends
+								+ "{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":\""
+								+ userId + "\"}";
+					}
+				} else {
+					List<Entity> friendAsList = UserDatabaseDriver
+							.queryUserByProperty(FACEBOOKID,
+									friend.getString("id"));
+					if (friendAsList == null || friendAsList.size() == 0)
+						newFriends = newFriends
+								+ ",{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":null}";
+					else {
+						long userId = friendAsList.get(0).getKey().getId();
+						newFriends = newFriends
+								+ ",{\"type\":\"f\",\"socialId\":\""
+								+ friend.getString("id") + "\",\"SMGId\":\""
+								+ userId + "\"}";
+					}
+				}
+			}
+			newFriends = newFriends + "]";
+			// resp.getWriter().println(newFriends);
+			friendText = new Text(newFriends);
+			friendOb = new JSONObject(friendText.getValue());
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// Text friendText = new Text(friends);
 		Map<Object, Object> infoMap = new HashMap<Object, Object>();
 		List<Entity> userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
 				email);
@@ -203,15 +240,18 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 			infoMap.put(EMAIL, email);
 			infoMap.put(FIRST_NAME, firstName);
 			infoMap.put(LAST_NAME, lastName);
-			infoMap.put(FRIEND_LIST, friends);
-			infoMap.put(IMAGEURL, profileURL);
+			infoMap.put(FRIEND_LIST, friendText);
+			infoMap.put(IMAGEURL, picURL);
+			infoMap.put(FACEBOOKID, facebookId);
 			try {
 				long userId = UserDatabaseDriver.insertUser(infoMap);
+				// resp.getWriter().println(userId);
 				String accessSignature = AccessSignatureUtil.generate(userId);
 				infoMap.put(ACCESS_SIGNATURE, accessSignature);
 				UserDatabaseDriver.updateUser(userId, infoMap);
 				UserUtil.jsonPut(jsonStore, USER_ID, Long.toString(userId));
 				UserUtil.jsonPut(jsonStore, ACCESS_SIGNATURE, accessSignature);
+				// resp.getWriter().println(userId + accessSignature);
 				resp.sendRedirect(MAIN_PAGE + "userId=" + Long.toString(userId)
 						+ "&accessSignature=" + accessSignature);
 			} catch (Exception e) {
@@ -226,11 +266,13 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 					Map user = UserDatabaseDriver.getUserMap(userId);
 					user.put(ACCESS_SIGNATURE,
 							AccessSignatureUtil.generate(userId));
+					user.put(FRIEND_LIST, friendText);
+
 					UserDatabaseDriver.updateUser(userId, user);
 					jsonStore = new JSONObject(user);
 					resp.sendRedirect(MAIN_PAGE + "userId="
 							+ Long.toString(userId) + "&accessSignature="
-							+ user.get(ACCESS_SIGNATURE));
+							+ user.get(ACCESS_SIGNATURE)+"&accessTokenFB="+token);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

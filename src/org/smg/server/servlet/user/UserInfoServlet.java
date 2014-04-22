@@ -39,6 +39,8 @@ public class UserInfoServlet extends HttpServlet{
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
 	        user.remove(BLOBKEY);
+	        user.remove(FRIEND_LIST);
+	        user.remove(SOCIAL_AUTH);
 	        json = new JSONObject(user);
 	        json.remove(ACCESS_SIGNATURE);
 	        json.remove(PASSWORD);

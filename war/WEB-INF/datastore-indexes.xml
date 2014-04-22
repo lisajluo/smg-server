@@ -10,24 +10,20 @@
         <property name="PLAYERID" direction="asc"/>
         <property name="DATE" direction="desc"/>
     </datastore-index>
-    <datastore-index kind="3Queue" ancestor="false" source="manual">
-        <property name="gameId" direction="asc"/>
-        <property name="enqueueTime" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="3PLAYERHISTORY" ancestor="false" source="manual">
-        <property name="GAMEID" direction="asc"/>
-        <property name="PLAYERID" direction="asc"/>
-        <property name="DATE" direction="desc"/>
-    </datastore-index>
     <datastore-index kind="4Queue" ancestor="false" source="manual">
         <property name="gameId" direction="asc"/>
         <property name="enqueueTime" direction="asc"/>
     </datastore-index>
-        <datastore-index kind="5Queue" ancestor="false" source="manual">
+    <datastore-index kind="4PLAYERHISTORY" ancestor="false" source="manual">
+        <property name="GAMEID" direction="asc"/>
+        <property name="PLAYERID" direction="asc"/>
+        <property name="DATE" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="5Queue" ancestor="false" source="manual">
         <property name="gameId" direction="asc"/>
         <property name="enqueueTime" direction="asc"/>
     </datastore-index>
-    <datastore-index kind="4PLAYERHISTORY" ancestor="false" source="manual">
+    <datastore-index kind="5PLAYERHISTORY" ancestor="false" source="manual">
         <property name="GAMEID" direction="asc"/>
         <property name="PLAYERID" direction="asc"/>
         <property name="DATE" direction="desc"/>

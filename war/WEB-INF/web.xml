@@ -221,6 +221,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         <url-pattern>/userLogOut/*</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>userFriendList</servlet-name>
+        <servlet-class>org.smg.server.servlet.user.UserFriendsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>userFriendList</servlet-name>
+        <url-pattern>/userfriendlist/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>getAdminList</servlet-name>
         <servlet-class>org.smg.server.servlet.admin.adminInfoServlet</servlet-class>
     </servlet>
