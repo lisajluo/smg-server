@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -252,7 +253,9 @@ public class ContainerDatabaseDriver {
     Filter filter = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
     Filter filter2 = new FilterPredicate(
         ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
-    Query q = new Query(ContainerConstants.MATCH).setFilter(filter).setFilter(filter2);
+    Filter compFilter =
+        CompositeFilterOperator.and(filter, filter2);
+    Query q = new Query(ContainerConstants.MATCH).setFilter(compFilter);
     List<Entity> result = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
     return result;
@@ -326,7 +329,9 @@ public class ContainerDatabaseDriver {
         ContainerConstants.GAME_OVER_REASON, FilterOperator.EQUAL, ContainerConstants.NOT_OVER);
     Filter filter2 = new FilterPredicate(
         ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
-    Query q = new Query(ContainerConstants.MATCH).setFilter(filter).setFilter(filter2);
+    Filter compFilter =
+        CompositeFilterOperator.and(filter, filter2);
+    Query q = new Query(ContainerConstants.MATCH).setFilter(compFilter);
     List<Entity> raw = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
     for (Entity entity: raw) {
@@ -363,7 +368,9 @@ public class ContainerDatabaseDriver {
     long gameId = (long)queueEntity.get(ContainerConstants.GAME_ID);    
     Filter filter = new FilterPredicate(ContainerConstants.PLAYER_ID, FilterOperator.EQUAL, playerId);
     Filter filter2 = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
-    Query q = new Query(ContainerConstants.QUEUE).setFilter(filter).setFilter(filter2);
+    Filter compFilter =
+        CompositeFilterOperator.and(filter, filter2);
+    Query q = new Query(ContainerConstants.QUEUE).setFilter(compFilter);
     List<Entity> result = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
     if (result == null) {
@@ -416,7 +423,9 @@ public class ContainerDatabaseDriver {
   public static boolean deleteQueueEntity (long playerId, long gameId) {    
     Filter filter = new FilterPredicate(ContainerConstants.PLAYER_ID, FilterOperator.EQUAL, playerId);
     Filter filter2 = new FilterPredicate(ContainerConstants.GAME_ID, FilterOperator.EQUAL, gameId);
-    Query q = new Query(ContainerConstants.QUEUE).setFilter(filter).setFilter(filter2);
+    Filter compFilter =
+        CompositeFilterOperator.and(filter, filter2);
+    Query q = new Query(ContainerConstants.QUEUE).setFilter(compFilter);
     List<Entity> result = datastore.prepare(q).asList(
         FetchOptions.Builder.withDefaults());
     if (result == null) {
