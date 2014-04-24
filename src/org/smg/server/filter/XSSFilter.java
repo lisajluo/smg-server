@@ -2,7 +2,6 @@ package org.smg.server.filter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
 
@@ -14,12 +13,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static org.smg.server.filter.XSSConstants.*;
 
-import org.smg.server.servlet.developer.DeveloperUtil;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.filter.XSSRequestWrapper;
 
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class XSSFilter implements Filter {
@@ -29,59 +27,59 @@ public class XSSFilter implements Filter {
   public void destroy() {
   }
 
-  public void doFilter(ServletRequest request, ServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+      throws IOException, ServletException {
     
     CORSUtil.addCORSHeader((HttpServletResponse) response);
     PrintWriter writer = response.getWriter();
     JSONObject json = new JSONObject();
+    XSSRequestWrapper multiReadRequest = new XSSRequestWrapper((HttpServletRequest) request);
 
-    if (hasXSSContent(request)) {
-      // return XSS_ERROR
-      DeveloperUtil.jsonPut(json, "error", "XSS_ERROR");
+    if (hasXSSContent(multiReadRequest)) {
       try {
+        json.put(ERROR, XSS_ERROR);
         json.write(writer);
-      } catch (JSONException e) {
+      } 
+      catch (Exception e) {
         e.printStackTrace();
       }
-    } else {
-      // invoke actual servlet
-//      chain.doFilter(new XSSRequestWrapper((HttpServletRequest) request), response);
-      chain.doFilter(request,response);
+    } 
+    else {
+      chain.doFilter(multiReadRequest, response);
     }
   }
   
   private boolean hasXSSContent(ServletRequest request) {
-    // TODO filter here
-    BufferedReader br;
+    BufferedReader reader;
+    StringBuffer buffer = new StringBuffer();
+    String line = null;
+    
     try {
-      br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-    } catch (IOException e) {
-      return true;
-    }
-    String json = "";
-    if (br != null) {
-      try {
-        json = br.readLine();
-        if (json != null) {
-          String originJson = new String(json);
-          if (originJson.equals(stripXSS(json))) {
-            return false;
-          } else {
-            return true;
-          }
-        }
-      } catch (IOException e) {
+      reader = request.getReader();
+      while ((line = reader.readLine()) != null) {
+        buffer.append(line);
+      }
+      
+      String originJson = buffer.toString();
+      if (originJson.equals(stripXSS(new String(originJson)))) {
+        return false;
       }
     }
-    return false;
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    return true;
   }
   
+  /*
+   * Credit to http://www.javacodegeeks.com/2012/07/anti-cross-site-scripting-xss-filter.html
+   */
   private String stripXSS(String value) {
     if (value != null) {
-        // NOTE: It's highly recommended to use the ESAPI library and uncomment the following line to
-        // avoid encoded attacks.
-        // value = ESAPI.encoder().canonicalize(value);
+      // NOTE: It's highly recommended to use the ESAPI library and uncomment the following line to
+      // avoid encoded attacks.
+      // value = ESAPI.encoder().canonicalize(value);
 
         // Avoid null characters
         value = value.replaceAll("", "");
@@ -125,6 +123,7 @@ public class XSSFilter implements Filter {
         scriptPattern = Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
         value = scriptPattern.matcher(value).replaceAll("");
     }
+    
     return value;
   }
 }
