@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static org.smg.server.filter.XSSConstants.*;
 
+import org.owasp.esapi.ESAPI;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.filter.XSSRequestWrapper;
 
@@ -77,9 +78,7 @@ public class XSSFilter implements Filter {
    */
   private String stripXSS(String value) {
     if (value != null) {
-      // NOTE: It's highly recommended to use the ESAPI library and uncomment the following line to
-      // avoid encoded attacks.
-      // value = ESAPI.encoder().canonicalize(value);
+        value = ESAPI.encoder().canonicalize(value);
 
         // Avoid null characters
         value = value.replaceAll("", "");
