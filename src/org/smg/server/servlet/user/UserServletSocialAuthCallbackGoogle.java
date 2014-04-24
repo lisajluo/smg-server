@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.smg.server.util.CORSUtil;
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
@@ -91,6 +93,7 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 	private Map<Object, Object> getInfoMap(String getReqResp) {
 		Map<Object, Object> infoMap = new HashMap<Object, Object>();
 		JSONObject jsonOb = null;
+		String googleId = null;
 		String email = null;
 		String familyName = null;
 		String givenName = null;
@@ -110,6 +113,7 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 			givenName = names.getString(GIVEN_NAME);
 			JSONObject imageOb = jsonOb.getJSONObject(IMAGE);
 			imageURL = imageOb.getString(URL);
+			googleId = jsonOb.getString("id");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -117,6 +121,7 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 		infoMap.put(FIRST_NAME, givenName);
 		infoMap.put(LAST_NAME, familyName);
 		infoMap.put(IMAGEURL, imageURL);
+		infoMap.put(GOOGLEID, googleId);
 		return infoMap;
 	}
 
@@ -165,7 +170,55 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 		url = new URL(GOOGLE_PEOPLE + urlParameters);
 		String getReqResp = processGet(url);
 
+		url = new URL(
+				"https://www.googleapis.com/plus/v1/people/me/people/visible?"
+						+ ACCESS_TOKEN + "=" + accToken);
+		String friendResp = processGet(url);
+		String frinedStr = "";
+		ArrayList<String> friendIds = new ArrayList<String>();
+		try {
+			JSONObject friendJsonOb = new JSONObject(friendResp);
+			JSONArray friendArray = friendJsonOb.getJSONArray("items");
+			for (int i = 0; i < friendArray.length(); i++) {
+				JSONObject friendInfo = friendArray.getJSONObject(i);
+				friendIds.add(friendInfo.getString("id"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		String newFriends = "{\"data\":[";
+
+		for (int i = 0; i < friendIds.size(); i++) {
+			String friendId = friendIds.get(i);
+			if (i == 0) {
+				List<Entity> friendAsList = UserDatabaseDriver
+						.queryUserByProperty(GOOGLEID, friendId);
+				if (friendAsList == null || friendAsList.size() == 0)
+					newFriends = newFriends + "{\"type\":\"g\",\"socialId\":"
+							+ friendId + ",\"SMGId\":null}";
+				else {
+					long userId = friendAsList.get(0).getKey().getId();
+					newFriends = newFriends + "{\"type\":\"g\",\"socialId\":"
+							+ friendId + ",\"SMGId\":" + userId + "}";
+				}
+			} else {
+				List<Entity> friendAsList = UserDatabaseDriver
+						.queryUserByProperty(GOOGLEID, friendId);
+				if (friendAsList == null || friendAsList.size() == 0)
+					newFriends = newFriends + ",{\"type\":\"g\",\"socialId\":"
+							+ friendId + ",\"SMGId\":null}";
+				else {
+					long userId = friendAsList.get(0).getKey().getId();
+					newFriends = newFriends + ",{\"type\":\"g\",\"socialId\":"
+							+ friendId + ",\"SMGId\":" + userId + "}";
+				}
+			}
+		}
+		newFriends = newFriends + "]}";
 		Map<Object, Object> infoMap = getInfoMap(getReqResp);
+		infoMap.put(FRIEND_LIST, new Text(newFriends));
+
 		String emailAddress = (String) infoMap.get(EMAIL);
 		List<Entity> userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
 				emailAddress);
@@ -193,6 +246,7 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 					Map user = UserDatabaseDriver.getUserMap(userId);
 					user.put(ACCESS_SIGNATURE,
 							AccessSignatureUtil.generate(userId));
+					user.put(FRIEND_LIST, new Text(newFriends));
 					UserDatabaseDriver.updateUser(userId, user);
 					json = new JSONObject(user);
 					resp.sendRedirect(MAIN_PAGE + "userId="
