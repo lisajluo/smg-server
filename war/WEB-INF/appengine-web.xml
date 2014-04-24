@@ -10,7 +10,11 @@
   <!-- Configure java.util.logging -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+    <property name="org.owasp.esapi.resources" value="ESAPI" />
   </system-properties>
+  <resource-files>
+    <include path="/**properties" />
+  </resource-files>
   <!-- Enable Channel -->
   <inbound-services>
    <service>channel_presence</service>
