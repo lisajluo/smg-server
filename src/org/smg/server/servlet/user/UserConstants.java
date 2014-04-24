@@ -52,7 +52,9 @@ public class UserConstants {
 	/**
 	 * config
 	 */
-	public static final String DOMAIN = "http://2-dot-valued-door-559.appspot.com/";
+	// public static final String DOMAIN =
+	// "http://2-dot-valued-door-559.appspot.com/";
+	public static final String DOMAIN = "http://smg-server.appspot.com/";
 	public static final String GOOGLE_CALLBACK = DOMAIN
 			+ "socialAuthCallbackGoogle";
 	public static final String MAIN_PAGE = DOMAIN + "index.html?";
@@ -86,10 +88,16 @@ public class UserConstants {
 	public static final String FRIEND_LIST = "friendList";
 	public static final String FACEBOOKID = "facebookId";
 	public static final String GOOGLEID = "googleId";
-	
-	
-	public static final String GOOGLE_CLIENT_ID = "957989692513-kopummh9chd0eorek307pbc1iaehplb2.apps.googleusercontent.com";
-	public static final String GOOGLE_CLIENT_SECRET = "RE7SXcFNa6FosxsTt6KtcdI_";
-	public static final String FACEBOOK_APP_ID = "1478359169060779";
-	public static final String FACEBOOK_APP_SECRET = "3f1164408fea6294ae7bbd919f0705f2";
+
+	// public static final String GOOGLE_CLIENT_ID =
+	// "957989692513-kopummh9chd0eorek307pbc1iaehplb2.apps.googleusercontent.com";
+	public static final String GOOGLE_CLIENT_ID = "558267404896.apps.googleusercontent.com";
+	// public static final String GOOGLE_CLIENT_SECRET =
+	// "RE7SXcFNa6FosxsTt6KtcdI_";
+	public static final String GOOGLE_CLIENT_SECRET = "nlg2URIHD3UY5icICwoyyT-N";
+	// public static final String FACEBOOK_APP_ID = "1478359169060779";
+	public static final String FACEBOOK_APP_ID = "708188635890698";
+	// public static final String FACEBOOK_APP_SECRET =
+	// "3f1164408fea6294ae7bbd919f0705f2";
+	public static final String FACEBOOK_APP_SECRET = "0f2bd5bb2469cbf2dc4d63f02c8ebfbf";
 }
