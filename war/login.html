@@ -20,6 +20,7 @@
     </script>
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
     <link href="css/login-page.css" rel="stylesheet">
+    <script src="./js/jquery.i18n.properties-min-1.0.9.js"></script>
     <style type="text/css">
       body {
 			  padding-top: 40px;
@@ -29,7 +30,21 @@
     </style>
     <script type="text/javascript">
     $(document).ready(function() {
-      
+        jQuery.i18n.properties({
+          name:'login', 
+          path:'i18n/', 
+          mode:'map',
+          callback: function() {
+            $('#form_title').html($.i18n.prop('form_title')); 
+            $('#string_email_form').prop('placeholder', $.i18n.prop('string_email')); 
+            $('#string_password').prop('placeholder', $.i18n.prop('string_password'));
+            $('#forget_password').html($.i18n.prop('forget_password')); 
+            $('#register').html($.i18n.prop('register')); 
+            $('#signin').html($.i18n.prop('signin')); 
+            $('#login_with_other_services').html($.i18n.prop('login_with_other_services')); 
+            $('span #login_with').each(function( index ) {$( this ).html($.i18n.prop('login_with'))}); 
+          }
+        });
       //var domain = "1-dot-huan-kang.appspot.com";
       //var domain = "localhost:8888";
       var domain = "smg-server.appspot.com";
@@ -90,24 +105,24 @@
       <form class="form-signin" role="form" id="post_form">
         <div class="row">
           <div class="span0">
-            <h3>
+            <h3 id="form_title">
               Please sign in
             </h3>
           </div>
           <div class="span1">
-            <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus/>
+            <input id="string_email_form" type="email" name="email" class="form-control" placeholder="Email address" required autofocus/>
           </div>
           <div class="span2">
-            <input type="password" name="password" class="form-control" placeholder="Password" required/>
-            <a href="passwordlink.html">
+            <input id="string_password" type="password" name="password" class="form-control" placeholder="Password" required/>
+            <a href="passwordlink.html" id="forget_password">
               Forgot password
             </a>
           </div>
           <div class="span3 pull-right">
-            <a href="signup.html" class="btn btn-me btn-info">
+            <a href="signup.html" class="btn btn-me btn-info" id="register">
               Register
             </a>
-            <button class="btn btn-md btn-success" type="submit">
+            <button class="btn btn-md btn-success" type="submit" id="signin">
               Sign in
             </button>
           </div>
@@ -115,7 +130,7 @@
       </form>
       <div class="row">
         <div class="span1">
-          <h4 class="text-left">
+          <h4 class="text-left" id="login_with_other_services">
             Login with other services.
           </h4>
         </div>
@@ -123,9 +138,8 @@
           <a class="btn btn-google-plus-style btn-lg btn-block" href="../userSocialAuth/google">
             <i class="fa fa-google-plus-square">
             </i>
-            
             <span>
-              Login with 
+              <span id="login_with">Login with</span> 
               <strong>
                 Google+
               </strong>
@@ -139,7 +153,7 @@
             </i>
             
             <span>
-              Login with 
+              <span id="login_with">Login with</span> 
               <strong>
                 Facebook
               </strong>

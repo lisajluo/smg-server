@@ -20,6 +20,7 @@
     </script>
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
     <link href="css/login-page.css" rel="stylesheet">
+    <script src="../js/jquery.i18n.properties-min-1.0.9.js"></script>
     <style type="text/css">
       body {
 			  padding-top: 40px;
@@ -39,6 +40,17 @@
     </style>
     <script type="text/javascript">
     $(document).ready(function () {
+        jQuery.i18n.properties({
+          name:'login', 
+          path:'i18n/', 
+          mode:'map',
+          callback: function() {
+            $('#welcome').html($.i18n.prop('welcome')); 
+            $('#adminId').prop('placeholder', $.i18n.prop('adminId')); 
+            $('#password').prop('placeholder', $.i18n.prop('password'));
+            $('#login_in').html($.i18n.prop('login_in')); 
+          }
+        });
         function jsonify(array) {
             var json = {};
             for (var i = 0; i < array.length; i++) {
@@ -51,8 +63,8 @@
             }
             return json;
         }
-        //var domain = "http://localhost:8888";
-         var domain = "http://smg-server.appspot.com";
+       	//var domain = "http://localhost:8888";
+       	var domain = "http://smg-server.appspot.com";
         toastr.options = {
             "closeButton": true,
             "debug": false,
@@ -99,18 +111,18 @@
             <img src="./img/shield.png" class="img-responsive" alt="Responsive image">
           </div>
           <div class="col-lg col-centered text-center">
-            <h3><b>
+            <h3><b id="welcome">
               Welcome to Level 6
             </b></h3>
           </div>
           <div class="span1">
-            <input type="name" name="adminId" class="form-control" placeholder="ID of Agent" required autofocus/>
+            <input id="adminId" type="name" name="adminId" class="form-control" placeholder="ID of Agent" required autofocus/>
           </div>
           <div class="span2">
-            <input type="password" name="password" class="form-control" placeholder="Password" required/>
+            <input id="password" type="password" name="password" class="form-control" placeholder="Password" required/>
           </div>
           <div class="col-lg col-centered text-center">
-            <button class="btn btn-lg btn-danger btn-block" type="submit">
+            <button id="login_in" class="btn btn-lg btn-danger btn-block" type="submit">
               Login to Shield
             </button>
           </div>

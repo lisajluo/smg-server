@@ -1,499 +1,558 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Main Page</title>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<link rel="stylesheet"
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
-<script
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<link rel="stylesheet"
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-<link rel="stylesheet"
-	href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-<script
-	src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<link
-	href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
-	rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Main Page</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="./js/jquery.i18n.properties-min-1.0.9.js"></script>
 
-<script type="text/javascript">
-  var imageUploadUrl = "";
-    var domain = "smg-server.appspot.com";
- //   var domain = "2-dot-valued-door-559.appspot.com"; 
-  var isSocial = getUrlParam("isSocial");
-  var userId = getUrlParam("userId");
-  var accessSignature = getUrlParam("accessSignature");
-  var accessTokenFB = getUrlParam("accessTokenFB");
-           
-  if(isSocial == undefined)
-     isSocial = true;
-  
-     
-  function showAccountManagement() {
-      if (isSocial == "true") {
-        $('#socialAccount').modal('show');
-      } else {            
-        $('#smgAccount').modal('show');
-      }
-  }   
-  
-  function submitSmgAccountForm() {
-        var formValues = jsonify($("#smgAccountForm").serializeArray());
-        if (formValues.password != formValues.confirm) {
-          document.getElementById("responseSMG").innerHTML = "<br>Please enter the same password";
-          return;
-        } else {
-          document.getElementById("responseSMG").innerHTML = "";
-        }
+    <script type="text/javascript">
+        var imageUploadUrl = "";
+        var domain = "smg-server.appspot.com";
+         //    var domain = "localhost:8888"; 
+        var isSocial = getUrlParam("isSocial");
+        var userId = getUrlParam("userId");
+        var accessSignature = getUrlParam("accessSignature");
+        var accessTokenFB = getUrlParam("accessTokenFB");
 
-        var jsonObj = {
-          "email" : formValues.email,
-          "password" : formValues.password,
-          "firstName" : formValues.firstName,
-          "lastName" : formValues.lastName,
-          "nickName" : formValues.nickName,
-          "accessSignature" : accessSignature
-        };
-        $.ajax({
-          url : "http://" + domain + "/userinfo/"+userId,
-          dataType : "json",
-          type : "PUT",
-          data : JSON.stringify(jsonObj),
-          success : function(data, textStatus, jqXHR) {
-            if (data["error"] == undefined) {
-              document.getElementById("responseSMG").innerHTML = "Update success";
-              updateFields();
-              window.setTimeout(function () {
-                 $('#smgAccount').modal('hide');
-              }, 1000);
+        if (isSocial == undefined)
+            isSocial = true;
+
+
+        function showAccountManagement() {
+            if (isSocial == "true") {
+                $('#socialAccount').modal('show');
             } else {
-              document.getElementById("responseSMG").innerHTML = data["error"].toString();
+                $('#smgAccount').modal('show');
             }
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
-      }
-     
-      
-     function submitSocialAccountForm() {
-        var formValues = jsonify($("#socialAccountForm").serializeArray());
-        console.log(formValues);
+        }
 
-        var jsonObj = {
-          "firstName" : formValues.firstName,
-          "lastName" : formValues.lastName,
-          "nickName" : formValues.nickName,
-           "accessSignature" : accessSignature
-        };
-
-        $.ajax({
-          url : "http://" + domain + "/userinfo/" + userId,
-          dataType : "json",
-          type : "PUT",
-          data : JSON.stringify(jsonObj),
-          success : function(data, textStatus, jqXHR) {
-            if (data["error"] == undefined) {
-              document.getElementById("responseSocial").innerHTML = "Update success";
-              updateFields();
-              window.setTimeout(function () {
-                 $('#socialAccount').modal('hide');
-              }, 1000);
+        function submitSmgAccountForm() {
+            var formValues = jsonify($("#smgAccountForm").serializeArray());
+            if (formValues.password != formValues.confirm) {
+                document.getElementById("responseSMG").innerHTML = "<br>Please enter the same password";
+                return;
             } else {
-              document.getElementById("responseSocial").innerHTML = data["error"].toString();
+                document.getElementById("responseSMG").innerHTML = "";
             }
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
-      
-      }
-  
-  function logout() {
-      discardCookie();
-      window.location = "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' +accessSignature;
-  }
-  
-  function getImage() {
-   $.ajax({
-      url: "http://" + domain + "/uploadurl",
-      type: "GET",
-      success: function(data, textStatus, jqXHR) {
-        imageUploadUrl = data;
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert("ERROR: " + textStatus + " " + errorThrown);
-      }
-    });
-    document.getElementById("image_upload").click();
-  }
-  
-  function upload() {
-    var form = document.getElementById('upload_form');
-    var formData = new FormData(form);
 
-    $.ajax({
-      url: imageUploadUrl,
-      data: formData,
-      processData: false,
-      contentType: false,
-      dataType: "json",
-      type: "POST",
-      success: function(data, textStatus, jqXHR) {
-        if (data.imageURL) {
-          $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+            var jsonObj = {
+                "email": formValues.email,
+                "password": formValues.password,
+                "firstName": formValues.firstName,
+                "lastName": formValues.lastName,
+                "nickName": formValues.nickName,
+                "accessSignature": accessSignature
+            };
+            $.ajax({
+                url: "http://" + domain + "/userinfo/" + userId,
+                dataType: "json",
+                type: "PUT",
+                data: JSON.stringify(jsonObj),
+                success: function (data, textStatus, jqXHR) {
+                    if (data["error"] == undefined) {
+                        document.getElementById("responseSMG").innerHTML = "Update success";
+                        updateFields();
+                        window.setTimeout(function () {
+                            $('#smgAccount').modal('hide');
+                        }, 1000);
+                    } else {
+                        document.getElementById("responseSMG").innerHTML = data["error"].toString();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
         }
-        else { 
-          alert ("Image upload error");
+
+
+        function submitSocialAccountForm() {
+            var formValues = jsonify($("#socialAccountForm").serializeArray());
+            //console.log(formValues);
+
+            var jsonObj = {
+                "firstName": formValues.firstName,
+                "lastName": formValues.lastName,
+                "nickName": formValues.nickName,
+                "accessSignature": accessSignature
+            };
+
+            $.ajax({
+                url: "http://" + domain + "/userinfo/" + userId,
+                dataType: "json",
+                type: "PUT",
+                data: JSON.stringify(jsonObj),
+                success: function (data, textStatus, jqXHR) {
+                    if (data["error"] == undefined) {
+                        document.getElementById("responseSocial").innerHTML = "Update success";
+                        updateFields();
+                        window.setTimeout(function () {
+                            $('#socialAccount').modal('hide');
+                        }, 1000);
+                    } else {
+                        document.getElementById("responseSocial").innerHTML = data["error"].toString();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+
         }
-        
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert("ERROR: " + textStatus + " " + errorThrown);
-      }
-    }); 
-  }
-  function updateFields() {
-          $.ajax({
-          url : "http://" + domain + "/userinfo/"+userId+"?accessSignature="+accessSignature,
-          dataType : "json",
-          type : "GET",
-          success : function(data, textStatus, jqXHR) {
-            if (data["error"] == undefined) {
-            $("#greeting_text").text(" Hi, " + data['firstName'] + " ");
-            $("input[name=email]").val(data["email"]);
-            $("input[name=firstName]").val(data["firstName"]);
-            $("input[name=lastName]").val(data["lastName"]);
-            $("input[name=nickName]").val(data["nickName"]);
-            $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
+
+        function logout() {
+            discardCookie();
+            window.location = "http://" + domain + '/userLogOut/' + userId + '?accessSignature=' + accessSignature;
+        }
+
+        function getImage() {
+            $.ajax({
+                url: "http://" + domain + "/uploadurl",
+                type: "GET",
+                success: function (data, textStatus, jqXHR) {
+                    imageUploadUrl = data;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+            document.getElementById("image_upload").click();
+        }
+
+        function upload() {
+            var form = document.getElementById('upload_form');
+            var formData = new FormData(form);
+
+            $.ajax({
+                url: imageUploadUrl,
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                type: "POST",
+                success: function (data, textStatus, jqXHR) {
+                    if (data.imageURL) {
+                        $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+                    } else {
+                        alert("Image upload error");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+        }
+
+        function updateFields() {
+            $.ajax({
+                url: "http://" + domain + "/userinfo/" + userId + "?accessSignature=" + accessSignature,
+                dataType: "json",
+                type: "GET",
+                success: function (data, textStatus, jqXHR) {
+                    if (data["error"] == undefined) {
+                        $("#greeting_text").text(" Hi, " + data['firstName'] + " ");
+                        $("input[name=email]").val(data["email"]);
+                        $("input[name=firstName]").val(data["firstName"]);
+                        $("input[name=lastName]").val(data["lastName"]);
+                        $("input[name=nickName]").val(data["nickName"]);
+                        $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
+                    } else {
+                        window.location = "./login.html";
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+        }
+
+        function resetAvatar() {
+            $.ajax({
+                url: "http://" + domain + "/resetavatar/" + userId,
+                type: "DELETE",
+                dataType: "json",
+                success: function (data, textStatus, jqXHR) {
+                    if (data.imageURL) {
+                        $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+                    } else {
+                        alert("Image upload error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
+                }
+            });
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
+
+         // Simple jsonify - doesn't handle nesting
+        function jsonify(array) {
+            var json = {};
+            for (var i = 0; i < array.length; i++) {
+                var obj = array[i];
+                if (obj.value) {
+                    json[obj.name] = obj.value;
+                }
             }
-            else
-            {
-              window.location = "./login.html";
-            } 
-          },
-          error : function(jqXHR, textStatus, errorThrown) {
-            alert("ERROR: " + textStatus + " " + errorThrown);
-          }
-        });
-  }
-  function resetAvatar() {
-   $.ajax({
-      url: "http://" + domain + "/resetavatar/" + userId,
-      type: "DELETE",
-      dataType: "json",
-      success: function(data, textStatus, jqXHR) {
-        if (data.imageURL) {
-          $("#greeting").css("background-image", "url('" + data.imageURL + "')");
+            return json;
         }
-        else { 
-          alert ("Image upload error");
-        }
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert("ERROR: " + textStatus + " " + errorThrown);
-      }
-    });
-  }
-  
-    function getUrlParam(name) {
-        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); 
-        var r = window.location.search.substr(1).match(reg);  
-        if (r!=null) return unescape(r[2]); return null; 
-    }
-    
-    
-    // Simple jsonify - doesn't handle nesting
-    function jsonify(array) {
-      var json = {};
-      for (var i = 0; i < array.length; i++) {
-        var obj = array[i];
-        if (obj.value) {
-          json[obj.name] = obj.value;
-        }
-      }
-      return json;
-    }
-    
-      function deleteAccount()
-      {
-        var divId = isSocial ? "responseSocial" : "responseSMG";
 
-                  $.ajax({
-                    url : "http://" + domain + "/user/"+userId+"?accessSignature="+accessSignature,
-                    dataType : "json",
-                    type: "DELETE",
-                    success : function (data,textStatus,jqXHR) {
-                      if (data["error"] == undefined) {
-                document.getElementById(divId).innerHTML = "Delete success";
-    window.setTimeout(function () {
+        function deleteAccount() {
+            var divId = isSocial ? "responseSocial" : "responseSMG";
+
+            $.ajax({
+                url: "http://" + domain + "/user/" + userId + "?accessSignature=" + accessSignature,
+                dataType: "json",
+                type: "DELETE",
+                success: function (data, textStatus, jqXHR) {
+                    if (data["error"] == undefined) {
+                        document.getElementById(divId).innerHTML = "Delete success";
+                        window.setTimeout(function () {
                             window.location.replace("http://" + domain + "/login.html");
-                                              }, 1000);
-  } 
-                             else {
-    document.getElementById(divId).innerHTML =  data["error"].toString();
-  }
-                    },
-                   error : function(jqXHR, textStatus, errorThrown) {
-                      alert("ERROR: " + textStatus + " " + errorThrown);
-}
-                  });
-
-                       
-                       
- 
+                        }, 1000);
+                    } else {
+                        document.getElementById(divId).innerHTML = data["error"].toString();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERROR: " + textStatus + " " + errorThrown);
                 }
+            });
 
-                function getCookie(cname)
-                {
-                  var name = cname + "=";
-                  var ca = document.cookie.split(';');
-                  for(var i=0; i<ca.length; i++) 
-                  {
-                    var c = ca[i].trim();
-                     if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-                  }
-                  return "";
-                }
 
-               function checkCookie()
-               {
-                 var userId=getCookie("userId");
-                 if (userId == null || userId =="")
-                  return false;
-                 else
-                  return true;
-               }
-               function setCookie(userId,accessSignature,isSocial,accessTokenFB)
-               {
-                 var d = new Date();
-                 d.setTime(d.getTime()+(1*24*60*60*1000));
-                 var expires = "expires="+d.toGMTString();
-                 document.cookie = "userId="+userId+";";
-                 document.cookie = "accessSignature=" + accessSignature + ";";
-                 if (isSocial==true)
-                 {
-                   document.cookie = "isSocial=true;";
-                 }
-                 else
-                 {
-                   document.cookie = "isSocial=false;";
-                 }
-                 document.cookie = "accessTokenFB=" + accessTokenFB + ";";
-                 document.cookie = expires + ";";
-                
-               }
-               function discardCookie()
-               {
-                  var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                  document.cookie = expires + ";";
-               }
 
-    $(document).ready(function() {
-            if (userId == null)
-            {
-              if (checkCookie()==false)
-              {
-                window.location = "./login.html";
-              }
-              else
-              {
-                   userId = getCookie("userId");
-                   accessSignature = getCookie("accessSignature");
-                   isSocial = getCookie("isSocial");
-                   accessTokenFB = getCookie("accessTokenFB");
-                   updateFields();   
-              } 
+
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
             }
+            return "";
+        }
+
+        function checkCookie() {
+            var userId = getCookie("userId");
+            if (userId == null || userId == "")
+                return false;
             else
-            {
-               setCookie(userId,accessSignature,isSocial,accessTokenFB);
-               window.location = "./";
+                return true;
+        }
+
+        function setCookie(userId, accessSignature, isSocial, accessTokenFB) {
+            var d = new Date();
+            d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toGMTString();
+            document.cookie = "userId=" + userId + ";";
+            document.cookie = "accessSignature=" + accessSignature + ";";
+            if (isSocial == true) {
+                document.cookie = "isSocial=true;";
+            } else {
+                document.cookie = "isSocial=false;";
             }
-            
+            document.cookie = "accessTokenFB=" + accessTokenFB + ";";
+            document.cookie = expires + ";";
+
+        }
+
+        function discardCookie() {
+            var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = expires + ";";
+        }
+
+        $(document).ready(function () {
+            if (userId == null) {
+                if (checkCookie() == false) {
+                    window.location = "./login.html";
+                } else {
+                    userId = getCookie("userId");
+                    accessSignature = getCookie("accessSignature");
+                    isSocial = getCookie("isSocial");
+                    accessTokenFB = getCookie("accessTokenFB");
+                    updateFields();
+                }
+            } else {
+                setCookie(userId, accessSignature, isSocial, accessTokenFB);
+                window.location = "./";
+            }
+
             //$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
-            if (accessTokenFB==null||accessTokenFB=="")
-            {
-        $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
-        $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId="+userId+"&accessSignature="+accessSignature);
-        }
-        else
-        {
-          $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature
-            +"&accessTokenFB="+accessTokenFB);
-        $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId="+userId+"&accessSignature="+accessSignature+"&accessTokenFB="+accessTokenFB);
-        }
+            if (accessTokenFB == null || accessTokenFB == "") {
+                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
+                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature);
+            } else {
+                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
+                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
+            }
             $("#userId").val(userId);
 
-      
-    });
-  </script>
+
+        });
+    </script>
 
 </head>
+
 <body>
-	
-	
-	<div class="modal fade" id="confirmResetAvatar" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-body">
-            Are you sure? This will replace your current avatar with an SMG avatar.
-          </div>
-          <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-		        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="resetAvatar()">OK</button>
-		      </div>
+
+
+    <div class="modal fade" id="confirmResetAvatar" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" id="warring_a">
+                    Are you sure? This will replace your current avatar with an SMG avatar.
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="ok" type="button" class="btn btn-primary" data-dismiss="modal" onclick="resetAvatar()">OK</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    
+
     <div class="modal fade" id="confirmDeleteAccount" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-body">
-            Are you sure you want to permanently delete your account?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary btn-danger" data-dismiss="modal" onclick="deleteAccount()">OK</button>
-          </div>
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" id="warring_b">
+                    Are you sure you want to permanently delete your account?
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="ok" type="button" class="btn btn-primary btn-danger" data-dismiss="modal" onclick="deleteAccount()">OK</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    
+
     <div class="modal fade" id="smgAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header"><h4>Account Management</h4></div>
+                <div class="modal-header">
+                    <h4 id="account_management">Account Management</h4>
+                </div>
                 <div class="modal-body">
-                        <form role="form" id="smgAccountForm">
-                            <div class="form-group float-label-control">
-                                <label for="">Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="Email">
-                            </div>
-                            <div class="form-group float-label-control">
-                                <label for="">Password</label>
-                                <input type="password" name="password" class="form-control" placeholder="Password">
-                            </div>
-                            <div class="form-group float-label-control">
-                                <label for="">Confirm Password</label>
-                                <input type="password" name="confirm" class="form-control" placeholder="Password">
-                            </div>
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">First Name</label>
-                                <input type="text" name="firstName" class="form-control" placeholder="First Name">
-                            </div>
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">Last Name</label>
-                                <input type="text" name="lastName" class="form-control" placeholder="Last Name">
-                            </div>
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">Nickname</label>
-                                <input type="text" name="nickName" class="form-control" placeholder="Nickname">
-                            </div>
-                          </form> 
-                     </div>
-                     <div class="modal-footer">
-						            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
-						            <button type="button" class="btn btn-sm btn-primary" onclick="submitSmgAccountForm()">Submit</button>
-						            <button class="btn btn-danger btn-sm pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
-						            <div id="responseSMG" style="padding-top: 10px"></div>
-					          </div>
-					          
+                    <form role="form" id="smgAccountForm">
+                        <div class="form-group float-label-control">
+                            <label id="email" for="">Email</label>
+                            <input id="email_form" type="email" name="email" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="form-group float-label-control">
+                            <label id="password" for="">Password</label>
+                            <input id="password_form" type="password" name="password" class="form-control" placeholder="Password">
+                        </div>
+                        <div class="form-group float-label-control">
+                            <label id="password_confirm" for="">Confirm Password</label>
+                            <input id="password_confirm_form" type="password" name="confirm" class="form-control" placeholder="Password">
+                        </div>
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="first_name" for="">First Name</label>
+                            <input id="first_name_form" type="text" name="firstName" class="form-control" placeholder="First Name">
+                        </div>
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="last_name" for="">Last Name</label>
+                            <input id="last_name_form" type="text" name="lastName" class="form-control" placeholder="Last Name">
+                        </div>
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="nick_name" for="">Nickname</label>
+                            <input id="nick_name_form" type="text" name="nickName" class="form-control" placeholder="Nickname">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="submit" type="button" class="btn btn-sm btn-primary" onclick="submitSmgAccountForm()">Submit</button>
+                    <button id="delete_account" class="btn btn-danger btn-sm pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
+                    <div id="responseSMG" style="padding-top: 10px"></div>
+                </div>
             </div>
         </div>
     </div>
-    
-  <div class="modal fade" id="socialAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal fade" id="socialAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header"><h4>Account Management</h4></div>
+                <div class="modal-header" id="account_management">
+                    <h4 id="account_management">Account Management</h4>
+                </div>
                 <div class="modal-body">
-                        <form role="form" id="socialAccountForm">
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">First Name</label>
-                                <input type="text" name="firstName" class="form-control" placeholder="First Name">
-                            </div>
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">Last Name</label>
-                                <input type="text" name="lastName" class="form-control" placeholder="Last Name">
-                            </div>
-                            <div class="form-group float-label-control label-bottom">
-                                <label for="">Nick name</label>
-                                <input type="text" name="nickName" class="form-control" placeholder="Nickname">
-                            </div>
-                            </form>
-                            </div>
-                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="submitSocialAccountForm()">Submit</button>
-                        <button class="btn btn-danger btn-sm pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
-                        <div id="responseSocial" style="padding-top: 10px"></div>
-                    </div>
+                    <form role="form" id="socialAccountForm">
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="first_name" for="">First Name</label>
+                            <input id="first_name_form" type="text" name="firstName" class="form-control" placeholder="First Name">
+                        </div>
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="last_name" for="">Last Name</label>
+                            <input id="last_name_form" type="text" name="lastName" class="form-control" placeholder="Last Name">
+                        </div>
+                        <div class="form-group float-label-control label-bottom">
+                            <label id="nick_name" for="">Nickname</label>
+                            <input id="nick_name_form" type="text" name="nickName" class="form-control" placeholder="Nickname">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel" type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="submit" type="button" class="btn btn-sm btn-primary" onclick="submitSocialAccountForm()">Submit</button>
+                    <button id="delete_account" class="btn btn-danger btn-sm pull-left" data-dismiss="modal" data-toggle="modal" data-target="#confirmDeleteAccount">Delete account</button>
+                    <div id="responseSocial" style="padding-top: 10px"></div>
+                </div>
             </div>
         </div>
     </div>
-    
-    
-	<div class="container">
-		<ul id="tabs" class="nav nav-pills">
-			<li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span><span class="hidden-xs"> Play</span></a></li>
-			<li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span><span class="hidden-xs"> Game Developer</span></a></li>
-			<li class="pull-right"><a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-log-out"></span><span class="hidden-xs"> Logout</span>
-					<b class="caret"></b>
-				</a>
-				<ul class="dropdown-menu">
-           <li><a href="#" id="logouturl" onclick="logout()">Logout</a></li>
-        </ul>
-			</li>
-			<li class="pull-right" id="accountManageDropdown">
-				<a href="#" onClick="showAccountManagement()" role="button" data-toggle="modal"><span class="glyphicon glyphicon-user"></span><span class="hidden-xs"> Account Management</span>
-					<b class="caret"></b>
-				</a>
-				
-			</li>
-			<li class="pull-right"><a href="#" data-toggle="dropdown"><span id="greeting" style="padding-left: 30px; background-repeat: no-repeat; background-size:contain;"></span><span id="greeting_text" class="hidden-xs"></span><b class="caret"></b></a>
-			 <ul class="dropdown-menu">
-          <li><a href="#" onclick="getImage()">Upload new avatar...</a></li>
-          <li><a href="#" data-toggle="modal" data-target="#confirmResetAvatar">Reset avatar</a></li>
-       </ul>
-			 <form method="post" enctype="multipart/form-data" id="upload_form">
-			 <div style="height: 0px; width:0px; overflow:hidden;">
-         <input type="hidden" name="userId" id="userId" value="">
-         <input type="file" accept="image/*" name="profile_pic" id="image_upload" onchange="upload()">
-       </div>
-       </form>
-      </li>
-		</ul>
-		<div id="my-tab-content" class="tab-content">
-			<div class="tab-pane active" id="play">
-				<div class="page-header">&nbsp;</div>
-				<div>
-					<iframe width="100%" height="1000" id="playerpage">
-					</iframe>
-				</div>
-			</div>
-			
-			<div class="tab-pane" id="dev">
-				<div class="page-header">&nbsp;</div>
-				<div>
-					<iframe width="100%" height="1000" id="developerpage">
-					</iframe>
-				</div>
-			</div>
-		</div>
 
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {
-				$('#tabs').tab();
-			});
-		</script>
-	</div>
+
+    <div class="container">
+        <ul id="tabs" class="nav nav-pills">
+            <li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span><span class="hidden-xs" id="play"> Play</span></a>
+            </li>
+            <li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span><span class="hidden-xs" id="game_developer"> Game Developer</span></a>
+            </li>
+            <li class="pull-right" id="logoutDropdown"><a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-log-out"></span><span class="hidden-xs" id="logout_span"> Logout</span>
+          <b class="caret"></b>
+        </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="logouturl" onclick="logout()">Logout</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="pull-right" id="accountManageDropdown">
+                <a href="#" onClick="showAccountManagement()" role="button" data-toggle="modal"><span class="glyphicon glyphicon-user"></span><span class="hidden-xs" id="account_management"> Account Management</span>
+          <b class="caret"></b>
+        </a>
+
+            </li>
+            <li class="pull-right"><a href="#" data-toggle="dropdown"><span id="greeting" style="padding-left: 30px; background-repeat: no-repeat; background-size:contain;"></span><span id="greeting_text" class="hidden-xs"></span><b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" onclick="getImage()" id="upload_new_avatar">Upload new avatar...</a>
+                    </li>
+                    <li><a href="#" data-toggle="modal" data-target="#confirmResetAvatar" id="reset_avatar">Reset avatar</a>
+                    </li>
+                </ul>
+                <form method="post" enctype="multipart/form-data" id="upload_form">
+                    <div style="height: 0px; width:0px; overflow:hidden;">
+                        <input type="hidden" name="userId" id="userId" value="">
+                        <input type="file" accept="image/*" name="profile_pic" id="image_upload" onchange="upload()">
+                    </div>
+                </form>
+            </li>
+        </ul>
+        <div id="my-tab-content" class="tab-content">
+            <div class="tab-pane active" id="play">
+                <div class="page-header">&nbsp;</div>
+                <div>
+                    <iframe width="100%" height="1000" id="playerpage">
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="dev">
+                <div class="page-header">&nbsp;</div>
+                <div>
+                    <iframe width="100%" height="1000" id="developerpage">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+              jQuery.i18n.properties({
+                name: 'index',
+                path: 'i18n/',
+                mode: 'map',
+                callback: function () {
+                    $('#warring_a').html($.i18n.prop('warring_a'));
+                    $('#play').html($.i18n.prop('play'));
+                    $('#game_developer').html($.i18n.prop('game_developer'));
+                    $('#logout_span').html($.i18n.prop('logout_span'));
+                    $('#logouturl').html($.i18n.prop('logout_span'));
+                    $('#upload_new_avatar').html($.i18n.prop('upload_new_avatar'));
+                    $('#reset_avatar').html($.i18n.prop('reset_avatar'));
+                    $('#enjoy_your_game').html($.i18n.prop('enjoy_your_game'));
+                    $('#deploy_your_game').html($.i18n.prop('deploy_your_game'));
+                    $('div #cancel').each(function (index) {
+                        $(this).html($.i18n.prop('cancel'))
+                    });
+                    $('div #ok').each(function (index) {
+                        $(this).html($.i18n.prop('ok'))
+                    });
+                    $('div #submit').each(function (index) {
+                        $(this).html($.i18n.prop('submit'))
+                    });
+                    $('div #email').each(function (index) {
+                        $(this).html($.i18n.prop('email'))
+                    });
+                    $('div #email_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('email'))
+                    });
+                    $('div #password').each(function (index) {
+                        $(this).html($.i18n.prop('password'))
+                    });
+                    $('div #password_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('password'))
+                    });
+                    $('div #password_confirm').each(function (index) {
+                        $(this).html($.i18n.prop('password_confirm'))
+                    });
+                    $('div #password_confirm_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('password'))
+                    });
+                    $('div #first_name').each(function (index) {
+                        $(this).html($.i18n.prop('first_name'))
+                    });
+                    $('div #first_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('first_name'))
+                    });
+                    $('div #last_name').each(function (index) {
+                        $(this).html($.i18n.prop('last_name'))
+                    });
+                    $('div #last_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('last_name'))
+                    });
+                    $('div #nick_name').each(function (index) {
+                        $(this).html($.i18n.prop('nick_name'))
+                    });
+                    $('div #nick_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('nick_name'))
+                    });
+                    $('#warring_b').html($.i18n.prop('warring_b'));
+                    $('h4 #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('span #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('div #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('div #delete_account').each(function (index) {
+                        $(this).html($.i18n.prop('delete_account'))
+                    });
+                }
+            });
+            jQuery(document).ready(function ($) {
+                $('#tabs').tab();
+            });
+        </script>
+    </div>
 </body>
+
 </html>

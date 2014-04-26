@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js">
-    </script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js"></script>
+    <script src="./js/jquery.i18n.properties-min-1.0.9.js"></script>
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css" />
     <link href="css/login-page.css" rel="stylesheet">
   </head>
@@ -56,7 +56,28 @@ toastr.options = {
 };
 
 $(document).ready(function() {
-  
+  jQuery.i18n.properties({
+    name:'signup', 
+    path:'i18n/', 
+    mode:'map',
+    callback: function() {
+      $('#string_sign_up_title').html($.i18n.prop('string_sign_up_title')); 
+      $('#string_email').html($.i18n.prop('string_email')); 
+      $('#string_password').html($.i18n.prop('string_password')); 
+      $('#string_confirm_password').html($.i18n.prop('string_confirm_password')); 
+      $('#string_first_name').html($.i18n.prop('string_first_name')); 
+      $('#string_last_name').html($.i18n.prop('string_last_name')); 
+      $('#string_submit_form').html($.i18n.prop('string_submit_form')); 
+
+      $("#string_email_form").prop('placeholder', $.i18n.prop('string_email'));
+      $("#string_password_form").prop('placeholder', $.i18n.prop('string_password'));
+      $("#string_confirm_password_form").prop('placeholder', $.i18n.prop('string_confirm_password'));
+      $("#string_first_name_form").prop('placeholder', $.i18n.prop('string_first_name'));
+      $("#string_last_name_form").prop('placeholder', $.i18n.prop('string_last_name'));
+    }
+  });
+
+
   $("#post1").submit(function(e) {
     // Prevent all default form submission
     e.preventDefault();
@@ -104,18 +125,18 @@ $(document).ready(function() {
 </script>
 <div class="xxxx">
         <form class="form-signup" role="form" id="post1">
-        <h3>User Sign Up</h3>
-        <label>Email Address</label>
-        <input type="email" name="email" class="form-control" placeholder="Email Address" required autofocus form="post1">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" placeholder="Password" required form="post1">
-        <label>Confirm Password</label>
-        <input type="password" name="confirm" class="form-control" placeholder="Confirm Password" required form="post1">
-        <label>First Name</label>
-        <input type="text" name="firstName" class="form-control" placeholder="First Name" required form="post1" >
-        <label>Last Name</label>
-        <input type="text" name="lastName" class="form-control" placeholder="Last Name" required form="post1" >
-        <button type="submit" class="btn btn-primary" form="post1">Create Account</button>
+        <h3 id="string_sign_up_title">User Sign Up</h3>
+        <label id="string_email">Email Address</label>
+        <input id="string_email_form" type="email" name="email" class="form-control" placeholder="Email Address" required autofocus form="post1">
+        <label id="string_password">Password</label>
+        <input id="string_password_form" type="password" name="password" class="form-control" placeholder="Password" required form="post1">
+        <label id="string_confirm_password">Confirm Password</label>
+        <input id="string_confirm_password_form" type="password" name="confirm" class="form-control" placeholder="Confirm Password" required form="post1">
+        <label id="string_first_name">First Name</label>
+        <input id="string_first_name_form" type="text" name="firstName" class="form-control" placeholder="First Name" required form="post1" >
+        <label id="string_last_name">Last Name</label>
+        <input id="string_last_name_form" type="text" name="lastName" class="form-control" placeholder="Last Name" required form="post1" >
+        <button id="string_submit_form" type="submit" class="btn btn-primary" form="post1">Create Account</button>
         </form>
         <label id="response" ></label>
 </div>
