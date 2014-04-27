@@ -76,7 +76,7 @@ public class UserConstants {
 	public static final String FAMILY_NAME = "familyName";
 	public static final String GIVEN_NAME = "givenName";
 	public static final String GREETINGS = "Please reset your password at the following link:\n";
-
+    public static final String ALL = "all";
 	public static final String FACEBOOK_REDIRECT_URI = DOMAIN
 			+ "socialAuthCallbackFacebook";
 	public static final String FACEBOOK_SCOPE = "&scope=email,read_friendlists";

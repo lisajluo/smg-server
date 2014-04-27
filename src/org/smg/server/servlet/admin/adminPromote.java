@@ -26,7 +26,7 @@ import org.smg.server.util.JSONUtil;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class adminPromote {
-	private String[] validParams = {PROMOTE };
+	private String[] validParams = {ADMIN};
 	private void sendEmailHelper(long userId, boolean pass)
 		      throws Exception
 		  {
@@ -100,7 +100,7 @@ public class adminPromote {
 		      String buffer = Utils.getBody(req);
 		      Map<Object, Object> parameterMap = deleteInvalid(
 		          (Map) JSONUtil.parse(buffer), validParams);
-		      if (parameterMap.containsKey(PROMOTE) == false)
+		      if (parameterMap.containsKey(ADMIN) == false)
 		      {
 		        put(jObj, ERROR, MISSING_INFO, resp);
 		        return;
@@ -108,7 +108,7 @@ public class adminPromote {
 		      long longId = Long.parseLong(userId);
 		      boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(longId, parameterMap);
 		      put(jObj, SUCCESS, ADMIN_FINISHED, resp);
-		      boolean pass = (boolean) parameterMap.get(PROMOTE);
+		      boolean pass = (boolean) parameterMap.get(ADMIN);
 		      sendEmailToUsers(longId, pass);
 		      return;
 		    } catch (Exception e)

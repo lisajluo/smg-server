@@ -12,8 +12,8 @@ public final class GameConstants {
 	  public static final String GAME_NAME = "gameName";
 	  public static final String DESCRIPTION = "description";
 	  public static final String URL = "url";
-	  public static final String WIDTH = "width";
-	  public static final String HEIGHT = "height";
+	//  public static final String WIDTH = "width";
+	 // public static final String HEIGHT = "height";
 	  public static final String GAME_ID = "gameId" ;
 	  public static final String HAS_TOKENS = "hasTokens";
 	  public static final String POST_DATE = "postDate";
