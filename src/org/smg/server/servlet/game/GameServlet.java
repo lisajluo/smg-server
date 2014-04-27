@@ -34,7 +34,7 @@ import org.smg.server.util.JSONUtil;
 public class GameServlet extends HttpServlet {
 
   private static final String[] validParams = { HAS_TOKENS, PICS, DEVELOPER_ID, 
-    GAME_NAME, DESCRIPTION, URL, WIDTH, HEIGHT, ACCESS_SIGNATURE };
+    GAME_NAME, DESCRIPTION, URL,  ACCESS_SIGNATURE };
 
   private Map<Object, Object> deleteInvalid(Map<Object, Object> params,
       String[] validParams) {
@@ -118,13 +118,13 @@ public class GameServlet extends HttpServlet {
       return false;
     }
 
-    if (parameterMap.get(WIDTH) == null) {
+  /*  if (parameterMap.get(WIDTH) == null) {
       return false;
     }
 
     if (parameterMap.get(HEIGHT) == null) {
       return false;
-    }
+    }*/
 
     if (parameterMap.get(ACCESS_SIGNATURE) == null) {
       return false;
@@ -162,8 +162,8 @@ public class GameServlet extends HttpServlet {
       metainfo.put(HAS_TOKENS, targetEntity.getProperty(HAS_TOKENS));
       metainfo.put(URL, targetEntity.getProperty(URL));
       metainfo.put(DESCRIPTION, targetEntity.getProperty(DESCRIPTION));
-      metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
-      metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));
+    //  metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
+    //  metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));
       metainfo.put(POST_DATE, targetEntity.getProperty(POST_DATE));
       if (targetEntity.hasProperty(PICS))
       {

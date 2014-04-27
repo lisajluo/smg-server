@@ -2,9 +2,17 @@ package org.smg.server.database;
 
 import static org.smg.server.servlet.user.UserConstants.*;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
+import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.EMAIL;
 import static org.smg.server.servlet.developer.DeveloperConstants.PASSWORD;
+import static org.smg.server.servlet.game.GameConstants.AUTHORIZED;
+import static org.smg.server.servlet.game.GameConstants.DEVELOPER_LOWER;
+import static org.smg.server.servlet.game.GameConstants.GAME_ID;
+import static org.smg.server.servlet.game.GameConstants.GAME_META_INFO;
+import static org.smg.server.servlet.game.GameConstants.PICS;
+import static org.smg.server.servlet.game.GameConstants.RATING;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +29,62 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class UserDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory
       .getDatastoreService();
-
+  private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
+  {
+	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
+		try {
+			for (Entity result : entityList) {
+				JSONObject currentQueryResult = new JSONObject();
+				Map<String, Object> userInfo = new HashMap<String, Object>(
+						result.getProperties());
+				for (String key : userInfo.keySet()) {
+					        //TODO : Only put in necessary userInfo. e.g.:Name, ID,etc
+							currentQueryResult.put(key, userInfo.get(key));
+					}
+				queryResult.add(currentQueryResult);
+				
+				}
+		
+			return queryResult;
+		}
+	  catch (Exception e)
+	  {
+		  return null;
+	  }
+  }
+  public static List<JSONObject> getAllUser()
+  {
+	  List<Entity> resultAsEntity= getAllUserAsEntity();
+	  List<JSONObject> jsonList = parseEntityToJSON(resultAsEntity);
+	  return jsonList;
+  }
+  private static List<Entity> getAllUserAsEntity()
+  {
+	  try
+      {
+			Query q = new Query(USER);
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = new ArrayList<Entity>();
+			for (Entity entity : pq.asIterable()) {
+				result.add(entity);
+			}
+			return result;
+		} catch (Exception e) {
+			return null;
+		}
+  }
   public static boolean insertUser(long userId, Map<Object, Object> properties)
       throws Exception {
     Transaction txn = datastore.beginTransaction();
