@@ -2,7 +2,7 @@ package org.smg.server.servlet.admin;
 
 public class adminConstants {
 
- 
+  public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
   public static final String ADMIN = "admin";	
   public static final String ADMIN_ID = "adminId";
   public static final String PASS_WORD = "password";
