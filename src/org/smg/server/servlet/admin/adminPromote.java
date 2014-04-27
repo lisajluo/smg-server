@@ -26,7 +26,7 @@ import org.smg.server.util.JSONUtil;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class adminPromote {
-	private String[] validParams = {ADMIN};
+	private String[] validParams = {ADMIN,USER_ID,ACCESS_SIGNATURE};
 	private void sendEmailHelper(long userId, boolean pass)
 		      throws Exception
 		  {
@@ -105,6 +105,10 @@ public class adminPromote {
 		        put(jObj, ERROR, MISSING_INFO, resp);
 		        return;
 		      }
+		      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
+		      Map user = UserDatabaseDriver.getUserMap(Long.parseLong(userId));
+		      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)==false)
+		    	  throw new Exception();
 		      long longId = Long.parseLong(userId);
 		      boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(longId, parameterMap);
 		      put(jObj, SUCCESS, ADMIN_FINISHED, resp);

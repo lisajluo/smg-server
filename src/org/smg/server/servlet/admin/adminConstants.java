@@ -2,6 +2,8 @@ package org.smg.server.servlet.admin;
 
 public class adminConstants {
 
+  public static final String USER_ID = "userId";
+  public static final String ACCESS_SIGNATURE = "accessSignature";
   public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
   public static final String ADMIN = "admin";	
   public static final String ADMIN_ID = "adminId";
@@ -28,7 +30,7 @@ public class adminConstants {
   public static final String ADMIN_NAME = "smg-server";
   public static final String EMAIL = "email";
   public static final String MAIL_SUBJECT = "Notification on your game approval";
-
+  public static final String WRONG_INFO  = "WRONG_INFO";
   public static final String promote ()
   {
 	  return "We are happy to inform you that you have been promoted to be part of our admin family\n";
