@@ -46,6 +46,8 @@ public class UserInfoServlet extends HttpServlet{
 	      long userId = Long.parseLong(req.getPathInfo().substring(1));
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
+	    	if (user.get(EMAIL).equals(SUPER_ADMIN))
+	    		user.put(IS_SUPER, true);
 	        user.remove(BLOBKEY);
 	        user.remove(FRIEND_LIST);
 	        user.remove(SOCIAL_AUTH);
