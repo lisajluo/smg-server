@@ -28,6 +28,8 @@ public class adminConstants {
   public static final String ADMIN_NAME = "smg-server";
   public static final String EMAIL = "email";
   public static final String MAIL_SUBJECT = "Notification on your game approval";
+  
+  public static final String PROMOTE = "promote";
 
   public static final String promote ()
   {

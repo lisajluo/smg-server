@@ -7,13 +7,13 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-16.0.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-all-1.9.11.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/fei/Documents/server-huan/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-labs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-testing.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/esapi-2.1.0.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="/home/fei/Documents/server-huan/war/WEB-INF/lib/esapi-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/fei/Documents/server-huan/war/WEB-INF/lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
