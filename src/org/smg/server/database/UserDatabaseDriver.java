@@ -51,12 +51,14 @@ public class UserDatabaseDriver {
 						result.getProperties());
 				for (String key : userInfo.keySet()) {
 					        //TODO : Only put in necessary userInfo. e.g.:Name, ID,etc
+					        if (key.equals(FIRSTNAME)||key.equals(EMAIL))
 							currentQueryResult.put(key, userInfo.get(key));
 					}
+				currentQueryResult.put(USER_ID, String.valueOf(result.getKey().getId()));
 				queryResult.add(currentQueryResult);
 				
 				}
-		
+		    
 			return queryResult;
 		}
 	  catch (Exception e)
