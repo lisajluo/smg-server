@@ -21,6 +21,7 @@ public class UserConstants {
 	public static final String GOOGLE = "google";
 	public static final String FACEBOOK = "facebook";
     public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
+    public static final String ADMIN = "admin";
 	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
 	public static final String ERROR = "error";
 	public static final String MISSING_INFO = "MISSING_INFO";
