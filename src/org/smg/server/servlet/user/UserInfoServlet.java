@@ -47,7 +47,10 @@ public class UserInfoServlet extends HttpServlet{
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
 	    	if (user.get(EMAIL).equals(SUPER_ADMIN))
+	    	{
 	    		user.put(IS_SUPER, true);
+	    		user.put(ADMIN, true);
+	    	}
 	        user.remove(BLOBKEY);
 	        user.remove(FRIEND_LIST);
 	        user.remove(SOCIAL_AUTH);

@@ -35,7 +35,7 @@ public class adminServlet extends HttpServlet{
 	
 	
 	
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		CORSUtil.addCORSHeader(resp);
 		PrintWriter writer = resp.getWriter();
 	    JSONObject json = new JSONObject();
