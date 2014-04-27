@@ -3,6 +3,7 @@ package org.smg.server.servlet.user;
 import org.smg.server.util.NamespaceUtil;
 
 public class UserConstants {
+	public static final String IS_SUPER = "is_super";
 	public static final String ACCESS_SIGNATURE = "accessSignature";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -19,7 +20,7 @@ public class UserConstants {
 	public static final String MAIL_SUBJECT = "Please Reset Your Password";
 	public static final String GOOGLE = "google";
 	public static final String FACEBOOK = "facebook";
-
+    public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
 	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
 	public static final String ERROR = "error";
 	public static final String MISSING_INFO = "MISSING_INFO";
