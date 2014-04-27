@@ -54,6 +54,8 @@ public class UserConstants {
 	 */
 	// public static final String DOMAIN =
 	// "http://2-dot-valued-door-559.appspot.com/";
+	public static final String FIRSTNAME = "firstName";
+	
 	public static final String DOMAIN = "http://smg-server.appspot.com/";
 	public static final String GOOGLE_CALLBACK = DOMAIN
 			+ "socialAuthCallbackGoogle";
