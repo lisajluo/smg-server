@@ -1,6 +1,9 @@
 package org.smg.server.database;
 
 import static org.smg.server.servlet.user.UserConstants.*;
+import static org.smg.server.servlet.admin.adminConstants.ADMIN;
+import static org.smg.server.servlet.admin.adminConstants.BLOCKED_LIST;
+import static org.smg.server.servlet.admin.adminConstants.PASSED_LIST;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.EMAIL;
@@ -36,14 +39,17 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class UserDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory
       .getDatastoreService();
-  private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
+  private static JSONObject parseEntityToJSON(List<Entity> entityList)
   {
-	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
+	  List<JSONObject> passedList = new ArrayList<JSONObject> ();
+	  List<JSONObject> unpassedList = new ArrayList<JSONObject> ();
+	  JSONObject queryResult = new JSONObject();
 		try {
 			for (Entity result : entityList) {
 				JSONObject currentQueryResult = new JSONObject();
@@ -55,10 +61,14 @@ public class UserDatabaseDriver {
 							currentQueryResult.put(key, userInfo.get(key));
 					}
 				currentQueryResult.put(USER_ID, String.valueOf(result.getKey().getId()));
-				queryResult.add(currentQueryResult);
+				if (result.getProperty(ADMIN)==null||(boolean)result.getProperty(ADMIN)==false)
+					unpassedList.add(currentQueryResult);
+				else
+					passedList.add(currentQueryResult);
 				
 				}
-		    
+		    queryResult.put(PASSED_LIST, new JSONArray(passedList));
+		    queryResult.put(BLOCKED_LIST, new JSONArray(unpassedList));
 			return queryResult;
 		}
 	  catch (Exception e)
@@ -66,11 +76,11 @@ public class UserDatabaseDriver {
 		  return null;
 	  }
   }
-  public static List<JSONObject> getAllUser()
+  public static JSONObject getAllUser()
   {
 	  List<Entity> resultAsEntity= getAllUserAsEntity();
-	  List<JSONObject> jsonList = parseEntityToJSON(resultAsEntity);
-	  return jsonList;
+	  JSONObject json = parseEntityToJSON(resultAsEntity);
+	  return json;
   }
   private static List<Entity> getAllUserAsEntity()
   {

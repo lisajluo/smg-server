@@ -38,7 +38,7 @@ public class UserInfoServlet extends HttpServlet{
 	    
 	    if (req.getPathInfo().substring(1).equals(ALL))
 	    {
-	    	List<JSONObject> allUsers = UserDatabaseDriver.getAllUser();
+	    	JSONObject allUsers = UserDatabaseDriver.getAllUser();
 	    	put(allUsers, resp);
 	        return;
 	    }
