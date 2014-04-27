@@ -269,6 +269,11 @@
                         $("input[name=lastName]").val(data["lastName"]);
                         $("input[name=nickName]").val(data["nickName"]);
                         $("#greeting").css("background-image", "url('" + data["imageURL"] + "')");
+                        if(data["admin"] == true) {
+                            $("#adminUrl").prop("href", "./admin/game_manager.html?userId=" + userId + "&accessSignature=" + accessSignature);
+                        } else {
+                            $("#adminUrlArea").hide();
+                        }
                     } else {
                         window.location = "./login.html";
                     }
@@ -499,6 +504,8 @@
             <li><a href="#play" data-toggle="tab"><span class="glyphicon glyphicon-tower"></span> <span class="hidden-xs" id="play">Play</span></a>
             </li>
             <li><a href="#dev" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span> <span class="hidden-xs" id="game_developer">Game Developer</span></a>
+            </li>
+            <li id="adminUrlArea"><a id="adminUrl" href="" target="_blank"><span class="glyphicon glyphicon-wrench"></span> <span class="hidden-xs">Administration</span></a>
             </li>
             <li class="pull-right" id="logoutDropdown"><a href="#" data-toggle="dropdown"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-xs" id="logout_span">Logout</span>
           <b class="caret"></b>

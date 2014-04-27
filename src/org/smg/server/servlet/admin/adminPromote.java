@@ -14,6 +14,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +26,7 @@ import org.smg.server.util.JSONUtil;
 
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
-public class adminPromote {
+public class adminPromote extends HttpServlet{
 	private String[] validParams = {ADMIN,USER_ID,ACCESS_SIGNATURE};
 	private void sendEmailHelper(long userId, boolean pass)
 		      throws Exception
@@ -33,7 +34,9 @@ public class adminPromote {
 		    try {
 		      Map userInfo = UserDatabaseDriver.getUserMap(userId);
 		      String firstName = (String) userInfo.get(FIRST_NAME);
+		     
 		      String emailAddress = (String) userInfo.get(EMAIL);
+		  
 		      Properties props = new Properties();
 		      Session session = Session.getDefaultInstance(props, null);
 		      StringBuffer msgBodyBuffer = new StringBuffer();
@@ -106,11 +109,14 @@ public class adminPromote {
 		        return;
 		      }
 		      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
-		      Map user = UserDatabaseDriver.getUserMap(Long.parseLong(userId));
+		      String adminId = (String)parameterMap.get(USER_ID);
+		      Map user = UserDatabaseDriver.getUserMap(Long.parseLong(adminId));
 		      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)==false)
 		    	  throw new Exception();
 		      long longId = Long.parseLong(userId);
-		      boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(longId, parameterMap);
+		      Map userTemp = UserDatabaseDriver.getUserMap(longId);
+		      userTemp.putAll(parameterMap);
+		      boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(longId, userTemp);
 		      put(jObj, SUCCESS, ADMIN_FINISHED, resp);
 		      boolean pass = (boolean) parameterMap.get(ADMIN);
 		      sendEmailToUsers(longId, pass);
