@@ -5,12 +5,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.smg.server.servlet.game.GameUtil.put;
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import org.smg.server.util.AccessSignatureUtil;
@@ -34,10 +36,21 @@ public class UserInfoServlet extends HttpServlet{
 	    JSONObject json = new JSONObject();
 	    String accessSignature = req.getParameter(ACCESS_SIGNATURE);
 	    
+	    if (req.getPathInfo().substring(1).equals(ALL))
+	    {
+	    	JSONObject allUsers = UserDatabaseDriver.getAllUser();
+	    	put(allUsers, resp);
+	        return;
+	    }
 	    try {
 	      long userId = Long.parseLong(req.getPathInfo().substring(1));
 	      Map user = UserDatabaseDriver.getUserMap(userId);	      
 	      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
+	    	if (user.get(EMAIL).equals(SUPER_ADMIN))
+	    	{
+	    		user.put(IS_SUPER, true);
+	    		user.put(ADMIN, true);
+	    	}
 	        user.remove(BLOBKEY);
 	        user.remove(FRIEND_LIST);
 	        user.remove(SOCIAL_AUTH);
