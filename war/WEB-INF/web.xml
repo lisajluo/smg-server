@@ -237,6 +237,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/userfriendlist/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
+    <servlet-name>userFilteredFriendList</servlet-name>
+    <servlet-class>org.smg.server.servlet.user.UserFriendBlackList</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>userFilteredFriendList</servlet-name>
+    <url-pattern>/userfriendfilter/*</url-pattern>
+  </servlet-mapping>
+	<servlet>
 		<servlet-name>getAdminList</servlet-name>
 		<servlet-class>org.smg.server.servlet.admin.adminInfoServlet</servlet-class>
 	</servlet>

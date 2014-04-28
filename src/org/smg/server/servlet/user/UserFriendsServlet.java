@@ -54,7 +54,8 @@ public class UserFriendsServlet extends HttpServlet {
         else {
           friendListString = "[]";
         }
-        UserUtil.jsonPut(json, FRIEND_LIST, new JSONArray(friendListString));
+        JSONArray fl = new JSONArray(friendListString);
+        UserUtil.jsonPut(json, FRIEND_LIST, fl);
       } else {
         UserUtil.jsonPut(json, ERROR, WRONG_ACCESS_SIGNATURE);
       }
