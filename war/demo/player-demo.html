@@ -68,6 +68,8 @@
 <p><a href = "#" id = "GET-A-PLAYER-HIS">GET A PLAYER GAME HISTORY</a></p>
 <p><a href = "#" id = "GET-A-PLAYER-FRI">GET A PLAYER FRIEND LIST</a></p>
 <p><a href = "#" id = "GET-A-PLAYER-FRI-FIL">GET A PLAYER FRIEND FILTERED LIST</a></p>
+<p><a href = "#" id = "ADD-A-PLAYER-FRI-FIL">ADD A PLAYER FRIEND FILTERED LIST</a></p>
+<p><a href = "#" id = "REM-A-PLAYER-FRI-FIL">REMOVE A PLAYER FRIEND FILTERED LIST</a></p>
 
 <div id = "responseArea">
   <div>
@@ -136,6 +138,12 @@ $(document).ready(function() {
   });
   $("#GET-A-PLAYER-FRI-FIL").on("click", function(event){
     ajaxCallFriendFilter(url+"/userfriendfilter");
+  });
+  $("#ADD-A-PLAYER-FRI-FIL").on("click", function(event){
+    ajaxCallAddFriendFilter(url+"/userfriendfilter");
+  });
+  $("#REM-A-PLAYER-FRI-FIL").on("click", function(event){
+    ajaxCallRemoveFriendFilter(url+"/userfriendfilter");
   });
 });
 
@@ -258,7 +266,7 @@ function ajaxCallGetGames(url){
 
 function ajaxCallFriend(url){
     $.ajax({
-      url: url + "/" + $("#playerIdInput").val(),
+      url: url + "/" + $("#playerIdInput").val()+"?accessSignature="+$("#accessSignatureInput").val(),
       dataType: 'json',
       type: "GET",
       success: function(data, textStatus, jqXHR){
@@ -274,10 +282,61 @@ function ajaxCallFriend(url){
 }
 
 function ajaxCallFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val()+"?accessSignature="+$("#accessSignatureInput").val();
     $.ajax({
-      url: url + "/" + $("#playerIdInput").val(),
+      url: url1, 
       dataType: 'json',
       type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallAddFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val();
+    var jsonObj = {};
+    jsonObj["accessSignature"] = $("#accessSignatureInput").val();
+    jsonObj["operation"] = "add";
+    jsonObj["socialId"] = $("#targetIdInput").val();
+    jsonObj["type"] = "f"
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url1, 
+      dataType: 'json',
+      type: "POST",
+      data: jsonString,
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallRemoveFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val();
+    var jsonObj = {};
+    jsonObj["accessSignature"] = $("#accessSignatureInput").val();
+    jsonObj["operation"] = "remove";
+    jsonObj["socialId"] = $("#targetIdInput").val();
+    jsonObj["type"] = "f"
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url1, 
+      dataType: 'json',
+      type: "POST",
+      data: jsonString,
       success: function(data, textStatus, jqXHR){
         $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
         if (data["accessSignature"] != undefined) {

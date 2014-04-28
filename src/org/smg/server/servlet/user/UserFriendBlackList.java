@@ -43,6 +43,7 @@ public class UserFriendBlackList extends HttpServlet{
    * parameter:
    *  filter : "1" return friend list without blacklist
    *  filter : "0" return friend list only in blacklist
+   *  accessSignature
    */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -51,7 +52,13 @@ public class UserFriendBlackList extends HttpServlet{
     JSONObject json = new JSONObject();
     String accessSignature = req.getParameter(ACCESS_SIGNATURE);
     String filter = req.getParameter(FILTER);
-    boolean ft = filter.equals("1");
+    
+    boolean ft;
+    try {
+      ft = filter.equals("1");
+    } catch (Exception e1) {
+      ft = true;
+    }
     String friendListString = null;
 
     try {
@@ -117,7 +124,7 @@ public class UserFriendBlackList extends HttpServlet{
       String accessSignature = (String)map.get(ACCESS_SIGNATURE);
       long userId = Long.parseLong(req.getPathInfo().substring(1));
       Map user = UserDatabaseDriver.getUserMap(userId);
-      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
+      if (!user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
         addErrorMessage(returnValue,WRONG_ACCESS_SIGNATURE,resp);
         return;
       }
@@ -160,6 +167,8 @@ public class UserFriendBlackList extends HttpServlet{
         return;
       }
       DatabaseDriverFriendBlackList.saveFriendBlackList(fbl);
+      returnValue.put("SUCCESS", op);
+      returnValue.write(resp.getWriter());
     } catch (Exception e) {
       addErrorMessage(returnValue,WRONG_USER_ID,resp);
       // TODO Auto-generated catch block
