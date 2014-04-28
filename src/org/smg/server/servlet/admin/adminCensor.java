@@ -117,36 +117,40 @@ public class adminCensor extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
     JSONObject jObj = new JSONObject();
     String gameId = req.getPathInfo().substring(1);
-    try
-    {
-      String buffer = Utils.getBody(req);
-      Map<Object, Object> parameterMap = deleteInvalid(
-          (Map) JSONUtil.parse(buffer), validParams);
-      if (parameterMap.containsKey(AUTHORIZED) == false)
-      {
-        put(jObj, ERROR, MISSING_INFO, resp);
-        return;
-      }
-      long userId = Long.parseLong((String)parameterMap.get(USER_ID));
-      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
-      Map user = UserDatabaseDriver.getUserMap(userId);
-      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)==false)
-    	  throw new Exception();
-      parameterMap.put(UPDATED, false);
-      long longId = Long.parseLong(gameId);
-      String text = (String) parameterMap.get(TEXT);
-      if (parameterMap.containsKey(TEXT)==true)
-    	  parameterMap.remove(TEXT);
-      GameDatabaseDriver.updateGame(longId, parameterMap);
-      put(jObj, SUCCESS, ADMIN_FINISHED, resp);
-      boolean pass = (boolean) parameterMap.get(AUTHORIZED);
-      sendEmailToDevelopers(longId, pass, text);
-      return;
-    } catch (Exception e)
-    {
-      put(jObj, ERROR,WRONG_INFO, resp);
-      return;
-    }
-
+    Map<Object, Object> parameterMap;
+    long longId;
+    String text;
+		try {
+			String buffer = Utils.getBody(req);
+			parameterMap = deleteInvalid((Map) JSONUtil.parse(buffer),
+					validParams);
+			if (parameterMap.containsKey(AUTHORIZED) == false) {
+				put(jObj, ERROR, MISSING_INFO, resp);
+				return;
+			}
+			long userId = Long.parseLong((String) parameterMap.get(USER_ID));
+			String accessSignature = (String) parameterMap
+					.get(ACCESS_SIGNATURE);
+			Map user = UserDatabaseDriver.getUserMap(userId);
+			if (user.get(ACCESS_SIGNATURE).equals(accessSignature) == false)
+				throw new Exception();
+			parameterMap.put(UPDATED, false);
+			longId = Long.parseLong(gameId);
+			text = (String) parameterMap.get(TEXT);
+			if (parameterMap.containsKey(TEXT) == true)
+				parameterMap.remove(TEXT);
+			GameDatabaseDriver.updateGame(longId, parameterMap);
+			put(jObj, SUCCESS, ADMIN_FINISHED, resp);
+		} catch (Exception e) {
+			put(jObj, ERROR, WRONG_INFO, resp);
+			return;
+		}
+		try {
+			boolean pass = (boolean) parameterMap.get(AUTHORIZED);
+			sendEmailToDevelopers(longId, pass, text);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
   }
+  
 }
