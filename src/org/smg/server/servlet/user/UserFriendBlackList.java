@@ -74,6 +74,14 @@ public class UserFriendBlackList extends HttpServlet{
           friendListString = "[]";
         }
         JSONArray fl2 = new JSONArray(friendListString);
+//        JSONArray fl2 = new JSONArray();
+//        for (int i = 100; i < 1000; i += 100){
+//          JSONObject obj = new JSONObject();
+//          obj.put("type", "g");
+//          obj.put("socialId", String.valueOf(i));
+//          obj.put("SMGId", String.valueOf(i*100));
+//          fl2.put(obj);
+//        }
         JSONArray fl = new JSONArray();
         
         for (int i = 0; i < fl2.length(); i ++){

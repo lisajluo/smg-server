@@ -305,7 +305,7 @@ function ajaxCallAddFriendFilter(url){
     jsonObj["accessSignature"] = $("#accessSignatureInput").val();
     jsonObj["operation"] = "add";
     jsonObj["socialId"] = $("#targetIdInput").val();
-    jsonObj["type"] = "f"
+    jsonObj["type"] = "g"
     var jsonString = JSON.stringify(jsonObj);
     $.ajax({
       url: url1, 
@@ -330,7 +330,7 @@ function ajaxCallRemoveFriendFilter(url){
     jsonObj["accessSignature"] = $("#accessSignatureInput").val();
     jsonObj["operation"] = "remove";
     jsonObj["socialId"] = $("#targetIdInput").val();
-    jsonObj["type"] = "f"
+    jsonObj["type"] = "g"
     var jsonString = JSON.stringify(jsonObj);
     $.ajax({
       url: url1, 
