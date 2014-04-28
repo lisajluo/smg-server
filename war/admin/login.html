@@ -63,8 +63,8 @@
             }
             return json;
         }
-       	//var domain = "http://localhost:8888";
-       	var domain = "http://smg-server.appspot.com";
+       	var domain = "http://localhost:8888";
+       	//var domain = "http://smg-server.appspot.com";
         toastr.options = {
             "closeButton": true,
             "debug": false,
@@ -90,7 +90,7 @@
                 success: function (data, textStatus, jqXHR) {
                     console.log(data);
                     if (data["error"] == undefined) {
-                        window.location = "./game_manager.html?token="+data["success"];
+                        window.location = "./game_manager.html?userId="+data["userId"] + "&accessSignature=" + data["accessSignature"];
                     } else {
                         toastr["error"]("Login failed. Please check your email and password.", "ERROR");
                     }
