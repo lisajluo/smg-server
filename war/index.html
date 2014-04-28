@@ -22,10 +22,113 @@
         var userId = getUrlParam("userId");
         var accessSignature = getUrlParam("accessSignature");
         var accessTokenFB = getUrlParam("accessTokenFB");
+        var greetTerm = "Hi, ";
 
         if (isSocial == undefined)
             isSocial = true;
+        jQuery(document).ready(function ($) {
+            jQuery.i18n.properties({
+                name: 'index',
+                path: 'i18n/',
+                mode: 'map',
+                callback: function () {
+                    $('#warring_a').html($.i18n.prop('warring_a'));
+                    $('#play').html($.i18n.prop('play'));
+                    $('#game_developer').html($.i18n.prop('game_developer'));
+                    $('#logout_span').html($.i18n.prop('logout_span'));
+                    $('#logouturl').html($.i18n.prop('logout_span'));
+                    $('#upload_new_avatar').html($.i18n.prop('upload_new_avatar'));
+                    $('#reset_avatar').html($.i18n.prop('reset_avatar'));
+                    $('#enjoy_your_game').html($.i18n.prop('enjoy_your_game'));
+                    $('#deploy_your_game').html($.i18n.prop('deploy_your_game'));
+                    $('div #cancel').each(function (index) {
+                        $(this).html($.i18n.prop('cancel'))
+                    });
+                    $('div #ok').each(function (index) {
+                        $(this).html($.i18n.prop('ok'))
+                    });
+                    $('div #submit').each(function (index) {
+                        $(this).html($.i18n.prop('submit'))
+                    });
+                    $('div #email').each(function (index) {
+                        $(this).html($.i18n.prop('email'))
+                    });
+                    $('div #email_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('email'))
+                    });
+                    $('div #password').each(function (index) {
+                        $(this).html($.i18n.prop('password'))
+                    });
+                    $('div #password_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('password'))
+                    });
+                    $('div #password_confirm').each(function (index) {
+                        $(this).html($.i18n.prop('password_confirm'))
+                    });
+                    $('div #password_confirm_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('password'))
+                    });
+                    $('div #first_name').each(function (index) {
+                        $(this).html($.i18n.prop('first_name'))
+                    });
+                    $('div #first_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('first_name'))
+                    });
+                    $('div #last_name').each(function (index) {
+                        $(this).html($.i18n.prop('last_name'))
+                    });
+                    $('div #last_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('last_name'))
+                    });
+                    $('div #nick_name').each(function (index) {
+                        $(this).html($.i18n.prop('nick_name'))
+                    });
+                    $('div #nick_name_form').each(function (index) {
+                        $(this).prop('placeholder', $.i18n.prop('nick_name'))
+                    });
+                    $('#warring_b').html($.i18n.prop('warring_b'));
+                    $('h4 #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('span #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('div #account_management').each(function (index) {
+                        $(this).html($.i18n.prop('account_management'))
+                    });
+                    $('div #delete_account').each(function (index) {
+                        $(this).html($.i18n.prop('delete_account'))
+                    });
+                    greetTerm = $.i18n.prop('greetTerm');
+                }
+            });
+            $('#tabs').tab();
+            if (userId == null) {
+                if (checkCookie() == false) {
+                    window.location = "./login.html";
+                } else {
+                    userId = getCookie("userId");
+                    accessSignature = getCookie("accessSignature");
+                    isSocial = getCookie("isSocial");
+                    accessTokenFB = getCookie("accessTokenFB");
+                    updateFields();
+                }
+            } else {
+                setCookie(userId, accessSignature, isSocial, accessTokenFB);
+                window.location = "./";
+            }
 
+            //$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
+            if (accessTokenFB == null || accessTokenFB == "") {
+                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
+                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature);
+            } else {
+                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
+                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
+            }
+            $("#userId").val(userId);
+
+        });
 
         function showAccountManagement() {
             if (isSocial == "true") {
@@ -160,7 +263,7 @@
                 type: "GET",
                 success: function (data, textStatus, jqXHR) {
                     if (data["error"] == undefined) {
-                        $("#greeting_text").text(" Hi, " + data['firstName'] + " ");
+                        $("#greeting_text").text(" "+greetTerm+" " + data['firstName'] + " ");
                         $("input[name=email]").val(data["email"]);
                         $("input[name=firstName]").val(data["firstName"]);
                         $("input[name=lastName]").val(data["lastName"]);
@@ -279,35 +382,6 @@
             var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
             document.cookie = expires + ";";
         }
-
-        $(document).ready(function () {
-            if (userId == null) {
-                if (checkCookie() == false) {
-                    window.location = "./login.html";
-                } else {
-                    userId = getCookie("userId");
-                    accessSignature = getCookie("accessSignature");
-                    isSocial = getCookie("isSocial");
-                    accessTokenFB = getCookie("accessTokenFB");
-                    updateFields();
-                }
-            } else {
-                setCookie(userId, accessSignature, isSocial, accessTokenFB);
-                window.location = "./";
-            }
-
-            //$("#logouturl").prop('href', '/userLogOut/' + userId + '?accessSignature=' +accessSignature);
-            if (accessTokenFB == null || accessTokenFB == "") {
-                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature);
-                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature);
-            } else {
-                $("#playerpage").prop('src', "http://smg-angularjs-player.appspot.com/index.html#/profile/" + userId + "?accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
-                $("#developerpage").prop('src', "http://4-dot-smg-angularjs-developer.appspot.com/loggedin.html#/?developerId=" + userId + "&accessSignature=" + accessSignature + "&accessTokenFB=" + accessTokenFB);
-            }
-            $("#userId").val(userId);
-
-
-        });
     </script>
 
 </head>
@@ -474,83 +548,6 @@
         </div>
 
         <script type="text/javascript">
-              jQuery.i18n.properties({
-                name: 'index',
-                path: 'i18n/',
-                mode: 'map',
-                callback: function () {
-                    $('#warring_a').html($.i18n.prop('warring_a'));
-                    $('#play').html($.i18n.prop('play'));
-                    $('#game_developer').html($.i18n.prop('game_developer'));
-                    $('#logout_span').html($.i18n.prop('logout_span'));
-                    $('#logouturl').html($.i18n.prop('logout_span'));
-                    $('#upload_new_avatar').html($.i18n.prop('upload_new_avatar'));
-                    $('#reset_avatar').html($.i18n.prop('reset_avatar'));
-                    $('#enjoy_your_game').html($.i18n.prop('enjoy_your_game'));
-                    $('#deploy_your_game').html($.i18n.prop('deploy_your_game'));
-                    $('div #cancel').each(function (index) {
-                        $(this).html($.i18n.prop('cancel'))
-                    });
-                    $('div #ok').each(function (index) {
-                        $(this).html($.i18n.prop('ok'))
-                    });
-                    $('div #submit').each(function (index) {
-                        $(this).html($.i18n.prop('submit'))
-                    });
-                    $('div #email').each(function (index) {
-                        $(this).html($.i18n.prop('email'))
-                    });
-                    $('div #email_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('email'))
-                    });
-                    $('div #password').each(function (index) {
-                        $(this).html($.i18n.prop('password'))
-                    });
-                    $('div #password_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('password'))
-                    });
-                    $('div #password_confirm').each(function (index) {
-                        $(this).html($.i18n.prop('password_confirm'))
-                    });
-                    $('div #password_confirm_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('password'))
-                    });
-                    $('div #first_name').each(function (index) {
-                        $(this).html($.i18n.prop('first_name'))
-                    });
-                    $('div #first_name_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('first_name'))
-                    });
-                    $('div #last_name').each(function (index) {
-                        $(this).html($.i18n.prop('last_name'))
-                    });
-                    $('div #last_name_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('last_name'))
-                    });
-                    $('div #nick_name').each(function (index) {
-                        $(this).html($.i18n.prop('nick_name'))
-                    });
-                    $('div #nick_name_form').each(function (index) {
-                        $(this).prop('placeholder', $.i18n.prop('nick_name'))
-                    });
-                    $('#warring_b').html($.i18n.prop('warring_b'));
-                    $('h4 #account_management').each(function (index) {
-                        $(this).html($.i18n.prop('account_management'))
-                    });
-                    $('span #account_management').each(function (index) {
-                        $(this).html($.i18n.prop('account_management'))
-                    });
-                    $('div #account_management').each(function (index) {
-                        $(this).html($.i18n.prop('account_management'))
-                    });
-                    $('div #delete_account').each(function (index) {
-                        $(this).html($.i18n.prop('delete_account'))
-                    });
-                }
-            });
-            jQuery(document).ready(function ($) {
-                $('#tabs').tab();
-            });
         </script>
     </div>
 </body>
