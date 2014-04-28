@@ -100,14 +100,14 @@ public class adminPromote extends HttpServlet{
 		    String userId = req.getPathInfo().substring(1);
 		    try
 		    {
-		      String buffer = Utils.getBody(req);
-		      Map<Object, Object> parameterMap = deleteInvalid(
+		        String buffer = Utils.getBody(req);
+		        Map<Object, Object> parameterMap = deleteInvalid(
 		          (Map) JSONUtil.parse(buffer), validParams);
-		      if (parameterMap.containsKey(ADMIN) == false)
-		      {
-		        put(jObj, ERROR, MISSING_INFO, resp);
-		        return;
-		      }
+		        if (parameterMap.containsKey(ADMIN) == false)
+		        {
+		          put(jObj, ERROR, MISSING_INFO, resp);
+		          return;
+		        }
 		      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
 		      String adminId = (String)parameterMap.get(USER_ID);
 		      Map user = UserDatabaseDriver.getUserMap(Long.parseLong(adminId));

@@ -54,7 +54,37 @@
         var token = getUrlParam("token");
         var adminId = getUrlParam("userId");
         var adminAS = getUrlParam("accessSignature");
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+        function checkCookie() {
+            var userId = getCookie("userId");
+            if (userId == null || userId == "")
+                return false;
+            else
+                return true;
+        }
 
+        function setCookie(userId, accessSignature ) {
+            var d = new Date();
+            d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toGMTString();
+            document.cookie = "userId=" + userId + ";";
+            document.cookie = "accessSignature=" + accessSignature + ";";
+            document.cookie = expires + ";";
+        }
+
+        function discardCookie() {
+            var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = expires + ";";
+        }
+        
         function jsonify(array) {
             var json = {};
             for (var i = 0; i < array.length; i++) {
@@ -158,7 +188,17 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             };
-
+            if (adminId == null) {
+                if (checkCookie() == false) {
+                    window.location = "./login.html";
+                } else {
+                    adminId = getCookie("userId");
+                    adminAS = getCookie("accessSignature");
+                }
+            } else {
+                setCookie(adminId, adminAS);
+                window.location = "./game_manager.html";
+            }
             var updateTableItem = function (html, entity, isPassed) {
                 var okIconStr = '<span class="glyphicon glyphicon-ok"></span>';
                 var removeIconStr = '<span class="glyphicon glyphicon-remove"></span>';
