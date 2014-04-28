@@ -41,8 +41,8 @@
     </style>
     <script type="text/javascript">
         //var domain = "localhost:8888";
-         // var domain = "1-dot-huan-kang.appspot.com";
-         var domain = "smg-server.appspot.com";
+        //var domain = "1-dot-smg-server-owwlo-test.appspot.com";
+        var domain = "smg-server.appspot.com";
 
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -194,10 +194,12 @@
                 } else {
                     adminId = getCookie("userId");
                     adminAS = getCookie("accessSignature");
+                    checkForPermission();
+                    getAllInfo();
                 }
             } else {
                 setCookie(adminId, adminAS);
-                window.location = "./game_manager.html";
+                window.location = "./admin_manager.html";
             }
             var updateTableItem = function (html, entity, isPassed) {
                 var okIconStr = '<span class="glyphicon glyphicon-ok"></span>';
@@ -240,23 +242,26 @@
             $("#tableHeader1, #tableHeader2").each(function () {
                 $(this).append(buildHeader())
             });
-            checkForPermission();
-            $.ajax({
-                url: "http://" + domain + "/userinfo/all",
-                dataType: "json",
-                type: "GET",
-                success: function (data, textStatus, jqXHR) {
-                    // console.log(JSON.stringify(data));
-                    if (data["error"] == undefined) {
-                        updateTable(data);
-                    } else {
-                        toastr["error"]("Login failed. Please check your email and password.", "ERROR");
+            
+            function getAllInfo(){
+               $.ajax({
+                    url: "http://" + domain + "/userinfo/all",
+                    dataType: "json",
+                    type: "GET",
+                    success: function (data, textStatus, jqXHR) {
+                        // console.log(JSON.stringify(data));
+                        if (data["error"] == undefined) {
+                            updateTable(data);
+                        } else {
+                            toastr["error"]("Login failed. Please check your email and password.", "ERROR");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        toastr["error"](textStatus, "ERROR");
                     }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    toastr["error"](textStatus, "ERROR");
-                }
-            });
+                }); 
+            }
+            
 
             function checkForPermission() {
                 $.ajax({
