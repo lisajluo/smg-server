@@ -44,13 +44,16 @@
          // var domain = "1-dot-huan-kang.appspot.com";
          var domain = "smg-server.appspot.com";
 
-         
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
             var r = window.location.search.substr(1).match(reg);
             if (r != null) return unescape(r[2]);
             return null;
         }
+
+        var token = getUrlParam("token");
+        var adminId = getUrlParam("userId");
+        var adminAS = getUrlParam("accessSignature");
         function getCookie(cname) {
             var name = cname + "=";
             var ca = document.cookie.split(';');
@@ -82,10 +85,6 @@
             document.cookie = expires + ";";
         }
         
-        var token = getUrlParam("token");
-        var adminId = getUrlParam("userId");
-        var adminAS = getUrlParam("accessSignature");
-
         function jsonify(array) {
             var json = {};
             for (var i = 0; i < array.length; i++) {
@@ -97,13 +96,13 @@
             return json;
         }
 
-        function acceptGame(gameId) {
+        function acceptGame(userId) {
             $.ajax({
-                url: "http://" + domain + "/adminCensor/" + gameId,
+                url: "http://" + domain + "/adminPromote/" + userId,
                 dataType: "json",
                 type: "POST",
                 data: JSON.stringify({
-                    "authorized": true,
+                    "admin": true,
                     "TEXT": "",
                     "userId": adminId,
                     "accessSignature": adminAS
@@ -126,64 +125,55 @@
             });
         };
 
-        function blockGame(gameId) {
-            $('#myModal').modal({
-                keyboard: false
-            });
-            $("#blockReasonForm").submit(function (e) {
-                e.preventDefault();
-                var formValues = jsonify($(this).serializeArray());
-                $.ajax({
-                    url: "http://" + domain + "/adminCensor/" + gameId,
-                    dataType: "json",
-                    type: "POST",
-                    data: JSON.stringify({
-                        "authorized": false,
-                        "TEXT": formValues.reason_text,
-                        "userId": adminId,
-                        "accessSignature": adminAS
-                    }),
-                    success: function (data, textStatus, jqXHR) {
-                        console.log(data);
-                        if (data["error"] == undefined) {
-                            toastr["success"]("Update Success", "SUCCESS");
-                            window.setTimeout(function () {
-                                window.location.replace(window.location)
-                            }, 1000);
-                        } else {
-                            alert("ERROR!");
-                            toastr["error"]("There is an error updating database.", "ERROR");
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-
-                        toastr["error"](textStatus, "ERROR");
+        function blockGame(userId) {
+            $.ajax({
+                url: "http://" + domain + "/adminPromote/" + userId,
+                dataType: "json",
+                type: "POST",
+                data: JSON.stringify({
+                    "admin": false,
+                    "TEXT": "",
+                    "userId": adminId,
+                    "accessSignature": adminAS
+                }),
+                success: function (data, textStatus, jqXHR) {
+                    console.log(data);
+                    if (data["error"] == undefined) {
+                        toastr["success"]("Update Success", "SUCCESS");
+                        window.setTimeout(function () {
+                            window.location.replace(window.location)
+                        }, 1000);
+                    } else {
+                        alert("ERROR!");
+                        toastr["error"]("There is an error updating database.", "ERROR");
                     }
-                });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                    toastr["error"](textStatus, "ERROR");
+                }
             });
         };
 
         $(document).ready(function () {
             var shownTableFields = {
-                "Name": "gameName",
-                "Game ID": "gameId",
-                "URL": "url",
-                "Description": "description",
-                "Post Date": "postDate"
+                "Email": "email",
+                "User ID": "userId",
+                "First Name": "firstName"
             };
             jQuery.i18n.properties({
-                name: 'admin',
+                name: 'adminAdministrator',
                 path: 'i18n/',
                 mode: 'map',
                 callback: function () {
-                    $('#accept_game').html($.i18n.prop('accept_game'));
-                    $('#block_game').html($.i18n.prop('block_game'));
+                    $('#accept_admin').html($.i18n.prop('accept_admin'));
+                    $('#block_admin').html($.i18n.prop('block_admin'));
                     $('#reason_of_block').html($.i18n.prop('reason_of_block'));
                     $('#close').html($.i18n.prop('close'));
                     $('#submit_button').html($.i18n.prop('submit_button'));
                 }
             });
-            
+
             toastr.options = {
                 "closeButton": true,
                 "debug": false,
@@ -209,11 +199,10 @@
                 setCookie(adminId, adminAS);
                 window.location = "./game_manager.html";
             }
-            
             var updateTableItem = function (html, entity, isPassed) {
                 var okIconStr = '<span class="glyphicon glyphicon-ok"></span>';
                 var removeIconStr = '<span class="glyphicon glyphicon-remove"></span>';
-                var btnGroupStr = '<div class="btn-group">' + (isPassed ? '' : '<a type="button" onclick="javascript:acceptGame(' + entity['gameId'] + ');" class="btn btn-sm">' + okIconStr + '</a>') + (true ? '<a type="button" onclick="javascript:blockGame(' + entity['gameId'] + ');" class="btn btn-sm">' + removeIconStr + '</a></div>' : '');
+                var btnGroupStr = '<div class="btn-group">' + (isPassed ? '' : '<a type="button" onclick="javascript:acceptGame(' + entity['userId'] + ');" class="btn btn-sm">' + okIconStr + '</a>') + (isPassed ? '<a type="button" onclick="javascript:blockGame(' + entity['userId'] + ');" class="btn btn-sm">' + removeIconStr + '</a></div>' : '');
                 var commonShowField = "";
                 for (var fieldName in shownTableFields) {
                     commonShowField += ("<td>" + entity[shownTableFields[fieldName]] + "</td>");
@@ -233,10 +222,10 @@
                 var blockedTable = $("#blokTable");
 
                 $.each(passedList, function (i, entry) {
-                    updateTableItem(entry["authorized"] == true ? passedTable : blockedTable, entry, true);
+                    updateTableItem(passedTable, entry, true);
                 });
                 $.each(blockedList, function (i, entry) {
-                    updateTableItem(entry["authorized"] == true ? passedTable : blockedTable, entry, false);
+                    updateTableItem(blockedTable, entry, false);
                 });
             };
 
@@ -253,7 +242,7 @@
             });
             checkForPermission();
             $.ajax({
-                url: "http://" + domain + "/adminList",
+                url: "http://" + domain + "/userinfo/all",
                 dataType: "json",
                 type: "GET",
                 success: function (data, textStatus, jqXHR) {
@@ -313,9 +302,9 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a id="game_manager_url" href="./game_manager.html">Game</a>
+                    <li><a id="game_manager_url" href="./game_manager.html">Game</a>
                     </li>
-                    <li id="admin_manager_btn"><a id="admin_manager_url" href="./admin_manager.html">Administrator</a>
+                    <li class="active" id="admin_manager_btn"><a id="admin_manager_url" href="./admin_manager.html">Administrator</a>
                     </li>
                 </ul>
             </div>
@@ -323,7 +312,7 @@
     </nav>
     <div class="xxxx">
         <div class="panel panel-success">
-            <div class="panel-heading" id="accept_game">Accepted Games</div>
+            <div class="panel-heading" id="accept_admin">Accepted Games</div>
             <div class="table table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -337,7 +326,7 @@
             </div>
         </div>
         <div class="panel panel-danger">
-            <div class="panel-heading" id="block_game">Blocked Games</div>
+            <div class="panel-heading" id="block_admin">Blocked Games</div>
             <div class="table table-responsive">
                 <table class="table table-hover">
                     <thead>

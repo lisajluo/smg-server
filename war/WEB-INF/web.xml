@@ -261,6 +261,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/adminCensor/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>adminPromote</servlet-name>
+		<servlet-class>org.smg.server.servlet.admin.adminPromote</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>adminPromote</servlet-name>
+		<url-pattern>/adminPromote/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>fbLogin</servlet-name>
 		<jsp-file>/fb/index.html</jsp-file>
 	</servlet>

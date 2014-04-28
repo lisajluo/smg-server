@@ -3,6 +3,7 @@ package org.smg.server.servlet.user;
 import org.smg.server.util.NamespaceUtil;
 
 public class UserConstants {
+	public static final String IS_SUPER = "is_super";
 	public static final String ACCESS_SIGNATURE = "accessSignature";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -19,7 +20,8 @@ public class UserConstants {
 	public static final String MAIL_SUBJECT = "Please Reset Your Password";
 	public static final String GOOGLE = "google";
 	public static final String FACEBOOK = "facebook";
-
+    public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
+    public static final String ADMIN = "admin";
 	public static final String WRONG_PASSWORD = "WRONG_PASSWORD";
 	public static final String ERROR = "error";
 	public static final String MISSING_INFO = "MISSING_INFO";
@@ -54,6 +56,8 @@ public class UserConstants {
 	 */
 	// public static final String DOMAIN =
 	// "http://2-dot-valued-door-559.appspot.com/";
+	public static final String FIRSTNAME = "firstName";
+	
 	public static final String DOMAIN = "http://smg-server.appspot.com/";
 	public static final String GOOGLE_CALLBACK = DOMAIN
 			+ "socialAuthCallbackGoogle";
@@ -76,7 +80,7 @@ public class UserConstants {
 	public static final String FAMILY_NAME = "familyName";
 	public static final String GIVEN_NAME = "givenName";
 	public static final String GREETINGS = "Please reset your password at the following link:\n";
-
+    public static final String ALL = "all";
 	public static final String FACEBOOK_REDIRECT_URI = DOMAIN
 			+ "socialAuthCallbackFacebook";
 	public static final String FACEBOOK_SCOPE = "&scope=email,read_friendlists";

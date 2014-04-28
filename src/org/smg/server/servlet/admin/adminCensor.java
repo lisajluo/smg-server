@@ -34,7 +34,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class adminCensor extends HttpServlet {
 
   private String[] validParams = {
-    AUTHORIZED,TEXT
+    AUTHORIZED,TEXT,USER_ID,ACCESS_SIGNATURE
   };
 
   private void sendEmailHelper(String gameName, long developerId, boolean pass, String Text)
@@ -127,6 +127,11 @@ public class adminCensor extends HttpServlet {
         put(jObj, ERROR, MISSING_INFO, resp);
         return;
       }
+      long userId = Long.parseLong((String)parameterMap.get(USER_ID));
+      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
+      Map user = UserDatabaseDriver.getUserMap(userId);
+      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)==false)
+    	  throw new Exception();
       parameterMap.put(UPDATED, false);
       long longId = Long.parseLong(gameId);
       String text = (String) parameterMap.get(TEXT);
@@ -139,7 +144,7 @@ public class adminCensor extends HttpServlet {
       return;
     } catch (Exception e)
     {
-      put(jObj, ERROR, WRONG_GAME_ID, resp);
+      put(jObj, ERROR,WRONG_INFO, resp);
       return;
     }
 
