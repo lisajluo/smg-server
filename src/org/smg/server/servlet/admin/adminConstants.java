@@ -3,6 +3,7 @@ package org.smg.server.servlet.admin;
 public class adminConstants {
 
   public static final String USER_ID = "userId";
+  public static final String WRONG_USER_ID = "WRONG_USER_ID";
   public static final String ACCESS_SIGNATURE = "accessSignature";
   public static final String SUPER_ADMIN = "SuperAdmin@smg.com";
   public static final String ADMIN = "admin";	

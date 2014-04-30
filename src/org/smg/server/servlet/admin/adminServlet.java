@@ -41,7 +41,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOExc
 	    JSONObject json = new JSONObject();
 	    Map user = new HashMap();
 	    String email = req.getParameter(ADMIN_ID);
-	    String passWord = req.getParameter(PASS_WORD);
+	    String passWord = AccessSignatureUtil.getHashedPassword(req.getParameter(PASS_WORD));
 	    long userId;
 	    try
 	    {
