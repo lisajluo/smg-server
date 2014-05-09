@@ -92,6 +92,7 @@ public class UserConstants {
 	public static final String FRIEND_LIST = "friendList";
 	public static final String FACEBOOKID = "facebookId";
 	public static final String GOOGLEID = "googleId";
+	public static final String FILTER = "filter";
 
 	// public static final String GOOGLE_CLIENT_ID =
 	// "957989692513-kopummh9chd0eorek307pbc1iaehplb2.apps.googleusercontent.com";
