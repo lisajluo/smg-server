@@ -14,115 +14,139 @@ import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+/**
+ * This is a model item for Match Info object in database. Every record for
+ * Match Info in database can be parsed to this item by using Jackson.
+ */
 public class MatchInfo {
-  private long matchId;
-  private long gameId;
-  private List<Long> playerIds;
-  private long playerThatHasTurn;
-  private long playerThatHasLastTurn;
-  private Map<Long, Integer> gameOverScores;
-  private String gameOverReason;
-  private List<GameStateHistoryItem> history;
-  private Map<Long, Long> playerIdToNumberOfTokensInPot;
+    private long matchId;
+    private long gameId;
+    private List<Long> playerIds;
+    private long playerThatHasTurn;
+    private long playerThatHasLastTurn;
+    private Map<Long, Integer> gameOverScores;
+    private String gameOverReason;
+    private List<GameStateHistoryItem> history;
+    private Map<Long, Long> playerIdToNumberOfTokensInPot;
 
-  public static MatchInfo getMatchInfoFromEntity(Entity e) throws JSONException,
-      JsonParseException, JsonMappingException, IOException {
-    Map<String, Object> propsMap = e.getProperties();
-    ObjectMapper mapper = new ObjectMapper();
-    JSONObject jsnObj = new JSONObject(propsMap);
-
-    jsnObj.put(ContainerConstants.MATCH_ID, e.getKey().getId());
-    // Makeup for "history"
-    // TODO Delete this!
-    String hstryStr = ((Text) jsnObj.get(ContainerConstants.HISTORY)).getValue();
-    jsnObj.put(ContainerConstants.HISTORY, new JSONArray(hstryStr));
     /**
-     * "[{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}},{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}}]"
+     * Get a MatchInfo object from a database queried entity object.
+     * 
+     * @param e Entity returned from a database query.
+     * @return A parsed MatchInfo object.
+     * @throws JSONException
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
      */
+    public static MatchInfo getMatchInfoFromEntity(Entity e) throws JSONException,
+            JsonParseException, JsonMappingException, IOException {
+        Map<String, Object> propsMap = e.getProperties();
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject jsnObj = new JSONObject(propsMap);
 
-    // Makeup for "playerIds"
-    // TODO Delete this!
-    String plrsStr = (String) jsnObj.get(ContainerConstants.PLAYER_IDS);
-    jsnObj.put(ContainerConstants.PLAYER_IDS, new JSONArray(plrsStr));
+        jsnObj.put(ContainerConstants.MATCH_ID, e.getKey().getId());
+        // Makeup for "history"
+        // TODO Delete this!
+        String hstryStr = ((Text) jsnObj.get(ContainerConstants.HISTORY)).getValue();
+        jsnObj.put(ContainerConstants.HISTORY, new JSONArray(hstryStr));
+        /**
+         * "[{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}},{\"gameState\":{\"state\":{\"key1\":\"val1\",\"key2\":\"val2\"},\"visibleTo\":{\"key3\":\"val3\",\"key4\":\"val4\"},\"playerIdToNumberOfTokensInPot\":{\"1\":111,\"2\":222}}}]"
+         */
 
-    // Makeup for "gameOverScores"
-    // TODO Delete this!
-    String gvsStr = (String) jsnObj.get(ContainerConstants.GAME_OVER_SCORES);
-    jsnObj.put(ContainerConstants.GAME_OVER_SCORES, new JSONObject(gvsStr));
+        // Makeup for "playerIds"
+        // TODO Delete this!
+        String plrsStr = (String) jsnObj.get(ContainerConstants.PLAYER_IDS);
+        jsnObj.put(ContainerConstants.PLAYER_IDS, new JSONArray(plrsStr));
 
-    MatchInfo mi = mapper.readValue(jsnObj.toString(), MatchInfo.class);
-    return mi;
-  }
+        // Makeup for "gameOverScores"
+        // TODO Delete this!
+        String gvsStr = (String) jsnObj.get(ContainerConstants.GAME_OVER_SCORES);
+        jsnObj.put(ContainerConstants.GAME_OVER_SCORES, new JSONObject(gvsStr));
 
-  public final long getMatchId() {
-    return matchId;
-  }
+        MatchInfo mi = mapper.readValue(jsnObj.toString(), MatchInfo.class);
+        return mi;
+    }
 
-  public final void setMatchId(long matchId) {
-    this.matchId = matchId;
-  }
+    /**
+     * Get match id for this MatchInfo object.
+     * 
+     * @return
+     */
+    public final long getMatchId() {
+        return matchId;
+    }
 
-  public final long getGameId() {
-    return gameId;
-  }
+    /**
+     * Set match id for this MatchInfo object.
+     * 
+     * @param matchId
+     */
+    public final void setMatchId(long matchId) {
+        this.matchId = matchId;
+    }
 
-  public final void setGameId(long gameId) {
-    this.gameId = gameId;
-  }
+    public final long getGameId() {
+        return gameId;
+    }
 
-  public final List<Long> getPlayerIds() {
-    return playerIds;
-  }
+    public final void setGameId(long gameId) {
+        this.gameId = gameId;
+    }
 
-  public final void setPlayerIds(List<Long> playerIds) {
-    this.playerIds = playerIds;
-  }
+    public final List<Long> getPlayerIds() {
+        return playerIds;
+    }
 
-  public final long getPlayerThatHasTurn() {
-    return playerThatHasTurn;
-  }
+    public final void setPlayerIds(List<Long> playerIds) {
+        this.playerIds = playerIds;
+    }
 
-  public final void setPlayerThatHasTurn(long playerThatHasTurn) {
-    this.playerThatHasTurn = playerThatHasTurn;
-  }
+    public final long getPlayerThatHasTurn() {
+        return playerThatHasTurn;
+    }
 
-  public final Map<Long, Integer> getGameOverScores() {
-    return gameOverScores;
-  }
+    public final void setPlayerThatHasTurn(long playerThatHasTurn) {
+        this.playerThatHasTurn = playerThatHasTurn;
+    }
 
-  public final void setGameOverScores(Map<Long, Integer> gameOverScores) {
-    this.gameOverScores = gameOverScores;
-  }
+    public final Map<Long, Integer> getGameOverScores() {
+        return gameOverScores;
+    }
 
-  public final String getGameOverReason() {
-    return gameOverReason;
-  }
+    public final void setGameOverScores(Map<Long, Integer> gameOverScores) {
+        this.gameOverScores = gameOverScores;
+    }
 
-  public final void setGameOverReason(String gameOverReason) {
-    this.gameOverReason = gameOverReason;
-  }
+    public final String getGameOverReason() {
+        return gameOverReason;
+    }
 
-  public final List<GameStateHistoryItem> getHistory() {
-    return history;
-  }
+    public final void setGameOverReason(String gameOverReason) {
+        this.gameOverReason = gameOverReason;
+    }
 
-  public final void setHistory(List<GameStateHistoryItem> history) {
-    this.history = history;
-  }
+    public final List<GameStateHistoryItem> getHistory() {
+        return history;
+    }
 
-  public final Map<Long, Long> getPlayerIdToNumberOfTokensInPot() {
-    return playerIdToNumberOfTokensInPot;
-  }
+    public final void setHistory(List<GameStateHistoryItem> history) {
+        this.history = history;
+    }
 
-  public final void setPlayerIdToNumberOfTokensInPot(Map<Long, Long> playerIdToNumberOfTokensInPot) {
-    this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
-  }
+    public final Map<Long, Long> getPlayerIdToNumberOfTokensInPot() {
+        return playerIdToNumberOfTokensInPot;
+    }
 
-  public long getPlayerThatHasLastTurn() {
-    return playerThatHasLastTurn;
-  }
+    public final void setPlayerIdToNumberOfTokensInPot(Map<Long, Long> playerIdToNumberOfTokensInPot) {
+        this.playerIdToNumberOfTokensInPot = playerIdToNumberOfTokensInPot;
+    }
 
-  public void setPlayerThatHasLastTurn(long playerThatHasLastTurn) {
-    this.playerThatHasLastTurn = playerThatHasLastTurn;
-  }
+    public long getPlayerThatHasLastTurn() {
+        return playerThatHasLastTurn;
+    }
+
+    public void setPlayerThatHasLastTurn(long playerThatHasLastTurn) {
+        this.playerThatHasLastTurn = playerThatHasLastTurn;
+    }
 }
