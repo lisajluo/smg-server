@@ -25,58 +25,67 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 @SuppressWarnings("serial")
 public class ChannelConnectServlet extends HttpServlet {
 
-  @Override
-  public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    CORSUtil.addCORSHeader(resp);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
-    String urlPath = req.getPathInfo();
-
-    ChannelService channelService = ChannelServiceFactory.getChannelService();
-    ChannelPresence presence = channelService.parsePresence(req);
-    String[] channelId = Utils.decodeChannel(presence.clientId());
-    String playerIdStr = channelId[0];
-    String gameIdStr = channelId[1];
-    long playerId = Long.parseLong(playerIdStr);
-    long gameId = Long.parseLong(gameIdStr);
-
-    if (urlPath.indexOf("/connected/") != -1) {
-      JSONObject returnValue = new JSONObject();
-      try {
-        returnValue.put("magic_msg", "Hello " + playerId + "!");
-      } catch (JSONException e1) {
-      }
-      channelService.sendMessage(new ChannelMessage(presence.clientId(), returnValue.toString()));
-    } else if (urlPath.indexOf("/disconnected/") != -1) {
-      ContainerDatabaseDriver.deleteQueueEntity(playerId, gameId);
-
-      // Notify other players that this player has disconnected.
-      Entity matchEntity = ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(playerId,
-          gameId);
-      if (matchEntity != null) {
-        // add playerIds and matchId
-        List<Long> playerIds = JSONUtil.parseDSPlayerIds(
-            (String) matchEntity.getProperty(ContainerConstants.PLAYER_IDS));
-        List<String> pIds = IDUtil.longListToStringList(playerIds);
-        JSONObject rtnJson = new JSONObject();
-        try {
-          rtnJson.put(ContainerConstants.MESSAGE, ContainerConstants.OPPONENTS_LOST_CONNECTION);
-        } catch (JSONException e) {
-        }
-        for (String pId : pIds) {
-          channelService.sendMessage(new ChannelMessage(Utils.encodeToChannelId(pId, gameIdStr),
-              rtnJson.toString()));
-        }
-      }
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        CORSUtil.addCORSHeader(resp);
     }
-    resp.getWriter().close();
-  }
 
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
-  }
+    /**
+     * Handle "/_ah/connected/*" from post requests.
+     * The servlet is requested by app engine automatically.
+     */
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException,
+            IOException {
+        String urlPath = req.getPathInfo();
+
+        ChannelService channelService = ChannelServiceFactory.getChannelService();
+        ChannelPresence presence = channelService.parsePresence(req);
+        String[] channelId = Utils.decodeChannel(presence.clientId());
+        String playerIdStr = channelId[0];
+        String gameIdStr = channelId[1];
+        long playerId = Long.parseLong(playerIdStr);
+        long gameId = Long.parseLong(gameIdStr);
+
+        if (urlPath.indexOf("/connected/") != -1) {
+            JSONObject returnValue = new JSONObject();
+            try {
+                returnValue.put("magic_msg", "Hello " + playerId + "!");
+            } catch (JSONException e1) {
+            }
+            channelService.sendMessage(new ChannelMessage(presence.clientId(), returnValue
+                    .toString()));
+        } else if (urlPath.indexOf("/disconnected/") != -1) {
+            ContainerDatabaseDriver.deleteQueueEntity(playerId, gameId);
+
+            // Notify other players that this player has disconnected.
+            Entity matchEntity = ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(
+                    playerId,
+                    gameId);
+            if (matchEntity != null) {
+                // add playerIds and matchId
+                List<Long> playerIds = JSONUtil.parseDSPlayerIds(
+                        (String) matchEntity.getProperty(ContainerConstants.PLAYER_IDS));
+                List<String> pIds = IDUtil.longListToStringList(playerIds);
+                JSONObject rtnJson = new JSONObject();
+                try {
+                    rtnJson.put(ContainerConstants.MESSAGE,
+                            ContainerConstants.OPPONENTS_LOST_CONNECTION);
+                } catch (JSONException e) {
+                }
+                for (String pId : pIds) {
+                    channelService.sendMessage(new ChannelMessage(Utils.encodeToChannelId(pId,
+                            gameIdStr),
+                            rtnJson.toString()));
+                }
+            }
+        }
+        resp.getWriter().close();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+            IOException {
+    }
 }
