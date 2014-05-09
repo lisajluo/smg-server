@@ -148,7 +148,7 @@ public class Utils {
     /**
      * Encode playerId and gameId into channel id.
      * 
-     * @param playerId
+     * @param playerId 
      * @param gameId
      * @return
      */
@@ -164,5 +164,21 @@ public class Utils {
      */
     public static String[] decodeChannel(String encodeId) {
         return encodeId.split(",");
+    }
+
+    /**
+     * Get a full request url for request object.
+     * @param request GET/POST request object.
+     * @return Full request URL.
+     */
+    public static String getFullURL(HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+
+        if (queryString == null) {
+            return requestURL.toString();
+        } else {
+            return requestURL.append('?').append(queryString).toString();
+        }
     }
 }
