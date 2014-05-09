@@ -50,8 +50,10 @@ public class StateServlet extends HttpServlet {
 
     // verify matchId
     if (req.getPathInfo().length() < 2) {
+      String details = "MatchId in url is not correct";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, details, json);
       return;
     }
     String mId = req.getPathInfo().substring(1);
@@ -59,19 +61,26 @@ public class StateServlet extends HttpServlet {
     try {
       matchId = IDUtil.stringToLong(mId);
     } catch (Exception e) {
+      String details = "MatchId in url is not int the correct format. "
+          + "Cannot be negative or zero";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, details, json);
       return;
     }
     if (!ContainerVerification.matchIdVerify(matchId)) {
+      String details = "MatchId do not exist in our datastore.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, details, json);
       return;
     }
     // verify playerId
     if (!req.getParameterMap().containsKey(ContainerConstants.PLAYER_ID)) {
+      String details = "No playerId received.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.PLAYER_ID);
+          ContainerConstants.PLAYER_ID, details, json);
       return;
     }
     String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
@@ -79,26 +88,35 @@ public class StateServlet extends HttpServlet {
     try {
       playerId = IDUtil.stringToLong(pId);
     } catch (Exception e) {
+      String details = "PlayerId in url is not int the correct format. "
+          + "Cannot be negative or zero";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     if (!ContainerVerification.playerIdVerify(playerId)) {
+      String details = "PlayerId does not exist in our datastore.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     // verify accessSignature
     if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      String details = "No access signature received.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, details, json);
       return;
     }
     String accessSignature = req
         .getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
+      String details = "Access signature is not associated with playerId client provided.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, details, json);
       return;
     }
 

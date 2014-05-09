@@ -213,7 +213,7 @@ public class NewMatchServlet extends HttpServlet {
     // verify playerId
     if (req.getPathInfo().length() < 2) {
       String details = "PlayerId in url is not correct";
-      String json = "";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
           ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
@@ -224,37 +224,43 @@ public class NewMatchServlet extends HttpServlet {
       playerId = IDUtil.stringToLong(pId);
     } catch (Exception e) {
       //TODO GET Example
-      String details = "PlayerId in url is not number format";
-      JSONObject errJSON = new JSONObject();
-      errJSON.put(ContainerConstants.PLAYER_ID, pId);
-      String json = errJSON.toString();
-      json = req.g
+      String details = "PlayerId in url is not int the correct format. "
+          + "Cannot be negative or zero";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
           ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     if (!ContainerVerification.playerIdVerify(playerId)) {
+      String details = "PlayerId does not exist in our datastore.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     // verify accessSignature
     if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
+      String details = "No access signature received.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, details, json);
       return;
     }
     String accessSignature = req
         .getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
+      String details = "Access signature is not associated with playerId client provided.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, details, json);
       return;
     }
     // verify gameId
     if (!req.getParameterMap().containsKey(ContainerConstants.GAME_ID)) {
+      String details = "No gameId received.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_GAME_ID);
+          ContainerConstants.WRONG_GAME_ID, details, json);
       return;
     }
     String gId = req.getParameter(ContainerConstants.GAME_ID);
@@ -262,22 +268,27 @@ public class NewMatchServlet extends HttpServlet {
     try {
       gameId = IDUtil.stringToLong(gId);
     } catch (Exception e2) {
+      String details = "GameId is not in the correct format. Cannot be negative or zero.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_GAME_ID);
+          ContainerConstants.WRONG_GAME_ID, details, json);
       return;
     }
     if (!ContainerVerification.gameIdVerify(gameId)) {
+      String details = "GameId does not exist in our datastore.";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_GAME_ID);
+          ContainerConstants.WRONG_GAME_ID, details, json);
       return;
     }
 
     Entity match = ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(
         playerId, gameId);
     if (match == null) {
-      
+      String details = "No match found by playerId and gameId";
+      String json = Utils.getFullURL(req);
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.NO_MATCH_FOUND);
+          ContainerConstants.NO_MATCH_FOUND, details, json);
       return;
     }
     // add playerIds and matchId
