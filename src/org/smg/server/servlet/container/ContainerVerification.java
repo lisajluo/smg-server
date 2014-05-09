@@ -192,17 +192,22 @@ public class ContainerVerification {
   }
 
   /**
-   * Send error message to the client Check {@link ContainerConstants} to find
-   * all the error type and msg.
+   * Send error message to the client with human readable details, and json
+   * string received from client. Check {@link ContainerConstants} to find all
+   * the error type and msg.
    * 
    * @param resp
    * @param returnValue
    * @param errorMSG
+   * @param details
+   * @param json
    */
   public static void sendErrorMessage(HttpServletResponse resp,
-      JSONObject returnValue, String errorMSG) {
+      JSONObject returnValue, String errorMSG, String details, String json) {
     try {
       returnValue.put(ContainerConstants.ERROR, errorMSG);
+      returnValue.put(ContainerConstants.DETAILS, details);
+      returnValue.put(ContainerConstants.JSON_RECEIVED, json);
       returnValue.write(resp.getWriter());
     } catch (JSONException | IOException e) {
       e.printStackTrace();

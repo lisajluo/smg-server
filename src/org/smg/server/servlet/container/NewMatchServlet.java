@@ -73,8 +73,10 @@ public class NewMatchServlet extends HttpServlet {
       try {
         jsonMap = JSONUtil.parse(json);
       } catch (IOException e) {
+        //TODO POST example
+        String details = "Json string from client is not in the correct format.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.JSON_PARSE_ERROR);
+            ContainerConstants.JSON_PARSE_ERROR, details, json);
         return;
       }
       // check if missing info
@@ -201,8 +203,10 @@ public class NewMatchServlet extends HttpServlet {
     JSONObject returnValue = new JSONObject();
     // verify playerId
     if (req.getPathInfo().length() < 2) {
+      String details = "PlayerId in url is not correct";
+      String json = "";
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     String pId = req.getPathInfo().substring(1);
@@ -210,8 +214,13 @@ public class NewMatchServlet extends HttpServlet {
     try {
       playerId = IDUtil.stringToLong(pId);
     } catch (Exception e) {
+      //TODO GET Example
+      String details = "PlayerId in url is not number format";
+      JSONObject errJSON = new JSONObject();
+      errJSON.put(ContainerConstants.PLAYER_ID, pId);
+      String json = errJSON.toString();
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
     }
     if (!ContainerVerification.playerIdVerify(playerId)) {
@@ -256,6 +265,7 @@ public class NewMatchServlet extends HttpServlet {
     Entity match = ContainerDatabaseDriver.getUnfinishedMatchByPlayerIdGameId(
         playerId, gameId);
     if (match == null) {
+      
       ContainerVerification.sendErrorMessage(resp, returnValue,
           ContainerConstants.NO_MATCH_FOUND);
       return;

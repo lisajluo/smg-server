@@ -54,6 +54,8 @@ public final class ContainerConstants {
 
   // Error messages
   public static final String ERROR = "error";
+  public static final String DETAILS = "details";
+  public static final String JSON_RECEIVED = "json_received"; 
   public static final String NO_DATA_RECEIVED = "NO_DATA_RECEIVED";
   public static final String MISSING_INFO = "MISSING_INFO";
   public static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
@@ -65,6 +67,7 @@ public final class ContainerConstants {
   public static final String JSON_PARSE_ERROR = "JSON_PARSE_ERROR";
   public static final String ENQUEUE_FAILED = "ENQUEUE_FAILED";
   public static final String MATCH_ENDED = "MATCH_ENDED";
+  
 
   // Success message
   public static final String SUCCESS = "success";
