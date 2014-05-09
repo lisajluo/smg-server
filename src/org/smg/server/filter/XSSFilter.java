@@ -28,6 +28,9 @@ public class XSSFilter implements Filter {
   public void destroy() {
   }
 
+  /**
+   * Filter XSS content and redirect to certain servlet
+   */
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
       throws IOException, ServletException {
     
@@ -50,6 +53,11 @@ public class XSSFilter implements Filter {
     }
   }
   
+  /**
+   * Verify if a request contains XSS content, if yes return true, otherwise return false
+   * @param request
+   * @return
+   */
   private boolean hasXSSContent(ServletRequest request) {
     BufferedReader reader;
     StringBuffer buffer = new StringBuffer();
@@ -73,8 +81,11 @@ public class XSSFilter implements Filter {
     return true;
   }
   
-  /*
+  /**
+   * Given a JSON String, remove all XSS format.
    * Credit to http://www.javacodegeeks.com/2012/07/anti-cross-site-scripting-xss-filter.html
+   * @param value
+   * @return
    */
   private String stripXSS(String value) {
     if (value != null) {
