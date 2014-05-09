@@ -83,8 +83,10 @@ public class NewMatchServlet extends HttpServlet {
       if (!jsonMap.containsKey(ContainerConstants.PLAYER_IDS)
           || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
           || !jsonMap.containsKey(ContainerConstants.GAME_ID)) {
+        String details = "Json string from client does not contains all the required field."
+            + "Requires: playerIds, accessSignature, gameId.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.MISSING_INFO);
+            ContainerConstants.MISSING_INFO, details, json);
         return;
       }
       // parse gameID and verify gameId existed
@@ -93,13 +95,15 @@ public class NewMatchServlet extends HttpServlet {
       try {
         gameId = IDUtil.stringToLong(gId);
       } catch (Exception e) {
+        String details = "GameId is not in the correct format. Cannot be negative or zero.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_GAME_ID);
+            ContainerConstants.WRONG_GAME_ID, details, json);
         return;
       }
       if (!ContainerVerification.gameIdVerify(gameId)) {
+        String details = "GameId does not exist in our datastore.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_GAME_ID);
+            ContainerConstants.WRONG_GAME_ID, details, json);
         return;
       }
       // verify playerIds
@@ -109,18 +113,21 @@ public class NewMatchServlet extends HttpServlet {
       try {
         playerIds = IDUtil.stringListToLongList(ids);
       } catch (Exception e) {
+        String details = "PlayerIds is not in the correct format. Cannot be negative or zero";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_PLAYER_ID);
+            ContainerConstants.WRONG_PLAYER_ID, details, json);
         return;
       }
       if (!ContainerVerification.playerIdsVerify(playerIds)) {
+        String details = "PlayerIds do not exist in our datastore.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_PLAYER_ID);
+            ContainerConstants.WRONG_PLAYER_ID, details, json);
         return;
       }
       if (!ContainerVerification.insertMatchVerify(playerIds, gameId)) {
+        String details = "Player already has an unfinished match for this game.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_PLAYER_ID);
+            ContainerConstants.WRONG_PLAYER_ID, details, json);
         return;
       }
       // verify accessSignature
@@ -128,8 +135,9 @@ public class NewMatchServlet extends HttpServlet {
           .get(ContainerConstants.ACCESS_SIGNATURE));
       if (!ContainerVerification.accessSignatureVerify(accessSignature,
           playerIds)) {
+        String details = "Access signature is not associated with any of playerId client provided.";
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_ACCESS_SIGNATURE);
+            ContainerConstants.WRONG_ACCESS_SIGNATURE, details, json);
         return;
       }
       // insert new match
@@ -174,8 +182,9 @@ public class NewMatchServlet extends HttpServlet {
         }
       }
     } else {
+      String details = "No json received";
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.NO_DATA_RECEIVED);
+          ContainerConstants.NO_DATA_RECEIVED, details, json);
       return;
     }
 
@@ -219,6 +228,7 @@ public class NewMatchServlet extends HttpServlet {
       JSONObject errJSON = new JSONObject();
       errJSON.put(ContainerConstants.PLAYER_ID, pId);
       String json = errJSON.toString();
+      json = req.g
       ContainerVerification.sendErrorMessage(resp, returnValue,
           ContainerConstants.WRONG_PLAYER_ID, details, json);
       return;
