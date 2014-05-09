@@ -73,7 +73,8 @@ public class MatchOperationServlet extends HttpServlet {
     // verify matchId
     if (req.getPathInfo().length() < 2) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, "Cannot et MatchId from request URL.", 
+          Utils.getFullURL(req));
       return;
     }
     String mId = req.getPathInfo().substring(1);
@@ -82,18 +83,21 @@ public class MatchOperationServlet extends HttpServlet {
       matchId = IDUtil.stringToLong(mId);
     } catch (Exception e) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, "Match Id cannot be converted to long.",
+          Utils.getFullURL(req));
       return;
     }
     if (!ContainerVerification.matchIdVerify(matchId)) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_MATCH_ID);
+          ContainerConstants.WRONG_MATCH_ID, "Match Id cannot be found in database.",
+          Utils.getFullURL(req));
       return;
     }
     // verify playerId
     if (!req.getParameterMap().containsKey(ContainerConstants.PLAYER_ID)) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.PLAYER_ID);
+          ContainerConstants.PLAYER_ID, "No playerId field found in URL.",
+          Utils.getFullURL(req));
       return;
     }
     String pId = String.valueOf(req.getParameter(ContainerConstants.PLAYER_ID));
@@ -102,25 +106,29 @@ public class MatchOperationServlet extends HttpServlet {
       playerId = IDUtil.stringToLong(pId);
     } catch (Exception e) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, "Cannot cast playerId into Long.",
+          Utils.getFullURL(req));
       return;
     }
     if (!ContainerVerification.playerIdVerify(playerId)) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_PLAYER_ID);
+          ContainerConstants.WRONG_PLAYER_ID, "PlayerId cannot be verified.",
+          Utils.getFullURL(req));
       return;
     }
     // verify accessSignature
     if (!req.getParameterMap().containsKey(ContainerConstants.ACCESS_SIGNATURE)) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, "No AccessSignature field found in URL.",
+          Utils.getFullURL(req));
       return;
     }
     String accessSignature = req
         .getParameter(ContainerConstants.ACCESS_SIGNATURE);
     if (!ContainerVerification.accessSignatureVerify(accessSignature, playerId)) {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.WRONG_ACCESS_SIGNATURE);
+          ContainerConstants.WRONG_ACCESS_SIGNATURE, "Cannot verify the AS with given playerId.",
+          Utils.getFullURL(req));
       return;
     }
 
@@ -158,7 +166,8 @@ public class MatchOperationServlet extends HttpServlet {
         jsonMap = JSONUtil.parse(json);
       } catch (IOException e) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.JSON_PARSE_ERROR);
+            ContainerConstants.JSON_PARSE_ERROR, "JSON format error.",
+            json);
         return;
       }
 
@@ -167,7 +176,7 @@ public class MatchOperationServlet extends HttpServlet {
           || !jsonMap.containsKey(ContainerConstants.ACCESS_SIGNATURE)
           || !jsonMap.containsKey(ContainerConstants.OPERATIONS)) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.MISSING_INFO);
+            ContainerConstants.MISSING_INFO, "PlayerId or AS or Operations missing.", json);
         return;
       }
       // verify playerIds
@@ -178,12 +187,12 @@ public class MatchOperationServlet extends HttpServlet {
         playerIds = IDUtil.stringListToLongList(ids);
       } catch (Exception e) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_PLAYER_ID);
+            ContainerConstants.WRONG_PLAYER_ID, "Cannot cast Id in list into long.", json);
         return;
       }
       if (!ContainerVerification.playerIdsVerify(playerIds)) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_PLAYER_ID);
+            ContainerConstants.WRONG_PLAYER_ID, "Cannot find playerId in database.", json);
         return;
       }
       // verify accessSignature
@@ -192,13 +201,13 @@ public class MatchOperationServlet extends HttpServlet {
       if (!ContainerVerification.accessSignatureVerify(accessSignature,
           playerIds)) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_ACCESS_SIGNATURE);
+            ContainerConstants.WRONG_ACCESS_SIGNATURE, "Cannot verify AS with given PlayerId.", json);
         return;
       }
       // verify matchId
       if (req.getPathInfo().length() < 2) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_MATCH_ID);
+            ContainerConstants.WRONG_MATCH_ID, "No MatchId found in URL.", Utils.getFullURL(req));
         return;
       }
       String mId = req.getPathInfo().substring(1);
@@ -207,12 +216,12 @@ public class MatchOperationServlet extends HttpServlet {
         matchId = IDUtil.stringToLong(mId);
       } catch (Exception e) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_MATCH_ID);
+            ContainerConstants.WRONG_MATCH_ID, "MatchId cannot be casted to long.", Utils.getFullURL(req));
         return;
       }
       if (!ContainerVerification.matchIdVerify(matchId)) {
         ContainerVerification.sendErrorMessage(resp, returnValue,
-            ContainerConstants.WRONG_MATCH_ID);
+            ContainerConstants.WRONG_MATCH_ID, "MatchId cannot be found in database.", Utils.getFullURL(req));
         return;
       }
 
@@ -264,7 +273,7 @@ public class MatchOperationServlet extends HttpServlet {
         // if matched is already ended, return error
         if (!mi.getGameOverReason().equals(ContainerConstants.NOT_OVER)) {
           ContainerVerification.sendErrorMessage(resp, returnValue,
-              ContainerConstants.MATCH_ENDED);
+              ContainerConstants.MATCH_ENDED, "Match has already end.", Utils.getFullURL(req));
           return;
         }
         // Modified at first place.
@@ -291,7 +300,7 @@ public class MatchOperationServlet extends HttpServlet {
           // EndGame move but no game over reason
           if (!jsonMap.containsKey(ContainerConstants.GAME_OVER_REASON)) {
             ContainerVerification.sendErrorMessage(resp, returnValue,
-                ContainerConstants.MISSING_INFO);
+                ContainerConstants.MISSING_INFO, "No GameOverReason field found.", json);
             return;
           }
           String gameOverReason = String.valueOf(jsonMap
@@ -390,7 +399,7 @@ public class MatchOperationServlet extends HttpServlet {
       }
     } else {
       ContainerVerification.sendErrorMessage(resp, returnValue,
-          ContainerConstants.NO_DATA_RECEIVED);
+          ContainerConstants.NO_DATA_RECEIVED, "No data received.", Utils.getFullURL(req));
       return;
     }
     try {
