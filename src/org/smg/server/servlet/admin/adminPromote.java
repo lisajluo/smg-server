@@ -29,49 +29,47 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class adminPromote extends HttpServlet{
 	private String[] validParams = {ADMIN,USER_ID,ACCESS_SIGNATURE};
 	private void sendEmailHelper(long userId, boolean pass)
-		      throws Exception
-		  {
-		    try {
-		      Map userInfo = UserDatabaseDriver.getUserMap(userId);
-		      String firstName = (String) userInfo.get(FIRST_NAME);
-		     
-		      String emailAddress = (String) userInfo.get(EMAIL);
-		  
-		      Properties props = new Properties();
-		      Session session = Session.getDefaultInstance(props, null);
-		      StringBuffer msgBodyBuffer = new StringBuffer();
-		      msgBodyBuffer.append("Hello " + firstName + ":\n");
-		      if (pass == true) {
-		        msgBodyBuffer.append(promote());
+ throws Exception {
+		try {
+			Map userInfo = UserDatabaseDriver.getUserMap(userId);
+			String firstName = (String) userInfo.get(FIRST_NAME);
 
-		      } else {
-		        msgBodyBuffer.append(degrade());
-		      }
+			String emailAddress = (String) userInfo.get(EMAIL);
 
-		      String msgBody = msgBodyBuffer.toString();
-		      Message msg = new MimeMessage(session);
-		      msg.setFrom(new InternetAddress(ADMIN_EMAIL, ADMIN_NAME));
-		      msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-		          emailAddress, firstName));
-		      msg.setSubject(MAIL_SUBJECT);
-		      msg.setText(msgBody);
-		      Transport.send(msg);
-		      return;
+			Properties props = new Properties();
+			Session session = Session.getDefaultInstance(props, null);
+			StringBuffer msgBodyBuffer = new StringBuffer();
+			msgBodyBuffer.append("Hello " + firstName + ":\n");
+			if (pass == true) {
+				msgBodyBuffer.append(promote());
 
-		    } catch (Exception e) {
-		      throw new Exception();
-		    }
-		  }
+			} else {
+				msgBodyBuffer.append(degrade());
+			}
 
-		  private void sendEmailToUsers(long userId, boolean pass) throws Exception
-		  {
-		    try {		    		      
-	        sendEmailHelper(userId, pass);
-		    
-		    } catch (Exception e) {
-		      throw new Exception();
-		    }
-		  }
+			String msgBody = msgBodyBuffer.toString();
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress(ADMIN_EMAIL, ADMIN_NAME));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+					emailAddress, firstName));
+			msg.setSubject(MAIL_SUBJECT);
+			msg.setText(msgBody);
+			Transport.send(msg);
+			return;
+
+		} catch (Exception e) {
+			throw new Exception();
+		}
+	}
+
+	private void sendEmailToUsers(long userId, boolean pass) throws Exception {
+		try {
+			sendEmailHelper(userId, pass);
+
+		} catch (Exception e) {
+			throw new Exception();
+		}
+	}
 	private Map<Object, Object> deleteInvalid(Map<Object, Object> params,
 		      String[] validParams) {
 		    Map<Object, Object> returnMap = new HashMap<Object, Object>();
@@ -98,34 +96,41 @@ public class adminPromote extends HttpServlet{
 		    CORSUtil.addCORSHeader(resp);
 		    JSONObject jObj = new JSONObject();
 		    String userId = req.getPathInfo().substring(1);
-		    try
-		    {
-		        String buffer = Utils.getBody(req);
-		        Map<Object, Object> parameterMap = deleteInvalid(
-		          (Map) JSONUtil.parse(buffer), validParams);
-		        if (parameterMap.containsKey(ADMIN) == false)
-		        {
-		          put(jObj, ERROR, MISSING_INFO, resp);
-		          return;
-		        }
-		      String accessSignature = (String)parameterMap.get(ACCESS_SIGNATURE);
-		      String adminId = (String)parameterMap.get(USER_ID);
-		      Map user = UserDatabaseDriver.getUserMap(Long.parseLong(adminId));
-		      if (user.get(ACCESS_SIGNATURE).equals(accessSignature)==false)
-		    	  throw new Exception();
-		      long longId = Long.parseLong(userId);
-		      Map userTemp = UserDatabaseDriver.getUserMap(longId);
-		      userTemp.putAll(parameterMap);
-		      boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(longId, userTemp);
-		      put(jObj, SUCCESS, ADMIN_FINISHED, resp);
-		      boolean pass = (boolean) parameterMap.get(ADMIN);
-		      sendEmailToUsers(longId, pass);
-		      return;
-		    } catch (Exception e)
-		    {
-		      put(jObj, ERROR, WRONG_GAME_ID, resp);
-		      return;
-		    }
+		    boolean pass;
+		    Map<Object, Object> parameterMap;
+		    long longId;
+		try {
+			String buffer = Utils.getBody(req);
+			parameterMap = deleteInvalid((Map) JSONUtil.parse(buffer),
+					validParams);
+			if (parameterMap.containsKey(ADMIN) == false) {
+				put(jObj, ERROR, MISSING_INFO, resp);
+				return;
+			}
+			pass = (boolean) parameterMap.get(ADMIN);
+			String accessSignature = (String) parameterMap
+					.get(ACCESS_SIGNATURE);
+			String adminId = (String) parameterMap.get(USER_ID);
+			Map user = UserDatabaseDriver.getUserMap(Long.parseLong(adminId));
+			if (user.get(ACCESS_SIGNATURE).equals(accessSignature) == false)
+				throw new Exception();
+			longId = Long.parseLong(userId);
+			Map userTemp = UserDatabaseDriver.getUserMap(longId);
+			userTemp.putAll(parameterMap);
+			boolean updated = UserDatabaseDriver.updateUserWithoutPassWord(
+					longId, userTemp);
+			put(jObj, SUCCESS, ADMIN_FINISHED, resp);
+		} catch (Exception e) {
+			put(jObj, ERROR, WRONG_USER_ID, resp);
+			return;
+		}
+		try {
+			pass = (boolean) parameterMap.get(ADMIN);
+			sendEmailToUsers(longId, pass);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		    
 	 }
 
 }
