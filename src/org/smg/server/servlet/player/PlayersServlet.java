@@ -39,6 +39,8 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 /**
+ * Deprecate Servlet, please use user servlet
+ * 
  * player servlet to handle player request
  * Insert:
  *    method: POST
@@ -71,6 +73,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
  *         TODO combine this with /players/{playerId}
  */
 @SuppressWarnings("serial")
+@Deprecated
 public class PlayersServlet extends HttpServlet {
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -88,7 +91,7 @@ public class PlayersServlet extends HttpServlet {
    */
 	@SuppressWarnings("unchecked")
   @Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+  public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
 	    Map user = new HashMap();
@@ -165,6 +168,7 @@ public class PlayersServlet extends HttpServlet {
 		if (originalString == null || originalString.length() < 6) {
 			try {
 				returnValue.put("error", "PASSWORD_TOO_SHORT");
+				returnValue.put("parameters", map);
 				returnValue.write(resp.getWriter());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -177,6 +181,7 @@ public class PlayersServlet extends HttpServlet {
 		if (saveResult.equals("EMAIL_EXISTS")) {
 		  try {
 				returnValue.put("error", "EMAIL_EXISTS");
+				returnValue.put("parameters", map);
 				returnValue.write(resp.getWriter());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
