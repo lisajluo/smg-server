@@ -23,7 +23,13 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+/**
+ * Deprecate Servlet, please use user servlet
+ * @author Archer
+ *
+ */
 @SuppressWarnings("serial")
+@Deprecated
 public class PlayerInfoServlet extends HttpServlet {
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
