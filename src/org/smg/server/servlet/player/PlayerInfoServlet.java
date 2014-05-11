@@ -23,7 +23,13 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+/**
+ * Deprecate Servlet, please use user servlet
+ * @author Archer
+ *
+ */
 @SuppressWarnings("serial")
+@Deprecated
 public class PlayerInfoServlet extends HttpServlet {
   @Override
   public void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -35,11 +41,11 @@ public class PlayerInfoServlet extends HttpServlet {
    *    Get player Info:
    *    method: GET
    *    url:/playerInfo?playerId=...&targetId=...&accessSignature=...
-   *    return: {  ��email�� : ��,  ��firstname�� : ��,  ��lastname�� : ��,  ��nickname�� : ��.}
-   *            {  ��firstname�� : ��,  ��nickname�� : ��.}
-   *            {"error": "WRONG_ACCESS_SIGNATURE"}
-   *            {"error": "WRONG_PLAYER_ID"}
-   *            {"error": "WRONG_TARGET_ID"}
+   *    return: {  "email" : ",  "firstname" : ",  "lastname" : ",  "nickname" : ".}
+   *            {  "firstname" : ",  "nickname" : ".}
+   *            {"error": "WRONG_ACCESS_SIGNATURE", "parameters": ...}
+   *            {"error": "WRONG_PLAYER_ID", "parameters": ...}
+   *            {"error": "WRONG_TARGET_ID", "parameters": ...}
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -51,7 +57,7 @@ public class PlayerInfoServlet extends HttpServlet {
     Map<String, String[]> map = req.getParameterMap();
     String playerId = null;
     if (!map.containsKey("playerId")){
-      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp);
+      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp,map);
       return;
     }
     playerId = req.getParameter("playerId");
@@ -59,11 +65,11 @@ public class PlayerInfoServlet extends HttpServlet {
     try {
       playerIdLong = Long.parseLong(playerId);
     } catch (NumberFormatException e) {
-      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp);
+      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp,map);
       return;
     }
     if (!map.containsKey("accessSignature")){
-      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp);
+      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp,map);
       return;
     }
     String accessSignature = req.getParameter("accessSignature");
@@ -71,12 +77,12 @@ public class PlayerInfoServlet extends HttpServlet {
       boolean valid = DatabaseDriverPlayer
           .validatePlayerAccessSignature(playerIdLong, accessSignature);
       if (!valid){
-        addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp);
+        addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp,map);
         return;
       } else {
         String targetId = null;
         if (!map.containsKey("targetId")){
-          addErrorMessage(returnValue,"WRONG_TARGET_ID",resp);
+          addErrorMessage(returnValue,"WRONG_TARGET_ID",resp,map);
           return;
         }
         targetId = req.getParameter("targetId");
@@ -84,7 +90,7 @@ public class PlayerInfoServlet extends HttpServlet {
         try {
           targetIdLong = Long.parseLong(targetId);
         } catch (NumberFormatException e) {
-          addErrorMessage(returnValue,"WRONG_TARGET_ID",resp);
+          addErrorMessage(returnValue,"WRONG_TARGET_ID",resp,map);
           return;
         }
         Player target = DatabaseDriverPlayer.getPlayerById(targetIdLong);
@@ -107,7 +113,7 @@ public class PlayerInfoServlet extends HttpServlet {
       }
       return;
     } catch (EntityNotFoundException e) {
-      addErrorMessage(returnValue,"WRONG_TARGET_ID",resp);
+      addErrorMessage(returnValue,"WRONG_TARGET_ID",resp,map);
       return;
     }
   }
@@ -137,6 +143,17 @@ public class PlayerInfoServlet extends HttpServlet {
     JSONObject returnValue = new JSONObject();
     addErrorMessage(returnValue,"NOT SUPPORT METHOD",resp);
     return;
+  }
+  
+  private void addErrorMessage(JSONObject returnValue, 
+      String errorMessage, HttpServletResponse resp, Map<String, String[]> map) throws IOException {
+    try {
+      returnValue.put("error", errorMessage);
+      returnValue.put("parameters", map);
+      returnValue.write(resp.getWriter());
+    } catch (JSONException e2) {
+      e2.printStackTrace();
+    }
   }
   
   private void addErrorMessage(JSONObject returnValue, 

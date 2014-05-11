@@ -39,9 +39,9 @@ public class PlayerAllGameServlet extends HttpServlet{
    *    return: 
    *     Success:{"123":{"draw":"1","RANK":"1500","lost":"0","token":"1","score":"47","win":"0"},
    *              "12323":{"draw":"0","RANK":"1516","lost":"0","token":"3","score":"43","win":"1"}}
-   *     Errors: {"error": "WRONG_ACCESS_SIGNATURE"}
-   *             {"error": "WRONG_PLAYER_ID"}
-   *             {"error": "WRONG_TARGET_ID"}
+   *     Errors: {"error": "WRONG_ACCESS_SIGNATURE", "parameters": ...}
+   *             {"error": "WRONG_PLAYER_ID", "parameters": ...}
+   *             {"error": "WRONG_TARGET_ID", "parameters": ...}
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -53,7 +53,7 @@ public class PlayerAllGameServlet extends HttpServlet{
     Map<String, String[]> map = req.getParameterMap();
     String playerId = null;
     if (!map.containsKey("playerId")){
-      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp);
+      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp,map);
       return;
     }
     playerId = req.getParameter("playerId");
@@ -61,23 +61,23 @@ public class PlayerAllGameServlet extends HttpServlet{
     try {
       playerIdLong = Long.parseLong(playerId);
     } catch (NumberFormatException e) {
-      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp);
+      addErrorMessage(returnValue,"WRONG_PLAYER_ID",resp,map);
       return;
     }
     if (!map.containsKey("accessSignature")){
-      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp);
+      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp,map);
       return;
     }
     String accessSignature = req.getParameter("accessSignature");
     boolean valid = DatabaseDriverPlayer
         .validatePlayerAccessSignature(playerIdLong, accessSignature);
     if (!valid){
-      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp);
+      addErrorMessage(returnValue,"WRONG_ACCESS_SIGNATURE",resp,map);
       return;
     } else {
       String targetId = null;
       if (!map.containsKey("targetId")){
-        addErrorMessage(returnValue,"WRONG_TARGET_ID",resp);
+        addErrorMessage(returnValue,"WRONG_TARGET_ID",resp,map);
         return;
       }
       targetId = req.getParameter("targetId");
@@ -85,7 +85,7 @@ public class PlayerAllGameServlet extends HttpServlet{
       try {
         targetIdLong = Long.parseLong(targetId);
       } catch (NumberFormatException e) {
-        addErrorMessage(returnValue,"WRONG_TARGET_ID",resp);
+        addErrorMessage(returnValue,"WRONG_TARGET_ID",resp,map);
         return;
       }
       List<PlayerStatistic> lps = DatabaseDriverPlayerStatistic.getPlayerStatistics(targetIdLong);
@@ -141,6 +141,17 @@ public class PlayerAllGameServlet extends HttpServlet{
     return;
   }
 
+  private void addErrorMessage(JSONObject returnValue, 
+      String errorMessage, HttpServletResponse resp, Map<String, String[]> map) throws IOException {
+    try {
+      returnValue.put("error", errorMessage);
+      returnValue.put("parameters", map);
+      returnValue.write(resp.getWriter());
+    } catch (JSONException e2) {
+      e2.printStackTrace();
+    }
+  }
+  
   private void addErrorMessage(JSONObject returnValue, 
       String errorMessage, HttpServletResponse resp) throws IOException {
     try {

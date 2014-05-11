@@ -102,10 +102,12 @@ public class UserFriendBlackList extends HttpServlet{
         UserUtil.jsonPut(json, FRIEND_LIST, fl);
       } else {
         UserUtil.jsonPut(json, ERROR, WRONG_ACCESS_SIGNATURE);
+        UserUtil.jsonPut(json, "parameters", req.getParameterMap());
       }
     } catch (Exception e) {
       e.printStackTrace();
       UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
+      UserUtil.jsonPut(json, "parameters", req.getParameterMap());
     }
 
     try {
@@ -115,6 +117,17 @@ public class UserFriendBlackList extends HttpServlet{
     }
   }
   
+  /**
+   * Add or remove a User from friend filtered list 
+   * POST /userfriendfiltter/{userId}
+      data input:
+      {
+        "operation¡±: "add¡± or "remove¡±,
+        "accessSignature¡±:...,
+        "socialId¡±: facebook or G+ id,
+        "type¡±: "f¡± or "g¡±,
+      }
+   */
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);
@@ -133,21 +146,22 @@ public class UserFriendBlackList extends HttpServlet{
       long userId = Long.parseLong(req.getPathInfo().substring(1));
       Map user = UserDatabaseDriver.getUserMap(userId);
       if (!user.get(ACCESS_SIGNATURE).equals(accessSignature)) {
-        addErrorMessage(returnValue,WRONG_ACCESS_SIGNATURE,resp);
+        addErrorMessage(returnValue,WRONG_ACCESS_SIGNATURE,resp,map);
         return;
       }
       String op;
       try {
         op = (String) map.get("operation");
+        op = op.toLowerCase();
       } catch (Exception e1) {
-        addErrorMessage(returnValue,"INVALID OPERATION",resp);
+        addErrorMessage(returnValue,"INVALID_OPERATION",resp,map);
         return;
       }
       String socialId;
       try {
         socialId = (String) map.get("socialId");
       } catch (Exception e1) {
-        addErrorMessage(returnValue,"INVALID SOCIALID",resp);
+        addErrorMessage(returnValue,"WRONG_SOCIAL_ID",resp,map);
         return;
       }
       FriendType ft;
@@ -161,7 +175,7 @@ public class UserFriendBlackList extends HttpServlet{
           throw new Exception();
         }
       } catch (Exception e) {
-        addErrorMessage(returnValue,"INVALID TYPE",resp);
+        addErrorMessage(returnValue,"INVALID_TYPE",resp,map);
         return;
       }
       String id = String.valueOf(userId);
@@ -171,27 +185,27 @@ public class UserFriendBlackList extends HttpServlet{
       } else if (op.equals("remove")) {
         fbl.removeFriend(socialId, ft);
       } else {
-        addErrorMessage(returnValue,"INVALID METHOD",resp);
+        addErrorMessage(returnValue,"INVALID_OPERATION",resp,map);
         return;
       }
       DatabaseDriverFriendBlackList.saveFriendBlackList(fbl);
       returnValue.put("SUCCESS", op);
       returnValue.write(resp.getWriter());
     } catch (Exception e) {
-      addErrorMessage(returnValue,WRONG_USER_ID,resp);
+      addErrorMessage(returnValue,WRONG_USER_ID,resp,map);
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
   
   private void addErrorMessage(JSONObject returnValue, 
-      String errorMessage, HttpServletResponse resp) throws IOException {
+      String errorMessage, HttpServletResponse resp, Map<String, Object> map) throws IOException {
     try {
       returnValue.put("error", errorMessage);
+      returnValue.put("parameters", map);
       returnValue.write(resp.getWriter());
     } catch (JSONException e2) {
       e2.printStackTrace();
     }
   }
-
 }
