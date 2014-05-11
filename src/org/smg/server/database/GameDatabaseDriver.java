@@ -36,7 +36,12 @@ import org.smg.server.util.JSONUtil;
 
 public class GameDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  
+  /**
+   * Get the game Entity given the gameId
+   * @param gameId
+   * @return
+   * @throws EntityNotFoundException
+   */
   public static Entity getGame(long gameId) throws EntityNotFoundException {
     try {
       Key gameKey = KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -45,7 +50,11 @@ public class GameDatabaseDriver {
       throw new EntityNotFoundException(null);
     }
   }
-
+  /**
+   * Check whether the game name is duplictaed given the parameterMap
+   * @param parameterMap
+   * @return
+   */
   static public boolean checkGameNameDuplicate(Map<Object, Object> parameterMap) {
     try {
       Filter nameFilter = new FilterPredicate(GAME_NAME, FilterOperator.EQUAL,
@@ -61,7 +70,12 @@ public class GameDatabaseDriver {
       return false;
     }
   }
-
+  /**
+   * check whether the target gameId exists in the dataStore
+   * @param gameId
+   * @return
+   * @throws EntityNotFoundException
+   */
   public static boolean checkGameIdExists(long gameId) throws EntityNotFoundException {
     try {
       Key idKey = KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -75,7 +89,12 @@ public class GameDatabaseDriver {
       return false;
     }
   }
-
+  /**
+   * Save the metaInfo of a game given the parameterMap, gameId is returned
+   * @param parameterMap
+   * @return
+   * @throws IOException
+   */
   static public long saveGameMetaInfo(Map<Object, Object> parameterMap) throws IOException {
     Date date = new Date();
 
@@ -108,13 +127,22 @@ public class GameDatabaseDriver {
     long gameId = game.getKey().getId();
     return gameId;
   }
-
+  /**
+   * Delete the target game from the dataStore given the gameId
+   * @param gameId
+   */
   public static void deleteGame(String gameId) {
     long ID = Long.parseLong(gameId);
     Key gameKey = KeyFactory.createKey(GAME_META_INFO, ID);
     datastore.delete(gameKey);
   }
-
+  /**
+   * update the metaInfo of the game in the dataStore, given the gameId and the parameterMap
+   * @param gameId
+   * @param parameterMap
+   * @throws EntityNotFoundException
+   * @throws IOException
+   */
   public static void updateGame(long gameId, Map<Object, Object> parameterMap)
       throws EntityNotFoundException, IOException {
     Key gameKey = KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -139,7 +167,12 @@ public class GameDatabaseDriver {
 
     datastore.put(target);
   }
-
+  /**
+   * Check whether the gameName is duplicated (beside the gameName of the gameId) given the parameterMap
+   * @param gameId
+   * @param parameterMap
+   * @return
+   */
   static public boolean checkGameNameDuplicate(long gameId, Map<Object, Object> parameterMap) {
     Key gameKey = KeyFactory.createKey(GAME_META_INFO, gameId);
     try {
@@ -154,7 +187,11 @@ public class GameDatabaseDriver {
       return false;
     }
   }
-
+  /**
+   * Get the list of developer Info and wrap them in a JSONObject, given a list of DeveloperId
+   * @param developerIdList
+   * @return  
+   */
   @SuppressWarnings("rawtypes")
   private static List<JSONObject> getDeveloperListInfo(List<String> developerIdList) {
     List<JSONObject> result = new ArrayList<JSONObject>();
@@ -183,6 +220,13 @@ public class GameDatabaseDriver {
       return null;
     }
   }
+  /**
+   * Return a list of game Entity, based on the boolean parameter
+   * If boolean is true, return a list of authorized game
+   * If boolean is false, return a list of unauthorized game
+   * @param censored
+   * @return
+   */
   @SuppressWarnings("unchecked")
   private static List<Entity> getGameInfoAsList(boolean censored) {
       
@@ -200,7 +244,12 @@ public class GameDatabaseDriver {
 			return null;
 		}
   }
-  
+  /**return a list of game JSONObject based on the boolean falue
+   * If the boolean value is true, return a list of authorized JSONObject
+   * If the boolean value is false, return a list of unauthorized JSONObject
+   * @param censored
+   * @return
+   */
   public static List<JSONObject> getGameInfoAsJSON(boolean censored)
   {
 	 List<Entity> resultAsEntity= getGameInfoAsList(censored);
@@ -208,6 +257,12 @@ public class GameDatabaseDriver {
 	 return jsonList;	 
 	 
   }
+  /**
+   * Get the developerList of a certain game, given the gameId
+   * @param gameId
+   * @return
+   * @throws Exception
+   */
   public static List<String> getDeveloperList (long gameId) throws Exception
   {
 	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -223,6 +278,12 @@ public class GameDatabaseDriver {
 	  }
 	  
   }
+  /**
+   * Get the gameName of a game, given the gameId
+   * @param gameId
+   * @return
+   * @throws Exception
+   */
   public static String getGameName (long gameId) throws Exception
   {
 	  Key gameKey =  KeyFactory.createKey(GAME_META_INFO, gameId);
@@ -236,6 +297,12 @@ public class GameDatabaseDriver {
 		  throw new Exception();
 	  }
   }
+  /**
+   * Get the stats Map of a game, given the gameId
+   * @param gameId
+   * @return
+   * @throws EntityNotFoundException
+   */
   public static Map<String, Object> getStatsHelper(long gameId) throws EntityNotFoundException {
      try
      {
@@ -247,6 +314,11 @@ public class GameDatabaseDriver {
     	 return null;
      }
   }
+  /**
+   * Parse the list of Entity into a list of JSON Object
+   * @param entityList
+   * @return
+   */
   private static List<JSONObject> parseEntityToJSON(List<Entity> entityList)
   {
 	  List<JSONObject> queryResult = new ArrayList<JSONObject>();
@@ -290,6 +362,14 @@ public class GameDatabaseDriver {
 		  return null;
 	  }
   }
+  /**
+   * Return a list of game JSONObject, given the particular developerId and developerQuery boolean value
+   * If the developerQuery boolean value is false, return all the gameInfo
+   * If the developerQuery boolean value is true, return all the games developed by developerId
+   * @param developerQuery
+   * @param developerId
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public static List<JSONObject> getGameInfo(boolean developerQuery, long developerId) {
     try {
@@ -304,7 +384,7 @@ public class GameDatabaseDriver {
       {
     	  entityList.add(result);
       }
-      //List<JSONObject> queryResult = parseEntityToJSON(entityList);
+      
       List<JSONObject> queryResult = new ArrayList<JSONObject>();
       for (Entity result : pq.asIterable()) {
         JSONObject currentQueryResult = new JSONObject();
@@ -341,7 +421,11 @@ public class GameDatabaseDriver {
       return null;
     }
   }
-
+   /**
+    * Return all the gameIds that the playerId has played
+    * @param playerId
+    * @return
+    */
   public static List<Long> getAllPlayableGameIds(long playerId) {
     List<Entity> matches = ContainerDatabaseDriver.getAllMatchesByPlayerId(playerId);
     Set<Long> gameIdCollection = new HashSet<Long>();
@@ -360,6 +444,9 @@ public class GameDatabaseDriver {
   /**
    * Returns a Map of statistics that can be directly parsed to JSON, or throws 
    * EntityNotFoundException if no statistics available for that game.
+   * @param gameId
+   * @return
+   * @throws EntityNotFoundException
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Map<String, Object> getStats(long gameId) throws EntityNotFoundException {
@@ -394,9 +481,13 @@ public class GameDatabaseDriver {
     return returnMap;
   }
 
+  
   /**
    * Updates the rating for that game (or creates a new statistics entry if no statistics exist)
    * in the database, and also returns the new averageRating.
+   * @param gameId
+   * @param newRating
+   * @return
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static double updateRatings(long gameId, double newRating) {
