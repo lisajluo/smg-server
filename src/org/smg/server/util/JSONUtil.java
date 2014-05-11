@@ -22,6 +22,14 @@ public class JSONUtil {
   private static final String LOWER_LAST_NAME = "lastname";
   private static final String LOWER_NICKNAME = "nickname";
   
+  /**
+   * Convert a json to a Player Instance
+   * 
+   * Only used in deprecated player servlet
+   * @param json
+   * @return
+   * @throws IOException
+   */
 	public static Player jSON2Player(String json) throws IOException{
 		Map<String, Object> jsonMap = JSONUtil.parse(json);
 		

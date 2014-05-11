@@ -5,11 +5,25 @@ import java.util.Map;
 
 import org.smg.server.database.DatabaseDriverPlayerStatistic;
 
+/**
+ * ELO Ranking 
+ * 
+ * http://en.wikipedia.org/wiki/Elo_rating_system
+ * 
+ * @author Archer
+ *
+ */
 public class ELORankingUtil {
   private static final double K = 32.0;
   private static final double DRAWSCORE = 0.5;
   private static final double WINSCORE = 1.0;
   
+  /**
+   * Generate expect Score
+   * @param rankOp previous rank of opponent
+   * @param rankSelf previous rank of player
+   * @return
+   */
   public static double expectScore(long rankOp, long rankSelf) {
     double result = 1.0;
     double exp = 1.0 * (rankOp-rankSelf)/400;
@@ -17,6 +31,13 @@ public class ELORankingUtil {
     return result;
   }
   
+  /**
+   * Generate ranking map contains (playerId, ranking) for a match
+   * 
+   * @param scoreMap a map contains (playerId, score) pair
+   * @param gameId
+   * @return
+   */
   public static Map<Long, Long> getRankingMap(Map<Long, Integer> scoreMap, long gameId) {
     Map<Long, Long> rankingMap = DatabaseDriverPlayerStatistic
         .getPlayersRanking(scoreMap.keySet(), gameId);
@@ -32,6 +53,11 @@ public class ELORankingUtil {
     return rankingMap;
   }
   
+  /**
+   * Get a map have (playerId, expected rank) pair
+   * @param rankingMap
+   * @return
+   */
   private static Map<Long, Double> getExpectMap(Map<Long, Long> rankingMap) {
     Map<Long, Double> expectMap = new HashMap<Long, Double>();
     for (Long idSelf: rankingMap.keySet()) {
@@ -48,6 +74,12 @@ public class ELORankingUtil {
     return expectMap;
   }
 
+  /**
+   * Transform score map to a new kind of score map: where a player win for 1 point, 
+   * draw for 0.5 points and lost for 0 point. 
+   * @param scoreMap
+   * @return
+   */
   private static Map<Long, Double> getWinMap(Map<Long, Integer> scoreMap) {
     Map<Long, Double> winMap = new HashMap<Long, Double>();
     for (Long idSelf: scoreMap.keySet()) {
@@ -68,7 +100,4 @@ public class ELORankingUtil {
     } 
     return winMap;
   }
-  
-  
-  
 }
