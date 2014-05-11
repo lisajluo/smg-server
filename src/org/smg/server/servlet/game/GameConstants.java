@@ -1,7 +1,13 @@
 package org.smg.server.servlet.game;
 
 import org.smg.server.util.NamespaceUtil;
-
+/**
+ * Constant used for game component including 1. Game Entity name used in datastore
+ * 2. Error/Success Msg 3. Other 4. Statistics table 5.Statistics properties
+ * @author kanghuan
+ *
+ */
+		
 public final class GameConstants {
 	  private GameConstants() { }  // Prevent instantiation/subclassing
 	
@@ -12,8 +18,6 @@ public final class GameConstants {
 	  public static final String GAME_NAME = "gameName";
 	  public static final String DESCRIPTION = "description";
 	  public static final String URL = "url";
-	//  public static final String WIDTH = "width";
-	 // public static final String HEIGHT = "height";
 	  public static final String GAME_ID = "gameId" ;
 	  public static final String HAS_TOKENS = "hasTokens";
 	  public static final String POST_DATE = "postDate";
@@ -21,6 +25,8 @@ public final class GameConstants {
 	  public static final String GAME_META_INFO = NamespaceUtil.VERSION+"gameMetaInfo";
 	  
 	  // Error messages
+	  static final String JSON_RECEIVED = "json_received";
+	  static final String DETAILS  = "details";
 	  static final String ERROR = "error";
 	  static final String GAME_EXISTS = "GAME_EXISTS";
 	  static final String WRONG_GAME_ID = "WRONG_GAME_ID";
@@ -29,6 +35,7 @@ public final class GameConstants {
 	  static final String WRONG_RATING = "WRONG_RATING";
 	  static final String INVALID_JSON = "INVALID_JSON";
 	  static final String NO_MATCH_RECORD = "NO_MATCH_RECORDS";
+	  
 	  // Success messages
 	  static final String SUCCESS = "success";
 	  static final String DELETED_GAME = "DELETED_GAME";
