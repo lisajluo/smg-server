@@ -16,6 +16,7 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,210 +28,114 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.DeveloperDatabaseDriver;
 import org.smg.server.database.GameDatabaseDriver;
+import org.smg.server.database.UserDatabaseDriver;
+import org.smg.server.servlet.container.ContainerConstants;
 import org.smg.server.util.CORSUtil;
 import org.smg.server.util.JSONUtil;
 
 @SuppressWarnings("serial")
 public class GameServlet extends HttpServlet {
+	
 
-  private static final String[] validParams = { HAS_TOKENS, PICS, DEVELOPER_ID, 
-    GAME_NAME, DESCRIPTION, URL,  ACCESS_SIGNATURE };
-
-  private Map<Object, Object> deleteInvalid(Map<Object, Object> params,
-      String[] validParams) {
-    Map<Object, Object> returnMap = new HashMap<Object, Object>();
-    for (Map.Entry<Object, Object> entry : params.entrySet()) {
-      if (Arrays.asList(validParams).contains(entry.getKey())) {
-        if (entry.getKey() instanceof String) {
-          returnMap.put(entry.getKey(), entry.getValue());
-        }
-      }
-    }
-    if (returnMap.containsKey(HAS_TOKENS) == false)
-      returnMap.put(HAS_TOKENS, false);
-    return returnMap;
-  }
-
-  private void put(JSONObject jObj, String key, String value, HttpServletResponse resp) {
-    try {
-      jObj.put(key, value);
-      resp.setContentType("text/plain");
-      jObj.write(resp.getWriter());
-    } catch (Exception e) {
-      return;
-    }
-  }
-
-  private boolean parsePathForPost(String pathInfo) {
-    if (pathInfo == null)
-      return true;
-    if (pathInfo.length() > 0) {
-      if (pathInfo.length() == 1) {
-        if (pathInfo.charAt(0) != '/') {
-          return false;
-        } else
-          return true;
-      }
-      return false;
-
-    }
-    return true;
-  }
-
-  @SuppressWarnings("rawtypes")
-  private boolean developerIdExists(String idAsStr) {
-    try {
-      long developerId = Long.parseLong(idAsStr);
-      Map developer = DeveloperDatabaseDriver.getDeveloperMap(developerId);
-      if (developer == null)
-        return false;
-      else
-        return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private boolean gameNameDuplicate(long gameId, Map<Object, Object> parameterMap) {
-    return GameDatabaseDriver.checkGameNameDuplicate(gameId, parameterMap);
-  }
-
-  private boolean requiredFieldForUpdate(Map<Object, Object> parameterMap) {
-    if (parameterMap.get(DEVELOPER_ID) == null)
-      return false;
-    return true;
-  }
-
-  private boolean requiredFieldsComplete(Map<Object, Object> parameterMap) {
-    if (parameterMap.get(DEVELOPER_ID) == null) {
-      return false;
-    }
-
-    if (parameterMap.get(GAME_NAME) == null) {
-      return false;
-    }
-
-    if (parameterMap.get(DESCRIPTION) == null) {
-      return false;
-    }
-
-    if (parameterMap.get(URL) == null) {
-      return false;
-    }
-
-  /*  if (parameterMap.get(WIDTH) == null) {
-      return false;
-    }
-
-    if (parameterMap.get(HEIGHT) == null) {
-      return false;
-    }*/
-
-    if (parameterMap.get(ACCESS_SIGNATURE) == null) {
-      return false;
-    }
-    return true;
-
-  }
-
-  private boolean gameNameDuplicate(Map<Object, Object> parameterMap) {
-    return GameDatabaseDriver.checkGameNameDuplicate(parameterMap);
-  }
-
-  private boolean gameIdExist(long gameId) {
-    try {
-      return GameDatabaseDriver.checkGameIdExists(gameId);
-    } catch (EntityNotFoundException e) {
-      e.printStackTrace();
-    }
-    return false;
-  }
-
-  private void returnMetaInfo(long gameName, HttpServletResponse resp)
-      throws IOException, JSONException {
-    JSONObject metainfo = new JSONObject();
-
-    Entity targetEntity;
-    try {
-		
-		
-      targetEntity = GameDatabaseDriver.getGame(gameName);
-      Map<String,Object> statsInfo = GameDatabaseDriver.getStatsHelper(targetEntity.getKey().getId());
-      if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
-    			metainfo.put(RATING, statsInfo.get(RATING));
-      metainfo.put(GAME_NAME, targetEntity.getProperty(GAME_NAME));
-      metainfo.put(HAS_TOKENS, targetEntity.getProperty(HAS_TOKENS));
-      metainfo.put(URL, targetEntity.getProperty(URL));
-      metainfo.put(DESCRIPTION, targetEntity.getProperty(DESCRIPTION));
-    //  metainfo.put(WIDTH, targetEntity.getProperty(WIDTH));
-    //  metainfo.put(HEIGHT, targetEntity.getProperty(HEIGHT));
-      metainfo.put(POST_DATE, targetEntity.getProperty(POST_DATE));
-      if (targetEntity.hasProperty(PICS))
-      {
-    	  Text picText = (Text)targetEntity.getProperty(PICS);
-    	  JSONObject picMap = new JSONObject(picText.getValue());
-    	  metainfo.put(PICS, picMap);
-      }
-      metainfo.put(DEVELOPER_ID, targetEntity.getProperty(DEVELOPER_ID));
-
-      metainfo.write(resp.getWriter());
-    } catch (EntityNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
+	/**
+	 * doPost is called when the client sends out a POST request to submit a new
+	 * game POST localhost:8888/games 
+	 * JSON input from client : {
+	 * “developerId”:”12312323”, //Current API key is developerId, may switch to
+	 * userId in later Versions 
+	 * “accessSignature”: “secretAccessSignature”,
+	 * “gameName”: “Cheat”, 
+	 * "description": "Game description.", 
+	 * “url”:“http://www.cheatgame.com”,
+	 *  “hasTokens”: false, // optional boolean(defaults to false) 
+	 * "pics":  { // optional, the value of pics should be a json string
+	 * “icon”: "http://www.foo.com/bar1.gif", //value of icon is a single string 
+	 * “screenshots”: [ //the value of screenshot should be a json array 
+	 *  “http://www.foo.com/bar2.gif”,
+	 *  “http://www.foo.com/bar3.gif” ] } }
+	 *  Successful JSON output: {
+	 * “gameId”: “134543543523” //gameId specifies the gameId that our data
+	 * store created for this game 
+	 * }
+	 */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    String pathInfo = req.getPathInfo();
-    CORSUtil.addCORSHeader(resp);
-    JSONObject jObj = new JSONObject();
-    StringBuffer buffer = new StringBuffer();
-    String line = null;
+		String pathInfo = req.getPathInfo();
+		CORSUtil.addCORSHeader(resp);
+		JSONObject jObj = new JSONObject();
+		StringBuffer buffer = new StringBuffer();
+		String line = null;
+        
+		try {
+			BufferedReader reader = req.getReader();
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+			}
+			Map<Object, Object> parameterMap = GameHelper.deleteInvalid(
+					(Map) JSONUtil.parse(buffer.toString()), GameHelper.validParams);
+			if (GameHelper.parsePathForPost(pathInfo) == false) {
+				String details = "The URL for your post in invalid, the correct URL PATH format is :localhost:8888/games";
+				GameHelper.sendErrorMessageForJson(resp, jObj, URL_ERROR, details,
+						buffer.toString());
+				return;
+			}
 
-    try {
-      BufferedReader reader = req.getReader();
-      while ((line = reader.readLine()) != null) {
-        buffer.append(line);
-      }
-     
-      Map<Object, Object> parameterMap = deleteInvalid(
-          (Map) JSONUtil.parse(buffer.toString()), validParams);
-      if (parsePathForPost(pathInfo) == false) {
+			if (GameHelper.requiredFieldsComplete(parameterMap) == false) {
+				String details = "Required fields for submitting a game is not complete, please refer to our API for more details";
+				GameHelper.sendErrorMessageForJson(resp, jObj, MISSING_INFO, details,
+								buffer.toString());
+				return;
+			}
+			if (GameHelper.userIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
+				String details = "User verification fails, please provide a correct userId";
+				GameHelper.sendErrorMessageForJson(resp, jObj, WRONG_DEVELOPER_ID, details,
+						buffer.toString());
 
-        put(jObj, ERROR, URL_ERROR, resp);
-        return;
-      }
+				return;
+			}
+			if (signatureRight(parameterMap) == false) {
+				String details = "Your accessSignature is not correct";
+				GameHelper.sendErrorMessageForJson(resp, jObj, WRONG_ACCESS_SIGNATURE, details,
+						buffer.toString());
+				return;
+			}
+			if (GameHelper.gameNameDuplicate(parameterMap) == true) {
+				String details ="Your game name exists, please change your game name";
+				GameHelper.sendErrorMessageForJson(resp, jObj, GAME_EXISTS, details,
+						buffer.toString());
+				return;
+			} else {
+				long gameId = GameDatabaseDriver.saveGameMetaInfo(parameterMap);
+				jObj.put(GAME_ID, Long.toString(gameId));
+				jObj.write(resp.getWriter());
 
-      if (requiredFieldsComplete(parameterMap) == false) {
-        put(jObj, ERROR, MISSING_INFO, resp);
-        return;
-      }
-      if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
-        put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+			}
+		} catch (Exception e) {
+			String details = "Your json format is invalid for us to parse,please check";
+			GameHelper.sendErrorMessageForJson(resp, jObj, INVALID_JSON, details,
+					buffer.toString());
+			
+			return;
+		}
+	}
 
-        return;
-      }
-      if (signatureRight(parameterMap) == false) {
-        put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
-        return;
-      }
-      if (gameNameDuplicate(parameterMap) == true) {
-        put(jObj, ERROR, GAME_EXISTS, resp);
-        return;
-      } else {
-        long gameId = GameDatabaseDriver.saveGameMetaInfo(parameterMap);
-        jObj.put(GAME_ID, Long.toString(gameId));
-        jObj.write(resp.getWriter());
-
-      }
-    } catch (Exception e) {
-      put(jObj, ERROR, INVALID_JSON, resp);
-      return;
-    }
-  }
-
+	/**
+	 * doGet is called when the client sends out a GET request to get all the
+	 * metaInfo of a game 
+	 * GET /games/{gameId} 
+	 * the successful json response
+	 *  {“developerId”: “120480234”, 
+	 *  “gameName”: “Cheat”, 
+	 *  "description": "Game description.", 
+	 *  “url”: “http://www.cheatgame.com”, 
+	 *  “hasTokens”: false, // optional 
+	 *  "pics": { // optional 
+	 * “icon”: "http://www.foo.com/bar1.gif ", 
+	 * “screenshots”: [ “http://www.foo.com/bar2.gif ”] }
+	 * }
+	 */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
@@ -241,19 +146,29 @@ public class GameServlet extends HttpServlet {
     try {
       targetIdStr = req.getPathInfo().substring(1);
       targetId = Long.parseLong(targetIdStr);
-      if (gameIdExist(targetId) == false) {
-        put(jObj, ERROR, WRONG_GAME_ID, resp);
-        return;
+      
+      if (GameHelper.gameIdExist(targetId) == false) {
+    	String json = GameUtil.getFullURL(req);
+    	String details = "The game Id you are querying does not exist in the datastore";
+    	GameHelper.sendErrorMessageForUrl(resp, jObj,
+        		  WRONG_GAME_ID, details, json);        
+    	return;
       } else {
         try {
-          returnMetaInfo(targetId, resp);
+        	GameHelper.returnMetaInfo(targetId, resp);
         } catch (JSONException e) {
-          put(jObj, ERROR, INVALID_JSON, resp);
+          String json = GameUtil.getFullURL(req);
+          String details = "JSON ERROR";
+          GameHelper.sendErrorMessageForUrl(resp, jObj,
+        		  INVALID_JSON, details, json); 
+          return;
         }
       }
     } catch (Exception e) {
-      put(jObj, ERROR, URL_ERROR, resp);
-      return;
+			String json = GameUtil.getFullURL(req);
+			String details = "The url you are requesting is not correct, the correct path: localhost:8888/games/{gameId}";
+			GameHelper.sendErrorMessageForUrl(resp, jObj, URL_ERROR, details, json);
+			return;
     }
 
   }
@@ -264,6 +179,11 @@ public class GameServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
   }
 
+	/**
+	 * doDelete is called when a client wants to delete certain game in the datastore
+	 * DELETE /games/{gameId}?developerId=...&accessSignature=... 
+	 * Successful JSON output: { “success”: “DELETED_GAME” }
+	 */
   @SuppressWarnings("unchecked")
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp)
@@ -275,37 +195,78 @@ public class GameServlet extends HttpServlet {
       targetId = req.getPathInfo().substring(1);
       long gameId = Long.parseLong(targetId);
       String developerId = req.getParameter(DEVELOPER_ID);
-      if (developerIdExists(developerId) == false) {
-        put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+      if (GameHelper.userIdExists(developerId) == false) {
+    	String json = GameUtil.getFullURL(req);
+        String details = "The developer Id you provide does not exist";
+        GameHelper.sendErrorMessageForUrl(resp, jObj,
+        		  WRONG_DEVELOPER_ID, details, json);   
         return;
       }
       if (signatureRight(req) == false) {
-
-        put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
+        String json = GameUtil.getFullURL(req);
+        String details = "Your access signature is not correct";
+        GameHelper.sendErrorMessageForUrl(resp, jObj,
+        		WRONG_ACCESS_SIGNATURE, details, json);  
         return;
       }
-      if (gameIdExist(gameId) == false) {
-        put(jObj, ERROR, WRONG_GAME_ID, resp);
+      if (GameHelper.gameIdExist(gameId) == false) {
+    	String json = GameUtil.getFullURL(req);
+    	String details = "Your game Id does not exist";
+    	GameHelper.sendErrorMessageForUrl(resp, jObj,
+    			  WRONG_GAME_ID, details, json);
         return;
       }
       Entity targetEntity = GameDatabaseDriver.getGame(gameId);
       List<String> developerList = (List<String>) targetEntity
           .getProperty(DEVELOPER_ID);
       if (developerList.contains(developerId) == false) {
-        put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+    	String json = GameUtil.getFullURL(req);
+      	String details = "The game you are trying to delete does not belong to you";
+      	GameHelper.sendErrorMessageForUrl(resp, jObj,
+      			WRONG_DEVELOPER_ID, details, json);
         return;
       }
 
       GameDatabaseDriver.deleteGame(targetId);
       put(jObj, SUCCESS, DELETED_GAME, resp);
+      return;
     } catch (Exception e) {
-      put(jObj, ERROR, URL_ERROR, resp);
-
+    	String json = GameUtil.getFullURL(req);
+      	String details = "The url you are trying to make a delete request in incorrect, the correct format:DELETE localhost:8888/games/{gameId}?developerId=123&accessSignature=123";
+      	GameHelper.sendErrorMessageForUrl(resp, jObj,
+      			URL_ERROR, details, json);
       return;
     }
 
   }
+  /**
+	 * doPut is called when the client sends out a PUT request to update a game
+	 * PUT localhost:8888/games 
+	 * JSON input from client : //The optional field won't get updated 
+	 * if the client doesn't specify that field 
+	 * {
+	 * “developerId”:”12312323”, //Current API key is developerId, may switch to
+	 * userId in later Versions 
+	 * “accessSignature”: “secretAccessSignature”,
+	 * “gameName”: “Cheat”, //optional
+	 * "description": "Game description.", //optional 
+	 * “url”:“http://www.cheatgame.com”, //optional
+	 *  “hasTokens”: false, // optional boolean(defaults to false) //optional
+	 * "pics":  { // optional, the value of pics should be a json string
+	 * “icon”: "http://www.foo.com/bar1.gif", //value of icon is a single string 
+	 * “screenshots”: [ //the value of screenshot should be a json array 
+	 *  “http://www.foo.com/bar2.gif”,
+	 *  “http://www.foo.com/bar3.gif” ] } }
+	 *  Successful JSON output: {
+	 * “gameId”: “134543543523” //gameId specifies the gameId that our data
+	 * store created for this game 
+	 * }
+	 * Successful JSON output:
+	 * { “success”: “UPDATED_GAME” }
+	 */
 
+	 
+     
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doPut(HttpServletRequest req, HttpServletResponse resp)
@@ -324,48 +285,64 @@ public class GameServlet extends HttpServlet {
         while ((line = reader.readLine()) != null) {
           buffer.append(line);
         }
-        Map<Object, Object> parameterMap = deleteInvalid(
-            (Map) JSONUtil.parse(buffer.toString()), validParams);
-        if (requiredFieldForUpdate(parameterMap) == false) {
-          put(jObj, ERROR, MISSING_INFO, resp);
+        Map<Object, Object> parameterMap = GameHelper.deleteInvalid(
+            (Map) JSONUtil.parse(buffer.toString()), GameHelper.validParams);
+        if (GameHelper.requiredFieldForUpdate(parameterMap) == false) {
+          String details = "Please provide your userId/developerId";
+		  GameHelper.sendErrorMessageForJson(resp, jObj, MISSING_INFO, details,
+					buffer.toString());
           return;
         }
-        if (developerIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
-          put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
-
+        if (GameHelper.userIdExists((String) parameterMap.get(DEVELOPER_ID)) == false) {
+          String details = "Your developerId/userId does not exist";
+          GameHelper.sendErrorMessageForJson(resp, jObj, WRONG_DEVELOPER_ID, details,
+					buffer.toString());
           return;
         }
         if (signatureRight(parameterMap) == false) {
-          put(jObj, ERROR, WRONG_ACCESS_SIGNATURE, resp);
+          String details = "Your access signature is incorrect";
+          GameHelper.sendErrorMessageForJson(resp, jObj,WRONG_ACCESS_SIGNATURE, details,
+					buffer.toString()); 
           return;
         }
-        if (gameIdExist(Long.parseLong(gameId)) == false) {
-          put(jObj, ERROR, WRONG_GAME_ID, resp);
+        if (GameHelper.gameIdExist(Long.parseLong(gameId)) == false) {
+          String details = "The game you are trying to update does not exist";
+          GameHelper.sendErrorMessageForJson(resp, jObj,WRONG_GAME_ID, details,
+					buffer.toString()); 
           return;
         }
 
-        if (gameNameDuplicate(longId, parameterMap) == true) {
-          put(jObj, ERROR, GAME_EXISTS, resp);
+        if (GameHelper.gameNameDuplicate(longId, parameterMap) == true) {
+          String details ="There is another game with the same name, please update to another name";
+          GameHelper.sendErrorMessageForJson(resp, jObj,GAME_EXISTS, details,
+					buffer.toString()); 
           return;
         }
         Entity targetEntity = GameDatabaseDriver.getGame(longId);
         List<String> developerList = (List<String>) targetEntity
             .getProperty(DEVELOPER_ID);
         if (developerList.contains(parameterMap.get(DEVELOPER_ID)) == false) {
-          put(jObj, ERROR, WRONG_DEVELOPER_ID, resp);
+          String details = "The game you are trying to update does not belong to you";
+          GameHelper.sendErrorMessageForJson(resp, jObj,WRONG_DEVELOPER_ID, details,
+					buffer.toString()); 
           return;
         }
         parameterMap.put(UPDATED, true);
         GameDatabaseDriver.updateGame(longId, parameterMap);
-
         put(jObj, SUCCESS, UPDATED_GAME, resp);
+        return;
       } catch (Exception e) {
-        put(jObj, ERROR, INVALID_JSON, resp);
+    	  String details = "Your JSON input is invalid, please check again or refer to our API for more details";
+    	  GameHelper.sendErrorMessageForJson(resp, jObj,INVALID_JSON, details,
+					buffer.toString()); 
 
         return;
       }
     } catch (Exception e) {
-      put(jObj, ERROR, URL_ERROR, resp);
+      String json =  GameUtil.getFullURL(req);
+      String details = "The url you are trying to make an update request in incorrect, the correct format:PUT localhost:8888/games/{gameId}";
+      GameHelper.sendErrorMessageForUrl(resp, jObj,
+    			URL_ERROR, details, json);
       return;
     }
   }

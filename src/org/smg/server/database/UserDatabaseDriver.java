@@ -1,9 +1,9 @@
 package org.smg.server.database;
 
 import static org.smg.server.servlet.user.UserConstants.*;
-import static org.smg.server.servlet.admin.adminConstants.ADMIN;
-import static org.smg.server.servlet.admin.adminConstants.BLOCKED_LIST;
-import static org.smg.server.servlet.admin.adminConstants.PASSED_LIST;
+import static org.smg.server.servlet.admin.AdminConstants.ADMIN;
+import static org.smg.server.servlet.admin.AdminConstants.BLOCKED_LIST;
+import static org.smg.server.servlet.admin.AdminConstants.PASSED_LIST;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER;
 import static org.smg.server.servlet.developer.DeveloperConstants.DEVELOPER_ID;
 import static org.smg.server.servlet.developer.DeveloperConstants.EMAIL;

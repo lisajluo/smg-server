@@ -19,6 +19,11 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class GameUtil {
 	@SuppressWarnings("rawtypes")
+	/**
+	 * Check whether the accessSignature matches the userId based on the HttpRequest
+	 * @param req 
+	 * @return
+	 */
   public static  boolean signatureRight(HttpServletRequest req)
 	{
 		try
@@ -36,6 +41,11 @@ public class GameUtil {
 		}
 		
 	}
+	/**
+	 * Check whether the accessSignature matches the userId based on the developer parameterMap 
+	 * @param parameterMap
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
   public static boolean signatureRight(Map<Object, Object> parameterMap) {
 		try {
@@ -54,6 +64,11 @@ public class GameUtil {
 		}
 
 	}
+	/**
+	 * Check whether the accessSignature matches the userId based on the player parameterMap 
+	 * @param parameterMap
+	 * @return
+	 */
 	public static boolean signatureRightForPlayer(Map<Object, Object> parameterMap) {
 		try {
 			long playerId = Long.parseLong((String) parameterMap
@@ -70,6 +85,13 @@ public class GameUtil {
 		}
 
 	}
+	/**
+	 * Put the key value pair into a HttpResponse
+	 * @param jObj
+	 * @param key
+	 * @param value
+	 * @param resp
+	 */
 	public  static void put (JSONObject jObj,String key,String value,HttpServletResponse resp)
 	{
 		try
@@ -83,6 +105,11 @@ public class GameUtil {
 			return;
 		}
 	}
+	/**
+	 * Put the JSON Object into a HttpResponse
+	 * @param jObj
+	 * @param resp
+	 */
 	public static void put(JSONObject jObj, HttpServletResponse resp)
 	{
 		try
@@ -95,6 +122,11 @@ public class GameUtil {
 			return;
 		}
 	}
+	/**
+	 * Wrap the list into a JSON list
+	 * @param jObj
+	 * @param resp
+	 */
 	public static void put(List<JSONObject> jObj, HttpServletResponse resp)
 	{
 		try
@@ -113,4 +145,19 @@ public class GameUtil {
 			return;
 		}
 	}
+	/**
+     * Get a full request url for request object.
+     * @param request GET/POST request object.
+     * @return Full request URL.
+     */
+    public static String getFullURL(HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+
+        if (queryString == null) {
+            return requestURL.toString();
+        } else {
+            return requestURL.append('?').append(queryString).toString();
+        }
+    }
 }
