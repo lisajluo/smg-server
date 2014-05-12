@@ -12,6 +12,9 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 
+/**
+ * Serves up images stored as blobs in the AppEngine datastore.
+ */
 @SuppressWarnings("serial")
 public class ImageDownloadServlet extends HttpServlet {
   private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
@@ -21,6 +24,10 @@ public class ImageDownloadServlet extends HttpServlet {
     CORSUtil.addCORSHeader(resp);
   }
   
+  /**
+   * Serves up an image in response the request: GET http://smg-server.appspot.com/images/{blobKey}
+   * Used internally at the main page: http://smg-server.appspot.com/index.html
+   */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     CORSUtil.addCORSHeader(resp);

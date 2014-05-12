@@ -18,10 +18,18 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+/**
+ * Resets a user's profile image to one of the four default smg-server images.
+ */
 @SuppressWarnings("serial")
 public class ImageResetServlet extends HttpServlet {
   private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   
+  /**
+   * Resets the user's profile image to one of the four default smg-server images in response the 
+   * request: DELETE http://smg-server.appspot.com/resetavatar/{userId}
+   * Used internally at the main page: http://smg-server.appspot.com/index.html
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {

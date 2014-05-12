@@ -31,6 +31,9 @@ public class UserConstants {
 	public static final String WRONG_USER_ID = "WRONG_USER_ID";
 	public static final String MESSAGE_ERROR = "MESSAGE_ERROR";
 	public static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
+	public static final String DETAILS = "details";
+	public static final String VERBOSE_WRONG_USER_ID = "The userId provided does not exist.";
+	public static final String VERBOSE_WRONG_ACCESS_SIGNATURE = "The accessSignature provided is incorrect for the given userId.";
 	public static final int INVALID = -1;
 	public static final String PASSWORD_TOO_SHORT = "PASSWORD_TOO_SHORT";
 	public static final String UNSUPPORTED_SOCIAL_AUTH = "UNSUPPORTED_SOCIAL_AUTH";

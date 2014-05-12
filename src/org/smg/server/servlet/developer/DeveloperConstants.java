@@ -2,6 +2,12 @@ package org.smg.server.servlet.developer;
 
 import org.smg.server.util.NamespaceUtil;
 
+@Deprecated 
+/**
+ * Player and developer entities have been unified to a single User entity.  Developer and Player 
+ * calls have been kept in for compatibility reasons (Player and Developer pages requested to keep 
+ * the old servlet calls), but in future iterations all should move forward to User servlet calls.
+ */
 public final class DeveloperConstants {
   private DeveloperConstants() { }  // Prevent instantiation/subclassing
   
