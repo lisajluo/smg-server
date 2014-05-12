@@ -1,6 +1,5 @@
 package org.smg.server.servlet.user;
 
-import static org.smg.server.servlet.game.GameConstants.PICS;
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import java.io.BufferedReader;
@@ -8,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -30,8 +28,21 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
+/**
+ * Respond to the callback from Facebook, after authentication.
+ * @author fei
+ *
+ */
+@SuppressWarnings("serial")
 public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
+	/**
+	 * Send a post request with data, return the response, only invoked in this servlet
+	 * @param parameters: the data with post requests
+	 * @param url: endpoint URL
+	 * @return: response string
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unused")
 	private String processPost(String parameters, URL url) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
@@ -63,6 +74,12 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		return theString.toString();
 	}
 
+	/**
+	 * Send a Get request, return the response, only invoked in this servlet
+	 * @param url: endpoint URL
+	 * @return: response string
+	 * @throws IOException
+	 */
 	private String processGet(URL url) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
@@ -87,6 +104,12 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		return theString.toString();
 	}
 
+	/**
+	 * This servlet is called by Google+ after authentication. Google+ sends the authentication code, if failed, the page 
+	 * will display this error. Then this servlet sends requests to Google+ with authentication code for specific scopes.
+	 * After acquiring user info, store it into datastore. Send a redirect to main page.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		CORSUtil.addCORSHeader(resp);
@@ -179,7 +202,9 @@ public class UserServletSocialAuthCallbackFacebook extends HttpServlet {
 		// resp.getWriter().println(FACEBOOK);
 		// resp.getWriter().println(picURL);
 		// firstName, lastName, email, friends, profileURL
+		@SuppressWarnings("unused")
 		String friendData = null;
+		@SuppressWarnings("unused")
 		JSONObject friendOb = null;
 		Text friendText = null;
 

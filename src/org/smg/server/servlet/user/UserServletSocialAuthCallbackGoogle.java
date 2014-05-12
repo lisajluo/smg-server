@@ -33,7 +33,11 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
+/**
+ * Respond to the callback from Google, after authentication.
+ * @author fei
+ *
+ */
 public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 	private String processPost(String parameters, URL url) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -66,6 +70,12 @@ public class UserServletSocialAuthCallbackGoogle extends HttpServlet {
 		return theString.toString();
 	}
 
+	/**
+	 * Send a Get request, return the response, only invoked in this servlet
+	 * @param url: endpoint URL
+	 * @return: response string
+	 * @throws IOException
+	 */
 	private String processGet(URL url) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
