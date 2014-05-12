@@ -126,7 +126,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>admin</servlet-name>
-		<servlet-class>org.smg.server.servlet.admin.adminServlet</servlet-class>
+		<servlet-class>org.smg.server.servlet.admin.AdminServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>admin</servlet-name>
@@ -246,7 +246,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
   </servlet-mapping>
 	<servlet>
 		<servlet-name>getAdminList</servlet-name>
-		<servlet-class>org.smg.server.servlet.admin.adminInfoServlet</servlet-class>
+		<servlet-class>org.smg.server.servlet.admin.AdminInfoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>getAdminList</servlet-name>
@@ -254,7 +254,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>adminCensor</servlet-name>
-		<servlet-class>org.smg.server.servlet.admin.adminCensor</servlet-class>
+		<servlet-class>org.smg.server.servlet.admin.AdminCensor</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>adminCensor</servlet-name>
@@ -262,7 +262,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>adminPromote</servlet-name>
-		<servlet-class>org.smg.server.servlet.admin.adminPromote</servlet-class>
+		<servlet-class>org.smg.server.servlet.admin.AdminPromote</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>adminPromote</servlet-name>
