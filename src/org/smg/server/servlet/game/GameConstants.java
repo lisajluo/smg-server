@@ -23,7 +23,7 @@ public final class GameConstants {
 	  public static final String POST_DATE = "postDate";
 	  public static final String PLAYER_ID = "playerId";
 	  public static final String GAME_META_INFO = NamespaceUtil.VERSION+"gameMetaInfo";
-	  
+	  public static final String USER_ID = "userId";
 	  // Error messages
 	  static final String JSON_RECEIVED = "json_received";
 	  static final String DETAILS  = "details";

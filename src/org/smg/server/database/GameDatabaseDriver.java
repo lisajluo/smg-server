@@ -326,7 +326,6 @@ public class GameDatabaseDriver {
 			for (Entity result : entityList) {
 				JSONObject currentQueryResult = new JSONObject();
 				long gameId = result.getKey().getId();
-				//Map
 				Map<String,Object> statsInfo = getStatsHelper(gameId);
 				if (statsInfo!=null&&statsInfo.containsKey(RATING)==true)
 					currentQueryResult.put(RATING, statsInfo.get(RATING));
@@ -341,6 +340,8 @@ public class GameDatabaseDriver {
 				Map<String, Object> gameInfo = new HashMap<String, Object>(
 						result.getProperties());
 				for (String key : gameInfo.keySet()) {
+					if (key.equals(USER_ID)==true)
+						continue;
 					if (key.equals(DEVELOPER_ID) == false) {
 						if (key.equals(PICS)) {
 
@@ -402,6 +403,8 @@ public class GameDatabaseDriver {
         currentQueryResult.put(DEVELOPER_LOWER, developerListInfo);
         Map<String, Object> gameInfo = new HashMap<String, Object>(result.getProperties());
 				for (String key : gameInfo.keySet()) {
+					if (key.equals(USER_ID)==true)
+						continue;
 					if (key.equals(DEVELOPER_ID) == false) {
 						if (key.equals(PICS)) {
 
