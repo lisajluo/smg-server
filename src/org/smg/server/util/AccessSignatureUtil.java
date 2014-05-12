@@ -6,20 +6,27 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+/**
+ * An Util for random accessSignature
+ * @author Archer
+ *
+ */
 public class AccessSignatureUtil {
   //TODO auto generate and update
   private static String saltAccessSignature = "ASDKLFJLHH123S981";
   private static String saltPassword = "SADKF123987SDKJH";
-  private static AccessSignatureUtil instance = null;
+  private static volatile AccessSignatureUtil instance = null;
   private static Object mutex = new Object();
   private static MessageDigest md = null;
   
+  /**
+   * Get an instance of accessSignatureUtil
+   * @return
+   */
   public static AccessSignatureUtil getInstance(){
-    if (instance == null){
-      synchronized(mutex){
-        if (instance == null) {
-          return new AccessSignatureUtil();
-        }
+    synchronized(mutex){
+      if (instance == null) {
+        instance = new AccessSignatureUtil();
       }
     }
     return instance;
@@ -33,6 +40,11 @@ public class AccessSignatureUtil {
     }
   }
   
+  /**
+   * Generate access Signature
+   * @param playerId
+   * @return
+   */
   public static String getAccessSignature(String playerId) {
     AccessSignatureUtil.getInstance();
     String sig = playerId+(new Date().toString())+saltAccessSignature;
@@ -40,6 +52,11 @@ public class AccessSignatureUtil {
     return new BigInteger(1,md.digest()).toString(16);
   }
   
+  /**
+   * Generate hashed password
+   * @param password
+   * @return
+   */
   public static String getHashedPassword(String password) {
     AccessSignatureUtil.getInstance();
     String sig = password+saltPassword;

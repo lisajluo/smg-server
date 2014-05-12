@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <script type="text/javascript" src="../resources/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="../resources/json2.js"></script>
+  <script type="text/javascript" src="../../resources/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="../../resources/json2.js"></script>
   <title>Player Demo</title>
   <style>
     input {float:right;width:250px;}
@@ -66,6 +66,10 @@
 <p><a href = "#" id = "GET-A-PLAYER-STAT">GET A PLAYER GAME STATISTIC</a></p>
 <p><a href = "#" id = "GET-A-PLAYER-ALL-STAT">GET A PLAYER ALL GAME STATISTIC</a></p>
 <p><a href = "#" id = "GET-A-PLAYER-HIS">GET A PLAYER GAME HISTORY</a></p>
+<p><a href = "#" id = "GET-A-PLAYER-FRI">GET A PLAYER FRIEND LIST</a></p>
+<p><a href = "#" id = "GET-A-PLAYER-FRI-FIL">GET A PLAYER FRIEND FILTERED LIST</a></p>
+<p><a href = "#" id = "ADD-A-PLAYER-FRI-FIL">ADD A PLAYER FRIEND FILTERED LIST</a></p>
+<p><a href = "#" id = "REM-A-PLAYER-FRI-FIL">REMOVE A PLAYER FRIEND FILTERED LIST</a></p>
 
 <div id = "responseArea">
   <div>
@@ -92,8 +96,8 @@
 
 
 <script type="text/javascript">
-var url = "http://4-dot-smg-server.appspot.com";
-//var url = "http://localhost:8888";
+//var url = "http://smg-server.appspot.com";
+var url = "http://localhost:8888";
 $(document).ready(function() {
   
   $("#INSERT-A-PLAYER").on("click", function(event){
@@ -128,6 +132,18 @@ $(document).ready(function() {
   });
   $("#GET-GAMES").on("click", function(event){
     ajaxCallGetGames(url+"/gameinfo/all");
+  });
+  $("#GET-A-PLAYER-FRI").on("click", function(event){
+    ajaxCallFriend(url+"/userfriendlist");
+  });
+  $("#GET-A-PLAYER-FRI-FIL").on("click", function(event){
+    ajaxCallFriendFilter(url+"/userfriendfilter");
+  });
+  $("#ADD-A-PLAYER-FRI-FIL").on("click", function(event){
+    ajaxCallAddFriendFilter(url+"/userfriendfilter");
+  });
+  $("#REM-A-PLAYER-FRI-FIL").on("click", function(event){
+    ajaxCallRemoveFriendFilter(url+"/userfriendfilter");
   });
 });
 
@@ -236,6 +252,91 @@ function ajaxCallGetGames(url){
       url: url,
       dataType: 'json',
       type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallFriend(url){
+    $.ajax({
+      url: url + "/" + $("#playerIdInput").val()+"?accessSignature="+$("#accessSignatureInput").val(),
+      dataType: 'json',
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val()+"?accessSignature="+$("#accessSignatureInput").val();
+    $.ajax({
+      url: url1, 
+      dataType: 'json',
+      type: "GET",
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallAddFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val();
+    var jsonObj = {};
+    jsonObj["accessSignature"] = $("#accessSignatureInput").val();
+    jsonObj["operation"] = "add";
+    jsonObj["socialId"] = $("#targetIdInput").val();
+    jsonObj["type"] = "g"
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url1, 
+      dataType: 'json',
+      type: "POST",
+      data: jsonString,
+      success: function(data, textStatus, jqXHR){
+        $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
+        if (data["accessSignature"] != undefined) {
+          $("#accessSignatureInput").val(data["accessSignature"]);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert("ERROR: " + textStatus + " " + errorThrown);
+      }
+    });
+}
+
+function ajaxCallRemoveFriendFilter(url){
+    var url1 = url + "/" + $("#playerIdInput").val();
+    var jsonObj = {};
+    jsonObj["accessSignature"] = $("#accessSignatureInput").val();
+    jsonObj["operation"] = "remove";
+    jsonObj["socialId"] = $("#targetIdInput").val();
+    jsonObj["type"] = "g"
+    var jsonString = JSON.stringify(jsonObj);
+    $.ajax({
+      url: url1, 
+      dataType: 'json',
+      type: "POST",
+      data: jsonString,
       success: function(data, textStatus, jqXHR){
         $("#rawResponse2").append("<p>Game:"+JSON.stringify(data)+"</p>");
         if (data["accessSignature"] != undefined) {

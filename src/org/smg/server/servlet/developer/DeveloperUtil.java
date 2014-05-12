@@ -7,6 +7,13 @@ import java.util.Map;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+@Deprecated
+/**
+ * Player and developer entities have been unified to a single User entity.  Developer and Player 
+ * calls have been kept in for compatibility reasons (Player and Developer pages requested to keep 
+ * the old servlet calls), but in future iterations all should move forward to User servlet calls.
+ * Please refer to the {@link org.smg.server.servlet.user.UserUtil}
+ */
 public class DeveloperUtil {
   /**
    * Deletes keys that are illegal and also massages map into form <String, String> (nested objects

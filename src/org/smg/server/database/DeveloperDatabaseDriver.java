@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.smg.server.database.models.Player.PlayerProperty;
 import org.smg.server.util.AccessSignatureUtil;
 
 import static org.smg.server.servlet.developer.DeveloperConstants.*;
@@ -22,6 +21,13 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+@Deprecated 
+/**
+ * Player and developer entities have been unified to a single User entity.  All servlet methods 
+ * should rely on {@link UserDatabaseDriver}.  Developer and Player calls have been kept in for
+ * compatibility reasons (Player and Developer pages requested to keep the old servlet calls),
+ * but in future iterations all should move forward to User servlet calls.
+ */
 public class DeveloperDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   

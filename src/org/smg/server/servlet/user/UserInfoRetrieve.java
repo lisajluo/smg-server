@@ -23,6 +23,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.smg.server.database.UserDatabaseDriver;
+import org.smg.server.servlet.game.GameUtil;
 import org.smg.server.util.AccessSignatureUtil;
 import org.smg.server.util.CORSUtil;
 
@@ -31,36 +32,41 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 public class UserInfoRetrieve extends HttpServlet{
-	/*
-	 * Retrieve the password.
+	/**
+	 * doGet is called when the user tries to retrive the passWord
+	 * If this operation is successful, an email will be sent to the email specified in the URL 
+	 * containing a URL where the user can change his/her password
+	 * 
+	 * A successful response:
+	 * {“success” : “EMAIL_SENT”}
 	 */
 	@Override
-	  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
 		CORSUtil.addCORSHeader(resp);
-	    PrintWriter writer = resp.getWriter();
+		PrintWriter writer = resp.getWriter();
 		String emailAddress = req.getPathInfo().substring(1);
 		JSONObject json = new JSONObject();
 		List<Entity> userAsList = null;
-		userAsList = UserDatabaseDriver.queryUserByProperty(EMAIL,
-					emailAddress);
+		userAsList = UserDatabaseDriver
+				.queryUserByProperty(EMAIL, emailAddress);
 		if (userAsList == null || userAsList.size() == 0) {
-			UserUtil.jsonPut(json, ERROR, WRONG_EMAIL);
-			try {
-				json.write(writer);
-			} catch (Exception t) {
-				t.printStackTrace();
-			}
+			String url = GameUtil.getFullURL(req); 
+			String details = "Your email address doesn't exist in our dataStore";
+			UserHelper.sendErrorMessageForUrl(resp, json, WRONG_EMAIL, details,
+							url);
 			return;
+			
 
 		}
 		if (userAsList.get(0).getProperty(SOCIAL_AUTH) != null) {
-			UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
-			try {
-				json.write(writer);
-			} catch (Exception t) {
-				t.printStackTrace();
-			}
+		    String url = GameUtil.getFullURL(req); 
+			String details = "You are a social-auth user, please retrieve your password via your social-auth site";
+			UserHelper.sendErrorMessageForUrl(resp, json, SOCIAL_AUTH_ACCOUNT, details,
+							url);
 			return;
+			
+			
 		}
 		long userId = userAsList.get(0).getKey().getId();
 		String accessSignature = (String) userAsList.get(0).getProperty(
@@ -69,10 +75,11 @@ public class UserInfoRetrieve extends HttpServlet{
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		StringBuffer msgBodyBuffer = new StringBuffer();
-		msgBodyBuffer.append("Hello "+ firstName+ ":\n");
+		msgBodyBuffer.append("Hello " + firstName + ":\n");
 		msgBodyBuffer.append(GREETINGS);
-		msgBodyBuffer.append(RETRIEVE_URL+"userId="+String.valueOf(userId) +"&accessSignature="+accessSignature);
-		String msgBody = msgBodyBuffer.toString();		
+		msgBodyBuffer.append(RETRIEVE_URL + "userId=" + String.valueOf(userId)
+				+ "&accessSignature=" + accessSignature);
+		String msgBody = msgBodyBuffer.toString();
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(ADMIN_EMAIL, ADMIN_NAME));
@@ -101,9 +108,7 @@ public class UserInfoRetrieve extends HttpServlet{
 				t.printStackTrace();
 			}
 			return;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

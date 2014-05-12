@@ -155,8 +155,6 @@ $(document).ready(function() {
       "developerId" : formValues.developerId,
       "accessSignature" : formValues.accessSignature,
       "description" : formValues.description,
-      "width" : formValues.width,
-      "height" : formValues.height,
       "gameName": formValues.gameName,
       "url" : formValues.url,
       "hasTokens" : hasToken 
@@ -189,10 +187,10 @@ $(document).ready(function() {
 <form id="post1"></form>
 <table>
 <tr>
-<tr><td>E-mail:<td><input type="text" name="email" form="post1" value="foo@bar.com">
-<tr><td>Password:</td><td><input type="text" name="password" form="post1" value="mysupersecurepassword"></td></tr>
-<tr><td>First Name:</td><td><input type="text" name="firstName" form="post1" value="Ninja"></td></tr>
-<tr><td>Last Name:</td><td><input type="text" name="lastName" form="post1" value="Turtle"></td></tr>
+<tr><td>E-mail:<td><input type="text" name="email" form="post1">
+<tr><td>Password:</td><td><input type="text" name="password" form="post1"></td></tr>
+<tr><td>First Name:</td><td><input type="text" name="firstName" form="post1"></td></tr>
+<tr><td>Last Name:</td><td><input type="text" name="lastName" form="post1"></td></tr>
 <tr><td>&nbsp;</td><td><input type="submit" value="Insert" form="post1"></td></tr>
 </table>
 
@@ -204,8 +202,6 @@ $(document).ready(function() {
 <tr><td>Developer ID:<td><input type="text" name="developerId" form="submitGame">
 <tr><td>Access Signature:</td><td><input type="text" name="accessSignature" form="submitGame"></td></tr>
 <tr><td>description:</td><td><input type="text" name="description" form="submitGame"></td></tr>
-<tr><td>width:</td><td><input type="text" name="width" form="submitGame"></td></tr>
-<tr><td>height:</td><td><input type="text" name="height" form="submitGame"></td></tr>
 <tr><td>gameName:</td><td><input type="text" name="gameName" form="submitGame"></td></tr>
 <tr><td>URL:</td><td><input type="text" name="url" form="submitGame"></td></tr>
 <tr><td>&nbsp;</td><td><input type="submit" value="Submit_Game" form="submitGame"></td></tr>

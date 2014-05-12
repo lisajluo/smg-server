@@ -21,6 +21,16 @@ import org.smg.server.filter.XSSRequestWrapper;
 
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
+/**
+ * A top-level filter that intercepts all servlets calls on smg-server and checks for cross-site
+ * scripting (XSS) attacks.  If there is no such content in the request, then the request is 
+ * redirected properly to the corresponding servlet; otherwise:
+ * { 
+ *   "error": "XSS_ERROR", 
+ *   "details": "Your request contained a potential XSS attack. Please correct and resubmit." 
+ * }
+ *
+ */
 public class XSSFilter implements Filter {
   public void init(FilterConfig filterConfig) throws ServletException {
   }
@@ -28,17 +38,22 @@ public class XSSFilter implements Filter {
   public void destroy() {
   }
 
+  /**
+   * Filter XSS content and redirect to the correct servlet if there is no XSS content.
+   */
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
       throws IOException, ServletException {
     
     CORSUtil.addCORSHeader((HttpServletResponse) response);
     PrintWriter writer = response.getWriter();
     JSONObject json = new JSONObject();
+    // Use a wrapper class for the request (normally a HttpServletRequest can only be consumed once)
     XSSRequestWrapper multiReadRequest = new XSSRequestWrapper((HttpServletRequest) request);
 
     if (hasXSSContent(multiReadRequest)) {
       try {
         json.put(ERROR, XSS_ERROR);
+        json.put(DETAILS, VERBOSE_XSS_ERROR);
         json.write(writer);
       } 
       catch (Exception e) {
@@ -50,6 +65,9 @@ public class XSSFilter implements Filter {
     }
   }
   
+  /**
+   * Verify if a request contains XSS content, if yes return true, otherwise return false
+   */
   private boolean hasXSSContent(ServletRequest request) {
     BufferedReader reader;
     StringBuffer buffer = new StringBuffer();
@@ -73,7 +91,8 @@ public class XSSFilter implements Filter {
     return true;
   }
   
-  /*
+  /**
+   * Given a JSON String, remove all XSS format.
    * Credit to http://www.javacodegeeks.com/2012/07/anti-cross-site-scripting-xss-filter.html
    */
   private String stripXSS(String value) {

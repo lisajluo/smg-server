@@ -24,10 +24,17 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
+/**
+ * 
+ * Dummy game model for game testing
+ *
+ */
 public class DummyGameModel {
 	static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/**
+	 * Update the initial stats
+	 */
   static public void updateStats() {
 
 		Map ScoreInfo = new HashMap();
@@ -66,6 +73,10 @@ public class DummyGameModel {
 	    datastore.put(statistics);
 	    
 	  }
+	/**
+	 * Insert a random match entity
+	 * @throws JSONException
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
   public static void  insertMatchEntity() throws JSONException {
 		
@@ -87,6 +98,10 @@ public class DummyGameModel {
 	   
 	    datastore.put(entity);
 	  }
+	/**
+	 * Update the match status
+	 * @throws IOException
+	 */
 	public static void updateMatch() throws IOException {
 	    Map<String, Object> match = new HashMap<String, Object>();
 	    match.put(ContainerConstants.GAME_ID, Long.valueOf(6403555720167424L));
