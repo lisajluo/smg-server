@@ -54,7 +54,6 @@ public class UserConstants {
 	public static final String EMAIL_UNABLE_TO_REACH = "EMAIL_UNABLE_TO_REACH";
 	public static final String UPDATED_USER = "UPDATED_USER";
 	public static final String EMAIL_SENT = "EMAIL_SENT";
-	public static final String DETAILS = "details";
 	public static final String JSON_RECEIVED = "json_received";
     //social Auth attributes
 	public static final String GOOGLE_SOCIAL_AUTH = "https://accounts.google.com/o/oauth2/auth?";
