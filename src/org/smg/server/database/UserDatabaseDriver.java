@@ -45,6 +45,17 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class UserDatabaseDriver {
   static final DatastoreService datastore = DatastoreServiceFactory
       .getDatastoreService();
+  /**
+   * Parse the list of user entities into a single JSON Object in the following format:
+   * {
+   *   "PASSED_LIST" : [{},{}]
+   *   "BLOCKED_LIST" :[{},{}]
+   * }
+   * PASSED_LIST returns a list of admin users
+   * BLOCKED_LIST returns a list of non-admin users  
+   * @param entityList
+   * @return
+   */
   private static JSONObject parseEntityToJSON(List<Entity> entityList)
   {
 	  List<JSONObject> passedList = new ArrayList<JSONObject> ();
@@ -76,12 +87,20 @@ public class UserDatabaseDriver {
 		  return null;
 	  }
   }
+  /**
+   * return all the users in the dataStore
+   * @return
+   */
   public static JSONObject getAllUser()
   {
 	  List<Entity> resultAsEntity= getAllUserAsEntity();
 	  JSONObject json = parseEntityToJSON(resultAsEntity);
 	  return json;
   }
+  /**
+   * Return all the users as a list of entities
+   * @return
+   */
   private static List<Entity> getAllUserAsEntity()
   {
 	  try
@@ -97,6 +116,14 @@ public class UserDatabaseDriver {
 			return null;
 		}
   }
+  /**
+   * Insert a user with the userId into the datastore
+   * properties specifies the field properties of the user
+   * @param userId
+   * @param properties
+   * @return
+   * @throws Exception
+   */
   public static boolean insertUser(long userId, Map<Object, Object> properties)
       throws Exception {
     Transaction txn = datastore.beginTransaction();
@@ -127,7 +154,12 @@ public class UserDatabaseDriver {
       return false;
     }
   }
-
+  /**
+   * Update the accessSignature of the user, given a specific userId
+   * @param userId
+   * @param accessSignature
+   * @throws Exception
+   */
   public static void updateUserAccessSignature(long userId,
       String accessSignature) throws Exception {
     Key key = KeyFactory.createKey(USER, userId);
@@ -142,7 +174,13 @@ public class UserDatabaseDriver {
 
     }
   }
-
+  /**
+   * Insert a user into the datastore, without the passWord attribute
+   * @param userId
+   * @param properties
+   * @return
+   * @throws Exception
+   */
   public static boolean insertUserWithoutPassWord(long userId,
       Map<Object, Object> properties) throws Exception {
     Transaction txn = datastore.beginTransaction();
@@ -169,7 +207,12 @@ public class UserDatabaseDriver {
       return false;
     }
   }
-
+  /**
+   * Insert a user into the dataStore, passWord included
+   * @param properties
+   * @return
+   * @throws Exception
+   */
   public static long insertUser(Map<Object, Object> properties)
       throws Exception {
     long key;
@@ -197,7 +240,12 @@ public class UserDatabaseDriver {
 
     return key;
   }
-
+  /**
+   * Return the userMap properties ,given a specific userId
+   * @param userId
+   * @return
+   * @throws EntityNotFoundException
+   */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Map getUserMap(long userId) throws EntityNotFoundException {
     try {
@@ -208,7 +256,12 @@ public class UserDatabaseDriver {
       throw new EntityNotFoundException(null);
     }
   }
-
+  /**
+   * Return a list of entities by property
+   * @param property the name of the field
+   * @param query the actual value of the field
+   * @return
+   */
   public static List<Entity> queryUserByProperty(String property, Object query) {
     Filter filter = new FilterPredicate(property, FilterOperator.EQUAL, query);
     Query q = new Query(USER).setFilter(filter);
@@ -216,17 +269,34 @@ public class UserDatabaseDriver {
         FetchOptions.Builder.withDefaults());
     return result;
   }
-
+  /**
+   * update the user given the specific userId
+   * properties provide the mapping of the fields to be updated
+   * @param userId
+   * @param properties
+   * @return
+   * @throws Exception
+   */
   public static boolean updateUser(long userId, Map<Object, Object> properties)
       throws Exception {
     return insertUser(userId, properties);
   }
-
+  /**
+   *  update the user given the specific userId without updating the password
+   * @param userId
+   * @param properties
+   * @return
+   * @throws Exception
+   */
   public static boolean updateUserWithoutPassWord(long userId,
       Map<Object, Object> properties) throws Exception {
     return insertUserWithoutPassWord(userId, properties);
   }
-
+  /**
+   * Delete the user in the datastore, given the userId
+   * @param userId
+   * @return
+   */
   public static boolean deleteUser(long userId) {
     Transaction txn = datastore.beginTransaction();
     try {

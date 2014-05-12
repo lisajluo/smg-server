@@ -1,5 +1,6 @@
 package org.smg.server.servlet.user;
 
+
 import static org.smg.server.servlet.user.UserConstants.*;
 
 import java.io.BufferedReader;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.smg.server.database.UserDatabaseDriver;
+import org.smg.server.servlet.game.GameHelper;
+import org.smg.server.servlet.game.GameUtil;
 import org.smg.server.servlet.image.ImageUtil;
 import org.smg.server.servlet.user.UserUtil;
 import org.smg.server.util.AccessSignatureUtil;
@@ -28,12 +31,28 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class UserServlet extends HttpServlet{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	  @Override
+	  /**
+	   * doPost is called when a new user is created
+	   * POST /user
+	   * 
+	   *  {
+	   *   “email”: …, //required
+       *   “password”: …,  //required 
+       *   “firstname”: …, //optional
+       *   “lastname”: …, //optional
+       *   “nickname”: …, //optional
+       *   }
+       *
+       *  A successful response:
+       *  {userId”: “1230850494”, “accessSignature”: ...}
+       *
+	   */
 	  public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 	    CORSUtil.addCORSHeader(resp);
 	    PrintWriter writer = resp.getWriter();
 
 	    JSONObject json = new JSONObject();
-	    
+	    //the parameters that should be kept in the json input 
 	    String[] validParams = {EMAIL, PASSWORD, FIRST_NAME, MIDDLE_NAME, LAST_NAME, NICK_NAME};
 	    StringBuffer buffer = new StringBuffer();
 	    String line = null;
@@ -47,16 +66,19 @@ public class UserServlet extends HttpServlet{
 	          (Map) JSONUtil.parse(buffer.toString()), validParams);
 	      String originalString = (String) parameterMap.get(PASSWORD);
 			if (originalString == null || originalString.length() < 6) {
-				try {
-					json.put(ERROR, PASSWORD_TOO_SHORT);
-					json.write(resp.getWriter());
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				return;
+				
+					String details = "Your password length is less than 6";
+					UserHelper.sendErrorMessageForJson(resp, json,  PASSWORD_TOO_SHORT, details,
+							buffer.toString());
+					return;
+			
+				
 			}
 	      if (parameterMap.get(EMAIL) == null || parameterMap.get(PASSWORD) == null) {
-	        UserUtil.jsonPut(json, ERROR, MISSING_INFO);
+	    	String details = "Please provide your email and password to register";
+	    	UserHelper.sendErrorMessageForJson(resp, json,  MISSING_INFO, details,
+					buffer.toString());
+	        return;
 	      }
 	      else {
 	        // Pick random avatar
@@ -67,7 +89,11 @@ public class UserServlet extends HttpServlet{
 	        long userId = UserDatabaseDriver.insertUser(parameterMap);
 	        
 	        if (userId == INVALID) {
-	          UserUtil.jsonPut(json, ERROR, EMAIL_EXISTS);
+	          String details = "Your email address has been registered";
+		      UserHelper.sendErrorMessageForJson(resp, json,  EMAIL_EXISTS, details,
+						buffer.toString());
+		        return;
+	          
 	        }
 	        else {
 	          String accessSignature = AccessSignatureUtil.generate(userId);
@@ -80,7 +106,10 @@ public class UserServlet extends HttpServlet{
 	    }
 	    catch (Exception e) { 
 	      e.printStackTrace();
-	      UserUtil.jsonPut(json, ERROR, INVALID_JSON);
+	      String details = "Your input json format is invalid";
+	      UserHelper.sendErrorMessageForJson(resp, json,  INVALID_JSON, details,
+					buffer.toString());
+	      return;
 	    }
 
 	    try {
@@ -91,8 +120,17 @@ public class UserServlet extends HttpServlet{
 	    }
 	  }
 	/*
-	 * Log-in
+	 * doGet is called when a user is trying to log in
+	 * GET /user/{userId}?password=...
+	 * or GET /user/?email=.....&password=...
+	 * Clients can use email instead of userId to login
 	 * 
+	 * If the password is correct, then it will return the player info including email and an accessSignature :
+     * {
+     *  “email”: …, 
+     *  “accessSignature”: …//MD5 Hash String
+     *  }
+     *
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	  @Override
@@ -108,8 +146,10 @@ public class UserServlet extends HttpServlet{
 					req.getParameter(EMAIL));
 			if (userAsList == null || userAsList.size() == 0) {
 				try {
-					UserUtil.jsonPut(json, ERROR, WRONG_EMAIL);
-					json.write(resp.getWriter());
+					String url = GameUtil.getFullURL(req); 
+					String details = "The email you provide does not exist";
+					UserHelper.sendErrorMessageForUrl(resp, json,  WRONG_EMAIL, details,
+							url);
 					return;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -125,7 +165,11 @@ public class UserServlet extends HttpServlet{
 			}
 			user = UserDatabaseDriver.getUserMap(userId);
 			if (user.get(SOCIAL_AUTH) != null) {
-				UserUtil.jsonPut(json, ERROR, SOCIAL_AUTH_ACCOUNT);
+				String url = GameUtil.getFullURL(req); 
+				String details = "This is a socialAuth Account, please login via socialAuth";
+				UserHelper.sendErrorMessageForUrl(resp, json,  SOCIAL_AUTH_ACCOUNT, details,
+						url);
+				return;
 
 			} else {
 				if (user.get(PASSWORD).equals(
@@ -139,11 +183,19 @@ public class UserServlet extends HttpServlet{
 					user.put(USER_ID, userId);
 					json = new JSONObject(user);
 				} else {
-					UserUtil.jsonPut(json, ERROR, WRONG_PASSWORD);
+					String url = GameUtil.getFullURL(req); 
+					String details = "Your password is wrong";
+					UserHelper.sendErrorMessageForUrl(resp, json,  WRONG_PASSWORD, details,
+							url);
+					return;
 				}
 			}
 		} catch (Exception e) {
-			UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
+			String url = GameUtil.getFullURL(req); 
+			String details = "The userId you provide does not exist";
+			UserHelper.sendErrorMessageForUrl(resp, json,  WRONG_USER_ID, details,
+					url);
+			return;
 		}
 	    try {
 	      json.write(writer);
@@ -158,6 +210,16 @@ public class UserServlet extends HttpServlet{
 	  }
 	@SuppressWarnings({ "rawtypes" })
 	  @Override
+	  /**
+	   * doDelete is called when a user is trying to delete the account
+	   * 
+	   * DELETE /user/{userId}?accessSignature=...
+	   * 
+	   * It will delete the player and all its associated data 
+	   * (including matches with other players}
+	   *  If this is a successful delete, it will return:
+       * {“success”: “DELETED_USER”}
+	   */
 	  public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 	    CORSUtil.addCORSHeader(resp);
 	    PrintWriter writer = resp.getWriter();
@@ -173,11 +235,20 @@ public class UserServlet extends HttpServlet{
 	        UserUtil.jsonPut(json, SUCCESS, DELETED_USER);
 	      }
 	      else {
-	        UserUtil.jsonPut(json, ERROR, WRONG_ACCESS_SIGNATURE);
+	    	String url = GameUtil.getFullURL(req); 
+			String details = "The accessSignature is not correct";
+			UserHelper.sendErrorMessageForUrl(resp, json,  WRONG_ACCESS_SIGNATURE, details,
+						url);
+	        return;
 	      }
 	    }
 	    catch (Exception e) {
-	      UserUtil.jsonPut(json, ERROR, WRONG_USER_ID);
+			String url = GameUtil.getFullURL(req);
+			String details = "The userId does not exist";
+			UserHelper.sendErrorMessageForUrl(resp, json, WRONG_USER_ID,
+					details, url);
+			return;
+	      
 	    }
 	    
 	    try {
