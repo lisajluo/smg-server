@@ -1,4 +1,5 @@
 smg-server
 ==========
 
-Social Multiplayer Games: Server component
+Social Multiplayer Games Spring 2014: Server component and Login pages
+Gaming platform hosted at http://smg-server.appspot.com
