@@ -274,6 +274,37 @@ function ajaxGetGameStat(id, expected)
 				ok(true);
 			} else if (expected == "") {
 				ok(true);
+			} else {
+				ok(false);
+			}
+		    start();
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.error("ERROR: " + textStatus + " " + errorThrown);
+		}
+	});
+};
+
+function ajaxDeletePlayer(id, sig, expected)
+{
+	$.ajax({
+		url: sServer + "/players/" + id + "?accessSignature=" + sig, 
+		type: 'DELETE',
+		dataType: 'json',
+		success: function(data, textStatus, jqXHR) {     
+			console.log(data);
+			if (data["error"] == "WRONG_PLAYER_ID" &&
+				expected == "WRONG_PLAYER_ID")
+			{
+				ok(true);
+			} else if (data["error"] == "WRONG_ACCESS_SIGNATURE" &&
+				expected == "WRONG_ACCESS_SIGNATURE")
+			{
+				ok(true);
+			} else if (data["success"] == "DELETED_PLAYER" && expected == "") {
+				ok(true);
+			} else {
+				ok(false);
 			}
 		    start();
 		},
@@ -398,4 +429,16 @@ asyncTest("Get Game Stat Correctly", function() {
 
 asyncTest("Get Game Stat With WRONG_GAME_ID", function() {
     ajaxGetGameStat("1234", "WRONG_GAME_ID");
+});
+
+asyncTest("Delete Player With WRONG_PLAYER_ID", function() {
+	ajaxDeletePlayer("", accessSignature, "WRONG_PLAYER_ID");
+});
+
+asyncTest("Delete Player With WRONG_ACCESS_SIGNATURE", function() {
+	ajaxDeletePlayer(PlayerId, "", "WRONG_ACCESS_SIGNATURE");
+});
+
+asyncTest("Delete Player Correctly", function() {
+	ajaxDeletePlayer(PlayerId, accessSignature, "");
 });
