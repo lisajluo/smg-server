@@ -61,7 +61,7 @@ public final class ContainerConstants {
   public static final String WRONG_PLAYER_ID = "WRONG_PLAYER_ID";
   public static final String WRONG_GAME_ID = "WRONG_GAME_ID";
   public static final String NO_MATCH_FOUND = "NO_MATCH_FOUND";
-  public static final String WRONG_MATCH_ID = "WROING_MATCH_ID";
+  public static final String WRONG_MATCH_ID = "WRONG_MATCH_ID";
   public static final String WRONG_ACCESS_SIGNATURE = "WRONG_ACCESS_SIGNATURE";
   public static final String BUILD_CHANNEL_FIALED = "BUILD_CHANNEL_FAILED";
   public static final String JSON_PARSE_ERROR = "JSON_PARSE_ERROR";
